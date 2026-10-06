@@ -3,9 +3,9 @@ import { LOCATIONS, STATE_ORDER, byId } from './data/locations.js';
 import {
   MEMBERS, ACCESS_REASONS, OFFLINE_POSTCODES,
   findMember, memberOrigin, appointmentInfo,
-  maskNumber, maskEmail, maskMobile, fullName,
+  maskNumber, fullName,
 } from './data/members.js';
-import { servicesFor, eventsFor, slotsFor } from './data/demo-content.js';
+import { servicesFor, eventsFor } from './data/demo-content.js';
 import { arrivalFor, phoneFor } from './data/arrival.js';
 import { haversineKm, estimateTravel, fmtDistance, fmtDuration, originKey } from './lib/geo.js';
 import { openStatus, hoursSummary } from './lib/hours.js';
@@ -364,6 +364,11 @@ function renderViewBar() {
 function renderHeader() {
   document.body.dataset.view = state.view;
   els.brandTag.hidden = true;
+  // Logged-in views use the member account site's layout: account header, left menu, navy banner.
+  const signedIn = isMemberView() && !!state.member;
+  document.body.classList.toggle('is-signed-in', signedIn);
+  $('#mol-name').textContent = signedIn ? fullName(state.member).toUpperCase() : '';
+  $('#hero-title').textContent = signedIn ? 'Find a location' : 'Our Locations';
   if (state.member) {
     const m = state.member;
     els.memberSlot.innerHTML = `
@@ -650,31 +655,35 @@ function tags(loc) {
   const m = state.member;
   const out = [];
   if (m?.appointment?.locationId === loc.id) out.push('Your appointment');
-  if (m && m.employer.locationId === loc.id) out.push('Your workplace');
   return out.map(t => `<span class="flagword">${t}</span>`).join('');
 }
 
+// Logged-in members always start from home: it's stated plainly, and after searching
+// somewhere else a single link takes them back.
 function originBlock() {
   const o = state.origin;
-  const m = state.member;
-  const personal = m && isMemberView();
-  if (!o && !personal) return '';
+  const personal = state.member && isMemberView();
+  if (!o) return '';
+  if (personal && o.source === 'home') {
+    return `
+      <div class="origin origin-home">
+        ${icon('home')}
+        <p>Near your home: <strong>${esc(o.label)}</strong><small>From your member profile</small></p>
+      </div>`;
+  }
   const sourceText = {
-    home: 'Your home address',
-    work: 'Your workplace',
     'member-number': 'Postcode matched to member number',
     geo: 'Your current location',
     search: 'Searched address',
-  }[o?.source] || '';
-  const label = o?.label;
-  const options = personal ? [['home', 'Home'], ['work', 'Work']] : [];
+  }[o.source] || '';
   return `
     <div class="origin">
       <div class="origin-row">
-        <p>Near <strong>${esc(label)}</strong><small>${sourceText}</small></p>
-        ${personal ? '' : '<button class="link" data-action="clear-origin">Clear</button>'}
+        <p>Near <strong>${esc(o.label)}</strong><small>${sourceText}</small></p>
+        ${personal
+          ? `<button class="link" data-action="origin" data-kind="home">${icon('home', 'icon-xs')} Back to your home address</button>`
+          : '<button class="link" data-action="clear-origin">Clear</button>'}
       </div>
-      ${options.length ? `<div class="origin-switch" role="group" aria-label="Start from">${options.map(([k, t]) => `<button class="${o?.source === k ? 'is-on' : ''}" aria-pressed="${o?.source === k}" data-action="origin" data-kind="${k}">${t}</button>`).join('')}</div>` : ''}
     </div>`;
 }
 
@@ -687,7 +696,7 @@ function virtualBlock() {
       <p>Talk to a super consultant by phone instead. Same help, no travel.</p>
       <div class="btn-row">
         <a class="btn btn-primary btn-sm" href="${telHref(CONFIG.ADVICE_PHONE)}">Call ${CONFIG.ADVICE_PHONE}</a>
-        <button class="btn btn-outline btn-sm" data-action="callback" data-id="${n.l.id}">Request a call back</button>
+        <button class="btn btn-outline btn-sm" data-action="callback">Request a call back</button>
       </div>
       <p class="small">Prefer to see someone? <button class="link" data-action="book" data-id="${n.l.id}" data-format="video">Book a video call</button></p>
     </aside>`;
@@ -799,17 +808,14 @@ function detailView(loc) {
       </div>
       ${appt ? `<p class="callout callout-teal"><strong>Your appointment:</strong> ${esc(appt.dateLabel)}, ${esc(appt.time)} · ${esc(appt.format)}</p>` : ''}
 
-      <div class="contact-actions">
-        <a class="btn btn-primary" href="${telHref(phoneFor(loc))}">${icon('phone')} Call ${loc.type === 'office' ? 'this office' : 'this campus'} <small>${phoneFor(loc)}</small></a>
-        <a class="btn btn-outline" href="${telHref(CONFIG.ADVICE_PHONE)}">${icon('phone')} Financial advice line <small>${CONFIG.ADVICE_PHONE}</small></a>
-      </div>
-
+      <!-- One contact block: the advice line leads; the office's own number sits with its hours below -->
       <div class="advice-callout">
         <strong>Financial advice is by appointment</strong>
-        <p>${svc.walkIn ? 'Walk-ins are welcome for general enquiries. To see an adviser, ask us to call you back or book ahead.' : 'This location is appointment only. Ask us to call you back, or book ahead.'}</p>
-        <div class="btn-row">
-          <button class="btn btn-primary btn-sm" data-action="callback" data-id="${loc.id}">Request a call back</button>
+        <p>${svc.walkIn ? 'Walk-ins are welcome for general enquiries. To see an adviser, call our advice line or book online.' : 'This location is appointment only. Call our advice line or book online.'}</p>
+        <a class="btn btn-primary advice-call" href="${telHref(CONFIG.ADVICE_PHONE)}">${icon('phone')} Call ${CONFIG.ADVICE_PHONE}</a>
+        <div class="advice-more">
           <button class="btn btn-outline btn-sm" data-action="book" data-id="${loc.id}">Book an appointment</button>
+          <button class="link" data-action="callback">Request a call back</button>
         </div>
       </div>
 
@@ -831,6 +837,7 @@ function detailView(loc) {
         <h4>Opening hours</h4>
         <p>${esc(hoursSummary(loc))}</p>
         <p>${statusText(loc) || esc(svc.note)}</p>
+        <p class="office-phone">${loc.type === 'office' ? 'Office' : 'Campus'} phone: <a href="${telHref(phoneFor(loc))}">${phoneFor(loc)}</a> <span>for directions or general questions</span></p>
       </section>
 
       <section class="detail-section">
@@ -878,110 +885,13 @@ function openLogin() {
     </ul>`, 'Member login');
 }
 
-const booking = { locId: null, format: 'in-person', slot: null, notify: null, note: '' };
-
-function openBooking(locId, { format = 'in-person', slot = null } = {}) {
-  const m = state.member;
-  Object.assign(booking, { locId, format, slot, note: '', notify: m ? (m.preferred === 'sms' ? 'sms' : 'email') : null });
-  renderBooking();
-}
-
-function readBookingNote() {
-  const note = els.modal.querySelector('textarea[name="note"]');
-  if (note) booking.note = note.value;
-}
-
-function choiceRow(name, current, options, stack = false) {
-  return `<div class="choice-row ${stack ? 'stack' : ''}">${options.map(([v, label]) => `<label class="choice ${current === v ? 'is-on' : ''}"><input type="radio" name="${name}" value="${v}" ${current === v ? 'checked' : ''}>${label}</label>`).join('')}</div>`;
-}
-
-function renderBooking(confirmed = false) {
-  const loc = byId(booking.locId);
-  const m = state.member;
-  if (confirmed) {
-    const formatLabel = { 'in-person': 'In person', video: 'Video', phone: 'Phone' }[booking.format];
-    const where = booking.format === 'in-person' ? `at ${loc.name}` : booking.format === 'video' ? 'by video call' : 'by phone';
-    if (m) m.appointment = { locationId: loc.id, dateLabel: booking.slot.day, time: booking.slot.time, format: formatLabel, topic: m.appointment?.topic };
-    const sentTo = m ? (booking.notify === 'sms' ? maskMobile(m.mobile) : maskEmail(m.email)) : '';
-    doneModal('Request sent', `
-      <p>Your appointment ${esc(where)} on <strong>${esc(booking.slot.day)} at ${esc(booking.slot.time)}</strong> has been requested.</p>
-      ${sentTo ? `<p>Confirmation will be sent to ${esc(sentTo)}.</p>` : ''}
-      <p class="small">Prototype: nothing was booked or sent.</p>`);
-    renderPersonal();
-    renderBody();
-    return;
-  }
-
-  let who;
-  if (m) {
-    who = `<p class="booking-as">Booking as <strong>${esc(fullName(m))}</strong>. We'll confirm by ${booking.notify === 'sms' ? `SMS to ${esc(maskMobile(m.mobile))}` : `email to ${esc(maskEmail(m.email))}`}.</p>`;
-  } else {
-    who = `<div class="field-row">
-      <label class="field">Name<input class="input" name="name" type="text" autocomplete="off"></label>
-      <label class="field">Email<input class="input" name="email" type="email" autocomplete="off"></label>
-    </div>`;
-  }
-
+// Advice bookings and call-back requests open full-screen placeholders. In production
+// each would hand off to UniSuper's existing form.
+function openTakeover(text, label) {
+  els.modal.classList.add('modal-takeover');
   openModal(`
-    ${modalHead('Book an appointment')}
-    <p>${booking.format === 'in-person' ? esc(loc.name) : 'With a super consultant'} · general advice, about 45 minutes</p>
-    <fieldset><legend>Appointment type</legend>${choiceRow('format', booking.format, [['phone', 'Phone'], ['in-person', loc.type === 'office' ? 'In person' : 'On campus'], ['video', 'Video']])}</fieldset>
-    <fieldset><legend>Next available</legend>
-      ${slotsFor(loc).map(d => `<div class="slot-day"><span>${esc(d.label)}</span><div class="slot-times">
-        ${d.times.map(t => { const on = booking.slot?.day === d.label && booking.slot?.time === t; return `<button type="button" class="slot ${on ? 'is-on' : ''}" aria-pressed="${on}" data-action="slot" data-day="${esc(d.label)}" data-time="${t}">${t}</button>`; }).join('')}
-      </div></div>`).join('')}
-    </fieldset>
-    ${who}
-    <button class="btn btn-primary btn-block" data-action="confirm-booking" ${booking.slot ? '' : 'disabled'}>${booking.slot ? `Request ${esc(booking.slot.day)}, ${esc(booking.slot.time)}` : 'Choose a time'}</button>`, 'Book an appointment');
-}
-
-// ── Call back request ────────────────────────────────────────────────────
-
-const CALLBACK_WINDOWS = [['morning', 'Morning', '9am – 12pm'], ['afternoon', 'Afternoon', '12pm – 3pm'], ['late', 'Late afternoon', '3pm – 5pm']];
-const CALLBACK_TOPICS = ['Financial advice', 'Retirement planning', 'Contributions and super balance', 'Insurance', 'Something else'];
-const callback = { locId: null, window: 'morning', topic: CALLBACK_TOPICS[0] };
-
-function nextBusinessDay(now = new Date()) {
-  const d = new Date(now);
-  do d.setDate(d.getDate() + 1); while (d.getDay() === 0 || d.getDay() === 6);
-  return d.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'short' });
-}
-
-function openCallback(locId) {
-  Object.assign(callback, { locId, window: 'morning', topic: CALLBACK_TOPICS[0] });
-  renderCallback();
-}
-
-function renderCallback(done = false) {
-  const loc = callback.locId && byId(callback.locId);
-  // A call back from the page-wide "Prefer to talk?" strip has no location: the advice team calls.
-  const team = loc ? `the ${loc.name} team` : 'our advice team';
-  const m = state.member;
-  const win = CALLBACK_WINDOWS.find(w => w[0] === callback.window);
-  const day = nextBusinessDay();
-  if (done) {
-    const number = m ? maskMobile(m.mobile) : (els.modal.querySelector('input[name="phone"]')?.value || 'the number you gave');
-    doneModal('Call back requested', `
-      <p>Someone from ${esc(team)} will call you on <strong>${esc(number)}</strong>, ${esc(day)} (${win[1].toLowerCase()}, ${win[2]}).</p>
-      <p>Topic: ${esc(callback.topic)}</p>
-      <p class="small">Prototype: no call back was requested.</p>`);
-    return;
-  }
-  const who = m
-      ? `<p class="booking-as">We'll call <strong>${esc(fullName(m))}</strong> on ${esc(maskMobile(m.mobile))}.</p>`
-      : `<div class="field-row">
-          <label class="field">Name<input class="input" name="name" type="text" autocomplete="off"></label>
-          <label class="field">Phone<input class="input" name="phone" type="tel" autocomplete="off"></label>
-        </div>`;
-  openModal(`
-    ${modalHead('Request a call back')}
-    <p>From ${esc(team)} · next available ${esc(day)}</p>
-    <label class="field">What would you like to talk about?
-      <select class="input" name="topic">${CALLBACK_TOPICS.map(t => `<option ${t === callback.topic ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>
-    </label>
-    <fieldset><legend>Best time to call</legend>${choiceRow('window', callback.window, CALLBACK_WINDOWS.map(([v, label, time]) => [v, `${label}<br><small>${time}</small>`]))}</fieldset>
-    ${who}
-    <button class="btn btn-primary btn-block" data-action="confirm-callback">Request call back</button>`, 'Request a call back');
+    <button class="takeover-close" data-action="close-modal">${icon('close')} Close</button>
+    <p class="takeover-text">${text}</p>`, label);
 }
 
 // ── Events ───────────────────────────────────────────────────────────────
@@ -1017,12 +927,8 @@ document.addEventListener('click', e => {
     case 'impersonate': impersonate(findMember(d.number), state.accessReason || ACCESS_REASONS[0]); break;
     case 'end-impersonation': endImpersonation(); break;
     case 'close-modal': closeModal(); break;
-    case 'book': e.preventDefault(); openBooking(d.id, { format: d.format || 'in-person', slot: d.day ? { day: d.day, time: d.time } : null }); break;
-    case 'book-general': openBooking(state.selectedId || sortedResults()[0]?.id || 'mel-office', { format: 'phone' }); break;
-    case 'slot': readBookingNote(); booking.slot = { day: d.day, time: d.time }; renderBooking(); break;
-    case 'confirm-booking': readBookingNote(); if (booking.slot) renderBooking(true); break;
-    case 'callback': openCallback(d.id); break;
-    case 'confirm-callback': renderCallback(true); break;
+    case 'book': e.preventDefault(); openTakeover('LINK TO ADVICE BOOKINGS FORM', 'Advice bookings form'); break;
+    case 'callback': openTakeover('LINK TO REQUEST A CALL BACK FORM', 'Request a call back form'); break;
     case 'app-screen': e.preventDefault(); setAppScreen(d.screen); break;
     case 'rsvp':
       doneModal('Registered', `<p>You're registered for <strong>${esc(d.title)}</strong>.</p><p class="small">Prototype: no registration was made.</p>`);
@@ -1062,18 +968,9 @@ els.settingsPop.addEventListener('change', e => {
   }
 });
 
-els.modal.addEventListener('change', e => {
-  readBookingNote();
-  if (e.target.name === 'format') { booking.format = e.target.value; renderBooking(); }
-  if (e.target.name === 'notify') { booking.notify = e.target.value; renderBooking(); }
-  if (e.target.name === 'window') {
-    callback.window = e.target.value;
-    // Update in place so a guest's typed name and phone survive.
-    els.modal.querySelectorAll('input[name="window"]').forEach(i => i.closest('.choice').classList.toggle('is-on', i.checked));
-  }
-  if (e.target.name === 'topic') callback.topic = e.target.value;
-});
 els.modal.addEventListener('click', e => { if (e.target === els.modal) closeModal(); });
+// Esc, Close or a backdrop click: the next pop-up opens at normal size.
+els.modal.addEventListener('close', () => els.modal.classList.remove('modal-takeover'));
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !els.settingsPop.hidden) { toggleSettings(false); els.settingsBtn.focus(); }

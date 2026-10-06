@@ -65,9 +65,10 @@ Restrict the key to the referrer `http://localhost:5173/*`. **Without a key** th
 
 **All views**
 - **Phone first:**
-  - A "Prefer to talk to someone?" strip with the advice line and call back sits at the top. On phones it shrinks to one line and a "Call us · 1800 823 842" bar stays fixed at the bottom of the screen.
-  - In each location's details, the call buttons come first, then "Request a call back", then "Book an appointment".
-  - The booking form lists Phone first, and members far from a location are offered a call before video.
+  - Guest pages on phones show "Prefer to talk? Call 1800 823 842" near the top, and a "Call us · 1800 823 842" bar stays fixed at the bottom of the screen.
+  - Each location's details have one contact block. **Call 1800 823 842** (the advice line) is the main button, with Book an appointment underneath and Request a call back as a small link. The office's own number sits with its opening hours, labelled "for directions or general questions".
+  - Members far from a location are offered a call before video.
+- **Booking and call-back placeholders:** advice booking links (Book an appointment, Book, Book a video or phone appointment) open a full-screen "LINK TO ADVICE BOOKINGS FORM". **Request a call back** opens "LINK TO REQUEST A CALL BACK FORM". These mark where UniSuper's existing forms would take over.
 - **On phones, search comes first:** the search box sits above the map, at 52px tall with 17px text. The map needs two fingers to move, so one finger always scrolls the page.
 - Results sorted **nearest first** (road distance), with drive time. Live times are fetched for the 10 nearest locations, so API cost stays low. The details panel shows car, public transport and walking times.
 - Appointment-type filter: walk-ins accepted, or appointment needed.
@@ -77,16 +78,15 @@ Restrict the key to the referrer `http://localhost:5173/*`. **Without a key** th
 - **Smooth zooming:** zooms out, glides across, then zooms in one level at a time, so tiles load cleanly instead of showing a blurry jump. This also applies when you click a cluster.
 - **Offices take priority:** office pins always show above everything else. Only campuses group into teal numbered clusters.
 - **Details panel:**
-  - "Financial advice is by appointment" shown near the top, with **Book an appointment** and **Request a call back**. The call-back form asks for a topic and the best time to call; consultants can schedule one for the member.
-  - The location's direct phone number, plus the advice line.
+  - "Financial advice is by appointment" near the top, with the advice line as the main action.
   - **Arrival information:** entrance and level, parking, public transport, accessibility, and what to do on arrival.
 - A mobile layout.
 
 **Guest:** address and postcode autocomplete, "use my location", and a prompt to log in. *Optional (Settings):* a public member-number field, kept for comparison with a privacy warning.
 
-**Logged-in member:** starts from the member's home address. A Home / Work switch uses their employer's campus as the starting point. Shows their next appointment, and the booking form is pre-filled with confirmation sent to their email or mobile (masked on screen).
+**Logged-in member:** always starts from the member's home address ("Near your home: Geelong VIC 3220, from your member profile"). After searching anywhere else, a **Back to your home address** link returns them. There's no Work option: members near or in retirement often have no workplace, so home is the one starting point that suits everyone. Shows their next appointment.
 
-**Consultant (impersonating):** the consultant sees **exactly the member's page**: same header, appointment card, results, details panel and booking forms. There are only two additions:
+**Consultant (impersonating):** the consultant sees **exactly the member's page**: same header, appointment card, results, details panel and forms. There are only two additions:
 - A yellow **impersonation bar**: "Viewing as Alex Chen (member 10000001) · Reason: Inbound phone call · All actions are logged", with **End session**.
 - A small yellow **consultant notes box** above the member's content:
   - **Accessibility warnings** from the member record, e.g. needs step-free access or an interpreter.
@@ -123,7 +123,7 @@ These were found while extracting the data and are fixed in `js/data/locations.j
 index.html             page shell + view bar
 css/styles.css         tokens measured from unisuper.com.au (navy #112C5C, blue #0E71F2, text #696969, panel #F9F9F9)
 js/config.js           API key + thresholds
-js/app.js              state, views, rendering, booking/send flows
+js/app.js              state, views, rendering, call-back flow, booking placeholder
 js/lib/google.js       Maps loader, autocomplete, geocoding, Routes API with fallbacks
 js/lib/map.js          map style, markers, clustering, route line
 js/lib/hours.js        opening-hours parsing / open-now per state time zone
