@@ -1,0 +1,11 @@
+{
+  "name": "unisuper-locations-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Prototype of an improved UniSuper 'Our locations' map: personalisation, travel times, filters and booking.",
+  "scripts": {
+    "start": "node server.js",
+    "build": "node build.js"
+  }
+}

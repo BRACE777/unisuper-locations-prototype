@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Our locations - Find a UniSuper office near you | UniSuper (prototype)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Source Sans 3 = Source Sans Pro (site body font). Source Serif 4 stands in for Tiempos (licensed). -->
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://unpkg.com/@googlemaps/markerclusterer@2/dist/index.min.js" defer></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#locator">Skip to locations</a>
+
+  <!-- Prototype-only chrome: switch between the three versions (also ?view=guest|member|consultant) -->
+  <nav id="view-bar" class="proto-bar" aria-label="Prototype view"></nav>
+  <div id="device-stage" class="device-stage" hidden></div>
+
+  <header class="us-header">
+    <div class="us-header-top container">
+      <button class="us-burger" aria-label="Menu"><span></span></button>
+      <a class="us-logo" href="#" aria-label="UniSuper home">
+        <svg viewBox="0 0 28 22" aria-hidden="true"><path d="M14 1.5c-6.4 0-12 3.3-12 8.6 0 3.6 3.1 7.1 7.4 9.2.9.4 1.8-.5 1.4-1.4-.6-1.3-.9-2.6-.9-3.9 0-2.6 1.8-4.6 4.1-4.6s4.1 2 4.1 4.6c0 1.3-.3 2.6-.9 3.9-.4.9.5 1.8 1.4 1.4 4.3-2.1 7.4-5.6 7.4-9.2 0-5.3-5.6-8.6-12-8.6z" fill="#112C5C"/></svg>
+        <span>UniSuper</span>
+      </a>
+      <span id="brand-tag" class="us-brand-tag" hidden></span>
+      <nav class="us-utility" aria-label="Utility">
+        <a href="#">Contact us</a><a href="#">About us</a><a href="#">Employers</a><a href="#">Advisers</a>
+      </nav>
+      <div id="member-slot" class="us-account"></div>
+      <button class="us-icon-btn" aria-label="Search UniSuper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      </button>
+      <button id="settings-btn" class="us-icon-btn proto-gear" aria-haspopup="dialog" aria-expanded="false" aria-controls="settings-pop" aria-label="Prototype settings" title="Prototype settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+      </button>
+    </div>
+    <nav class="us-mainnav" aria-label="Main">
+      <div class="container">
+        <a href="#">Compare</a><a href="#">Super</a><a href="#">Retirement</a><a href="#">Investments</a><a href="#">Financial advice</a><a href="#">Insurance</a><a href="#">Tools and learning</a>
+      </div>
+    </nav>
+  </header>
+  <div id="impersonation" class="impersonation" role="status" hidden></div>
+  <div id="settings-pop" class="popover" role="dialog" aria-label="Prototype settings" hidden></div>
+
+  <section class="us-hero">
+    <div class="container"><h1 id="hero-title">Our Locations</h1></div>
+  </section>
+
+  <main class="page">
+    <div class="container">
+      <div id="notice"></div>
+
+      <!-- Phone first: the advice line is the first thing on the page for people who'd rather talk -->
+      <aside class="call-strip" aria-label="Talk to us">
+        <svg class="call-strip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
+        <p><strong>Prefer to talk to someone?</strong> <span class="call-strip-long">Call us, or we can call you back at a time that suits you.</span><button class="link call-strip-short" data-action="callback">We can call you back</button></p>
+        <div class="call-strip-actions">
+          <a class="btn btn-primary" href="tel:1800823842">Call 1800 823 842</a>
+          <button class="btn btn-outline" data-action="callback">Request a call back</button>
+        </div>
+      </aside>
+
+      <div id="personal-area"></div>
+
+      <div class="locator-head">
+        <div id="panel-title"></div>
+        <div id="layout-toggle" class="layout-toggle" role="radiogroup" aria-label="Show results as"></div>
+      </div>
+
+      <section id="locator" class="locator" data-layout="map" aria-label="Find a location">
+        <div class="locator-panel">
+          <div id="search-area"></div>
+          <div id="panel-body" tabindex="-1"></div>
+        </div>
+        <div class="map-wrap">
+          <div id="map" class="map"></div>
+          <div class="legend" aria-hidden="true">
+            <span><i class="lg lg-office"></i>Office</span>
+            <span><i class="lg lg-campus"></i>Campus</span>
+            <span><i class="lg lg-you"></i>Starting point</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="advice">
+        <h2>Get financial advice</h2>
+        <p>For all states, we continue to offer secure appointments via video or phone. For general advice, book an appointment online with a super consultant.</p>
+        <p>For personal advice, call us on <a href="tel:1800823842">1800 823 842</a></p>
+        <button class="btn btn-primary" data-action="book-general">Book an appointment</button>
+      </section>
+    </div>
+  </main>
+
+  <footer class="us-footer">
+    <div class="container">
+      <nav aria-label="Footer"><a href="#">Contact us</a><a href="#">Privacy</a><a href="#">Terms of use</a><a href="#">Accessibility</a><a href="#">Complaints</a></nav>
+      <p>Prototype for internal review. Appointment times, events and member data are illustrative.</p>
+    </div>
+  </footer>
+
+  <!-- Phones: the phone number stays on screen while scrolling -->
+  <a class="call-fab" href="tel:1800823842" aria-label="Call UniSuper on 1800 823 842">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
+    Call us · 1800 823 842
+  </a>
+
+  <dialog id="modal" class="modal"></dialog>
+  <div id="live-region" class="sr-only" aria-live="polite"></div>
+</body>
+</html>

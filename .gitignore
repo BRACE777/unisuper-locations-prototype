@@ -1,0 +1,7 @@
+# Google Maps key — local only; the Pages workflow writes it from a repository secret
+js/config.local.js
+
+# Build output and local tooling
+dist/
+node_modules/
+.claude/
