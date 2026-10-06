@@ -161,9 +161,11 @@ export function createMap(el, locations, onSelect) {
   map = new maps.Map(el, {
     center: AUSTRALIA.center, zoom: auZoom(el), minZoom: 3,
     styles: MAP_STYLE, clickableIcons: false,
-    // 'cooperative': one finger / the scroll wheel scroll the PAGE; two fingers (or Ctrl + scroll)
-    // move the map. 'greedy' trapped people in the map on phones before they reached the search box.
-    gestureHandling: 'cooperative',
+    // The map moves the way people expect: one finger on phones, the plain mouse wheel on
+    // desktop ("use two fingers" / "Ctrl + scroll" confused people). The page still scrolls
+    // around it: on phones the search box sits above and the map is under half the screen;
+    // on desktop the results panel and the rest of the page sit beside and below it.
+    gestureHandling: 'greedy',
     mapTypeControl: false, streetViewControl: false, fullscreenControl: false,
     zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP },
   });
