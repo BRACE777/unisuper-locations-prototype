@@ -188,8 +188,15 @@ textarea.input { height: auto; padding: 8px 12px; resize: vertical; }
 .login-prompt { margin-top: 14px; font-size: 13.5px; }
 
 /* List layout: search + filter on one row */
-.locator[data-layout="list"] #search-area { display: grid; grid-template-columns: minmax(0, 520px) auto; align-items: end; gap: 12px 32px; }
+/* List layout: search on the left, appointment type on the right. Top-aligned so both
+   labels share a line, and the filter buttons match the search box's height so they
+   share its row too; the hint and "Use my location" sit under the search box only. */
+.locator[data-layout="list"] #search-area { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); align-items: start; gap: 12px 40px; padding-bottom: 20px; }
 .locator[data-layout="list"] #search-area .tabs, .locator[data-layout="list"] #search-area .privacy-note { grid-column: 1 / -1; }
+.locator[data-layout="list"] .filter legend { float: left; width: 100%; line-height: 20px; margin-bottom: 8px; }
+.locator[data-layout="list"] .filter .radio-pills { clear: both; }
+.locator[data-layout="list"] #search-form .field-label { line-height: 20px; }
+.locator[data-layout="list"] .radio-pills span { height: 40px; padding: 0 16px; border-radius: 20px; }
 
 /* ── Filter (appointment type) ─────────────────────────────────────── */
 .filter { margin: 20px 0 16px; }
