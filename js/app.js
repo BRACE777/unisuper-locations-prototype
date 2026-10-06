@@ -477,7 +477,7 @@ function toggleSettings(open = els.settingsPop.hidden) {
 function renderNotice() {
   const n = state.notice;
   const text = {
-    'no-key': '<strong>Running without Google Maps.</strong> Add an API key to <code>js/config.js</code> for the map, address autocomplete and live travel times. Times shown are estimates.',
+    'no-key': '<strong>Running without Google Maps.</strong> The map, address suggestions and live travel times need a Google Maps key (<code>js/config.local.js</code> locally, or the <code>GOOGLE_MAPS_API_KEY</code> repository secret on GitHub). Times shown are estimates.',
     auth: `<strong>Google rejected the API key on this site.</strong> In Google Cloud, add <code>${esc(location.origin)}/*</code> to the key's allowed websites, then reload. Changes can take about 5 minutes.`,
     'load-failed': '<strong>Google Maps failed to load.</strong> Check your connection and API key. Times shown are estimates.',
   }[n];
@@ -1181,7 +1181,7 @@ async function boot() {
   if (!G.hasKey(CONFIG.GOOGLE_MAPS_API_KEY)) {
     state.notice = 'no-key';
     renderNotice();
-    els.map.innerHTML = `<div class="map-placeholder">${icon('pin', 'icon-lg')}<p>Add a Google Maps API key in <code>js/config.js</code> to show the map.</p></div>`;
+    els.map.innerHTML = `<div class="map-placeholder">${icon('pin', 'icon-lg')}<p>The map needs a Google Maps key. See the README.</p></div>`;
     return;
   }
   try {
