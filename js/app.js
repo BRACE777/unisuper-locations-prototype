@@ -5,7 +5,7 @@ import {
   findMember, memberOrigin, appointmentInfo,
   maskNumber, fullName,
 } from './data/members.js';
-import { servicesFor, eventsFor } from './data/demo-content.js';
+import { servicesFor } from './data/demo-content.js';
 import { arrivalFor, phoneFor } from './data/arrival.js';
 import { haversineKm, estimateTravel, fmtDistance, fmtDuration, originKey } from './lib/geo.js';
 import { openStatus, hoursSummary } from './lib/hours.js';
@@ -775,7 +775,6 @@ function emptyState() {
 
 function detailView(loc) {
   const svc = servicesFor(loc);
-  const events = eventsFor(loc.id);
   const m = state.member;
   const gmode = { drive: 'driving', transit: 'transit', walk: 'walking' }[state.mode];
   const originParam = state.origin ? `&origin=${state.origin.lat},${state.origin.lng}` : '';
@@ -844,15 +843,6 @@ function detailView(loc) {
         <h4>Services</h4>
         <ul class="plain-list">${svc.tags.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
       </section>
-
-      ${events.length ? `
-      <section class="detail-section">
-        <h4>Upcoming events</h4>
-        <ul class="events">${events.map(e => `
-          <li><div class="event-date"><span>${e.date.toLocaleDateString('en-AU', { month: 'short' })}</span><strong>${e.date.getDate()}</strong></div>
-          <div><strong>${esc(e.title)}</strong><small>${esc(e.dateLabel)} · ${esc(e.time)} · ${esc(e.format)}</small></div>
-          <button class="link" data-action="rsvp" data-title="${esc(e.title)}">Register</button></li>`).join('')}</ul>
-      </section>` : ''}
     </div>`;
 }
 
@@ -871,7 +861,6 @@ function openModal(html, label) {
 }
 function closeModal() { if (els.modal.open) els.modal.close(); }
 const modalHead = (title, extra = '') => `<div class="modal-head"><h2>${title}${extra}</h2><button class="icon-btn" data-action="close-modal" aria-label="Close">${icon('close')}</button></div>`;
-const doneModal = (title, body) => openModal(`${modalHead(title)}<div class="confirm">${icon('check', 'icon-lg')}${body}</div><button class="btn btn-primary btn-block" data-action="close-modal">Done</button>`, title);
 
 function openLogin() {
   openModal(`
@@ -930,9 +919,6 @@ document.addEventListener('click', e => {
     case 'book': e.preventDefault(); openTakeover('LINK TO ADVICE BOOKINGS FORM', 'Advice bookings form'); break;
     case 'callback': openTakeover('LINK TO REQUEST A CALL BACK FORM', 'Request a call back form'); break;
     case 'app-screen': e.preventDefault(); setAppScreen(d.screen); break;
-    case 'rsvp':
-      doneModal('Registered', `<p>You're registered for <strong>${esc(d.title)}</strong>.</p><p class="small">Prototype: no registration was made.</p>`);
-      break;
     case 'noop': e.preventDefault(); break;
     case 'close-settings': toggleSettings(false); els.settingsBtn.focus(); break;
     case 'reset': state.mode = 'drive'; setView(state.view, { member: isMemberView() ? state.member : null }); break;

@@ -267,14 +267,6 @@ textarea.input { height: auto; padding: 8px 12px; resize: vertical; }
 .detail-section h4 { margin: 0; color: var(--label); font-size: 14px; font-weight: 600; }
 .plain-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .plain-list li::before { content: '–'; margin-right: 8px; color: var(--line-strong); }
-.events { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.events li { display: flex; align-items: center; gap: 12px; }
-.events li > div { flex: 1; display: grid; line-height: 1.3; }
-.events strong { color: var(--text-strong); font-weight: 600; }
-.events small { font-size: 12.5px; }
-.event-date { flex: none !important; width: 44px; text-align: center; border: 1px solid var(--line); padding: 3px 0; line-height: 1.1; background: var(--white); }
-.event-date span { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; display: block; }
-.event-date strong { font-family: var(--serif); color: var(--navy); font-size: 18px; font-weight: 400; }
 .advice-callout { background: var(--white); border-left: 3px solid var(--navy); padding: 14px 16px; display: grid; gap: 6px; }
 .advice-callout strong { color: var(--navy); font-family: var(--serif); font-weight: 600; font-size: 16px; }
 .advice-callout p { font-size: 13.5px; }

@@ -73,7 +73,7 @@ Restrict the key to the referrer `http://localhost:5173/*`. **Without a key** th
 - Results sorted **nearest first** (road distance), with drive time. Live times are fetched for the 10 nearest locations, so API cost stays low. The details panel shows car, public transport and walking times.
 - Appointment-type filter: walk-ins accepted, or appointment needed.
 - Live **"Open now · closes 5pm"** status, worked out in each office's own time zone.
-- Details panel: travel time for all three modes, hours, services, upcoming events, **book an appointment**, and **directions** in Google Maps.
+- Details panel: travel time for all three modes, hours, services, **book an appointment**, and **directions** in Google Maps.
 - **Virtual fallback:** if the nearest location is more than 90 minutes by car, suggests a video or phone appointment.
 - **Smooth zooming:** zooms out, glides across, then zooms in one level at a time, so tiles load cleanly instead of showing a blurry jump. This also applies when you click a cluster.
 - **Offices take priority:** office pins always show above everything else. Only campuses group into teal numbered clusters.
@@ -105,7 +105,7 @@ The session opens already impersonating, as if started from the CRM on an inboun
 | 10000004 | Sam Taylor, Albany WA | 5+ hours from any location, so the virtual fallback appears |
 | 10000005 | Morgan Ng, Glenelg SA | Interpreter flag, upcoming appointment |
 
-Appointment slots, events, services, campus visit days, **arrival information** and **location phone numbers** are **illustrative**. Arrival content is in `js/data/arrival.js`, ready for a facilities team to replace with confirmed details. Phone numbers, including the demo members' mobiles, use the ranges ACMA reserves for fiction ((0X) 5550 xxxx and 0491 570 xxx), so none can reach a real person. Location names, addresses, coordinates and hours come from the live site's search endpoint (36 locations).
+Services, campus visit days, **arrival information** and **location phone numbers** are **illustrative**. Arrival content is in `js/data/arrival.js`, ready for a facilities team to replace with confirmed details. Phone numbers, including the demo members' mobiles, use the ranges ACMA reserves for fiction ((0X) 5550 xxxx and 0491 570 xxx), so none can reach a real person. Location names, addresses, coordinates and hours come from the live site's search endpoint (36 locations).
 
 ## Data quality issues found on the live site
 
@@ -130,6 +130,6 @@ js/lib/hours.js        opening-hours parsing / open-now per state time zone
 js/lib/geo.js          distance, travel estimates, formatting
 js/data/locations.js   36 locations (cleaned)
 js/data/members.js     fictional members, consultant, access reasons
-js/data/demo-content.js  services, events, appointment slots (illustrative)
+js/data/demo-content.js  services and campus visit days (illustrative)
 server.js              zero-dependency static server
 ```
