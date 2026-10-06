@@ -101,10 +101,28 @@ const auZoom = el => ((el || map.getDiv()).clientWidth < 560 ? 3 : AUSTRALIA.zoo
 // level at a time so each step animates and tiles load progressively.
 
 const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-const STEP_MS = { out: 140, in: 200, pan: 380 };
 let flight = 0;
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
+
+// Wait until the map's current animation has finished: Google drops an animation (and
+// jumps) if the next zoom or pan starts while one is still running. Resolves on the
+// map's 'idle' event, but no sooner than `min` ms and no later than `max` ms.
+function settled(min, max) {
+  return new Promise(resolve => {
+    const start = performance.now();
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      listener.remove();
+      clearTimeout(timer);
+      setTimeout(resolve, Math.max(0, min - (performance.now() - start)));
+    };
+    const listener = google.maps.event.addListenerOnce(map, 'idle', finish);
+    const timer = setTimeout(finish, max);
+  });
+}
 const toLatLng = p => (p instanceof google.maps.LatLng ? p : new google.maps.LatLng(p.lat, p.lng));
 
 function zoomForBounds(bounds, pad = 60) {
@@ -122,31 +140,50 @@ function zoomForBounds(bounds, pad = 60) {
   return Math.max(3, Math.min(z(h, latFrac), z(w, lngFrac), 18));
 }
 
+// Google glides a pan smoothly (GPU, no redraw) only when it is shorter than the map's
+// width and height, and only when no other animation is running; otherwise it jumps.
+// True when the move from `a` to `b` at `zoom` is comfortably inside that limit.
+function glidable(a, b, zoom) {
+  const proj = map.getProjection();
+  if (!proj) return true;
+  const pa = proj.fromLatLngToPoint(a);
+  const pb = proj.fromLatLngToPoint(b);
+  const scale = 2 ** zoom;
+  const div = map.getDiv();
+  return Math.abs(pa.x - pb.x) * scale < div.clientWidth * 0.75
+    && Math.abs(pa.y - pb.y) * scale < div.clientHeight * 0.75;
+}
+
 export async function flyTo(target, targetZoom) {
   if (!map) return;
   const id = ++flight;
   const dest = toLatLng(target);
   if (reduceMotion) { map.setCenter(dest); map.setZoom(targetZoom); return; }
 
-  // 1. Zoom out until the current view centre and the destination are both visible.
-  const span = new google.maps.LatLngBounds();
-  span.extend(map.getCenter());
-  span.extend(dest);
-  const overview = Math.min(zoomForBounds(span, 40), targetZoom);
-  while (map.getZoom() > overview) {
+  // 1. Zoom out, one animated level at a time, until the trip is short enough on screen
+  //    for Google to glide it — and at least to the final zoom if that is wider (e.g. a
+  //    cross-country route), so the flight never zooms out again after the glide.
+  let zoomedOut = false;
+  while (map.getZoom() > 3 && (map.getZoom() > targetZoom || !glidable(map.getCenter(), dest, map.getZoom()))) {
     map.setZoom(map.getZoom() - 1);
-    await wait(STEP_MS.out);
+    zoomedOut = true;
+    await wait(140);
     if (id !== flight) return;
   }
-  // 2. Glide across.
-  map.panTo(dest);
-  await wait(STEP_MS.pan);
-  if (id !== flight) return;
-  // 3. Zoom in one level at a time (or out, if the target is wider than now).
+  // 2. Glide across with Google's own animation, but only once the last zoom has finished
+  //    (starting it mid-zoom is what caused the jump), then let the glide finish.
+  if (!map.getCenter().equals(dest)) {
+    if (zoomedOut) await settled(150, 400);
+    if (id !== flight) return;
+    map.panTo(dest);
+    await settled(350, 1000);
+    if (id !== flight) return;
+  }
+  // 3. Zoom in (or out, if the target is wider) one level at a time. The centre is already
+  //    on the destination, so each step zooms in place.
   while (map.getZoom() !== targetZoom) {
     map.setZoom(map.getZoom() + (map.getZoom() < targetZoom ? 1 : -1));
-    map.panTo(dest);
-    await wait(STEP_MS.in);
+    await wait(200);
     if (id !== flight) return;
   }
 }

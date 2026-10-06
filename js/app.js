@@ -206,6 +206,9 @@ async function setOrigin(origin) {
   state.showAll = false;
   state.message = null;
   state.loadingTravel = false;
+  // The "Near …" line now says where results are from, so empty the search box ready for
+  // the next search. (A search that finds nothing never gets here, so its text stays.)
+  if (origin) ['#q', '#member-number'].forEach(sel => { const input = $(sel); if (input) input.value = ''; });
   M.clearRoute();
   M.setSelected(null);
   M.setOrigin(origin);
@@ -322,9 +325,13 @@ async function selectLocation(id) {
   state.selectedId = id;
   M.setSelected(id);
   renderBody();
-  els.body.querySelector('.detail h3')?.focus({ preventScroll: true });
-  if (isList()) els.locator.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  else els.body.scrollTop = 0;
+  if (inSheet()) {
+    $('#sheet .sheet-close')?.focus({ preventScroll: true });
+  } else {
+    els.body.querySelector('.detail h3')?.focus({ preventScroll: true });
+    if (isList()) els.locator.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    else els.body.scrollTop = 0;
+  }
 
   if (state.origin) {
     refreshDetailTravel(loc);
@@ -506,7 +513,8 @@ function renderSearch() {
   const guestTabs = state.view === 'guest' && state.guestLookup;
   if (!guestTabs) state.searchTab = 'address';
   const tab = state.searchTab;
-  const label = isMemberView() && state.member ? 'Search another location' : 'Find a location near you';
+  const signedIn = isMemberView() && !!state.member;
+  const label = signedIn ? 'Search for a UniSuper office or campus' : 'Find a location near you';
 
   const tabs = guestTabs ? `
     <div class="tabs" role="tablist" aria-label="Search by">
@@ -524,8 +532,8 @@ function renderSearch() {
         </div>
         <button type="submit" class="btn btn-primary">Search</button>
       </div>
-      <div class="search-help">
-        <span>Search for a UniSuper office or campus</span>
+      <div class="search-help ${signedIn ? 'search-help-member' : ''}">
+        ${signedIn ? '' : '<span>Search for a UniSuper office or campus</span>'}
         <button type="button" class="link" data-action="geolocate">${icon('locate', 'icon-xs')} Use my location</button>
       </div>
     </form>`;
@@ -676,13 +684,19 @@ function originBlock() {
     geo: 'Your current location',
     search: 'Searched address',
   }[o.source] || '';
+  // Logged-in member looking somewhere else: one line, with a single "Home" button back.
+  if (personal) {
+    return `
+      <div class="origin origin-away">
+        <p>Near <strong>${esc(o.label)}</strong></p>
+        <button class="origin-home-btn" data-action="origin" data-kind="home" aria-label="Show results near your home again">${icon('home')} Home</button>
+      </div>`;
+  }
   return `
     <div class="origin">
       <div class="origin-row">
         <p>Near <strong>${esc(o.label)}</strong><small>${sourceText}</small></p>
-        ${personal
-          ? `<button class="link" data-action="origin" data-kind="home">${icon('home', 'icon-xs')} Back to your home address</button>`
-          : '<button class="link" data-action="clear-origin">Clear</button>'}
+        <button class="link" data-action="clear-origin">Clear</button>
       </div>
     </div>`;
 }
@@ -773,7 +787,8 @@ function emptyState() {
 
 // ── Detail ───────────────────────────────────────────────────────────────
 
-function detailView(loc) {
+// `compact`: the phone bottom sheet, where contact options collapse into one row of actions.
+function detailView(loc, { compact = false } = {}) {
   const svc = servicesFor(loc);
   const m = state.member;
   const gmode = { drive: 'driving', transit: 'transit', walk: 'walking' }[state.mode];
@@ -807,6 +822,16 @@ function detailView(loc) {
       </div>
       ${appt ? `<p class="callout callout-teal"><strong>Your appointment:</strong> ${esc(appt.dateLabel)}, ${esc(appt.time)} · ${esc(appt.format)}</p>` : ''}
 
+      ${compact ? `
+      <!-- Phone sheet: one line of context, then one row of actions -->
+      <p class="advice-note">Financial advice is by appointment.${svc.walkIn ? ' Walk-ins are welcome for general enquiries.' : ' This location is appointment only.'}</p>
+      <div class="quick-actions">
+        <a class="qa qa-primary" href="${telHref(CONFIG.ADVICE_PHONE)}" aria-label="Call the advice line on ${CONFIG.ADVICE_PHONE}">${icon('phone')}<span>Call</span><small>${CONFIG.ADVICE_PHONE}</small></a>
+        <button class="qa" data-action="book" data-id="${loc.id}">${icon('calendar')}<span>Book</span></button>
+        <a class="qa" href="${directionsUrl}" target="_blank" rel="noopener">${icon('directions')}<span>Directions</span></a>
+      </div>
+      <p class="callback-line">Prefer we call you? <button class="link" data-action="callback">Request a call back</button></p>
+      ${tiles}` : `
       <!-- One contact block: the advice line leads; the office's own number sits with its hours below -->
       <div class="advice-callout">
         <strong>Financial advice is by appointment</strong>
@@ -821,7 +846,7 @@ function detailView(loc) {
       ${tiles}
       <div class="btn-row">
         <a class="btn btn-outline" href="${directionsUrl}" target="_blank" rel="noopener">Get directions</a>
-      </div>
+      </div>`}
       ${farAway ? `<p class="small">It's a ${fmtDuration(driveSecs)} drive. <button class="link" data-action="book" data-id="${loc.id}" data-format="phone">Book a phone appointment instead</button></p>` : ''}
 
       <section class="detail-section">
@@ -846,9 +871,110 @@ function detailView(loc) {
     </div>`;
 }
 
+// On phones (website and app) a chosen location opens in a bottom sheet over the results;
+// on wider screens its details replace the results in the side panel.
+const narrowScreen = window.matchMedia('(max-width: 900px)');
+const inSheet = () => EMBED === 'app' || narrowScreen.matches;
+narrowScreen.addEventListener('change', () => renderBody());
+
 function renderBody() {
   const loc = state.selectedId && byId(state.selectedId);
+  if (inSheet()) {
+    els.body.innerHTML = isList() ? listResults() : mapResults();
+    renderSheet(loc);
+    return;
+  }
+  renderSheet(null); // e.g. the window was widened while the sheet was open
   els.body.innerHTML = loc ? detailView(loc) : isList() ? listResults() : mapResults();
+}
+
+// ── Bottom sheet (app) ───────────────────────────────────────────────────
+// Closes with the Close button, a swipe or drag down, a tap on the dimmed backdrop, or Esc.
+
+function renderSheet(loc) {
+  const sheet = $('#sheet');
+  const backdrop = $('#sheet-backdrop');
+  if (!sheet) return;
+  const body = sheet.querySelector('.sheet-body');
+  if (loc) {
+    const isNew = sheet.dataset.loc !== loc.id;
+    body.innerHTML = detailView(loc, { compact: true });
+    sheet.setAttribute('aria-label', loc.name);
+    if (isNew) body.scrollTop = 0;
+    sheet.dataset.loc = loc.id;
+    if (sheet.hidden) {
+      sheet.hidden = backdrop.hidden = false;
+      document.body.classList.add('sheet-open');
+      void sheet.offsetHeight; // lay out the closed position first, so the slide-up animates
+      sheet.classList.add('is-open');
+      backdrop.classList.add('is-open');
+    }
+  } else if (!sheet.hidden) {
+    delete sheet.dataset.loc;
+    sheet.classList.remove('is-open');
+    backdrop.classList.remove('is-open');
+    document.body.classList.remove('sheet-open');
+    setTimeout(() => { if (!sheet.classList.contains('is-open')) sheet.hidden = backdrop.hidden = true; }, 320);
+  }
+}
+
+function renderSheetShell() {
+  document.body.insertAdjacentHTML('beforeend', `
+    <div id="sheet-backdrop" class="sheet-backdrop" data-action="back" hidden></div>
+    <section id="sheet" class="sheet" role="dialog" aria-modal="true" hidden>
+      <div class="sheet-top">
+        <span class="sheet-handle" aria-hidden="true"></span>
+        <span class="sheet-hint">Swipe down to close</span>
+        <button class="sheet-close" data-action="back">${icon('close')} Close</button>
+      </div>
+      <div class="sheet-body"></div>
+    </section>`);
+  wireSheet();
+}
+
+function wireSheet() {
+  const sheet = $('#sheet');
+  const body = sheet.querySelector('.sheet-body');
+  let startY = null;
+  let startT = 0;
+  let dy = 0;
+
+  const begin = y => { startY = y; startT = performance.now(); dy = 0; sheet.classList.add('is-dragging'); };
+  const move = y => {
+    dy = Math.max(0, y - startY);
+    sheet.style.transform = `translateY(${dy}px)`;
+    $('#sheet-backdrop').style.opacity = String(Math.max(0, 1 - dy / 400));
+  };
+  const end = () => {
+    if (startY == null) return;
+    const fast = dy / Math.max(1, performance.now() - startT) > 0.5;
+    startY = null;
+    sheet.classList.remove('is-dragging');
+    sheet.style.transform = '';
+    $('#sheet-backdrop').style.opacity = '';
+    if (dy > 110 || (fast && dy > 30)) deselect();
+  };
+
+  // Drag the top bar (handle + Close row) with a finger or a mouse.
+  const grab = sheet.querySelector('.sheet-top');
+  grab.addEventListener('pointerdown', e => {
+    if (e.target.closest('.sheet-close')) return;
+    try { grab.setPointerCapture(e.pointerId); } catch { /* keep dragging without capture */ }
+    begin(e.clientY);
+  });
+  grab.addEventListener('pointermove', e => { if (startY != null) move(e.clientY); });
+  grab.addEventListener('pointerup', end);
+  grab.addEventListener('pointercancel', end);
+
+  // Swipe down on the content too, once it's scrolled to the top.
+  body.addEventListener('touchstart', e => { if (body.scrollTop <= 0) begin(e.touches[0].clientY); }, { passive: true });
+  body.addEventListener('touchmove', e => {
+    if (startY == null) return;
+    const y = e.touches[0].clientY;
+    if (y - startY > 0 && body.scrollTop <= 0) { e.preventDefault(); move(y); }
+    else if (dy === 0) { startY = null; sheet.classList.remove('is-dragging'); }
+  }, { passive: false });
+  body.addEventListener('touchend', end);
 }
 
 // ── Modals ───────────────────────────────────────────────────────────────
@@ -960,6 +1086,7 @@ els.modal.addEventListener('close', () => els.modal.classList.remove('modal-take
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !els.settingsPop.hidden) { toggleSettings(false); els.settingsBtn.focus(); }
+  else if (e.key === 'Escape' && inSheet() && state.selectedId && !els.modal.open) deselect();
 });
 
 // ── Device previews ──────────────────────────────────────────────────────
@@ -1032,6 +1159,7 @@ function renderAppChrome() {
 }
 
 function setAppScreen(screen) {
+  if (screen === 'more' && state.selectedId) deselect();
   document.body.dataset.appScreen = screen;
   document.querySelector('.app-head-title').textContent = screen === 'more' ? 'More' : 'Find a location';
   window.scrollTo(0, 0);
@@ -1058,6 +1186,7 @@ async function boot() {
     window.scrollTo(0, 0);
   }
   if (!EMBED && DEVICE_VIEWS[state.view]) { renderDeviceStage(); return; }
+  renderSheetShell();
   if (EMBED === 'app') renderAppChrome();
   els.locator.dataset.layout = state.layout;
   setView(state.view);

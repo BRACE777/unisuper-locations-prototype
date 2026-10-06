@@ -171,6 +171,8 @@ select.input { padding-right: 32px; appearance: none; background: var(--white) u
 textarea.input { height: auto; padding: 8px 12px; resize: vertical; }
 .search-help { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 12px; margin-top: 8px; font-size: 13px; }
 .search-help .link { white-space: nowrap; }
+/* Logged in: the title already says what to search for, so only "Use my location" sits under the box */
+.search-help-member { justify-content: flex-start; }
 .suggestions { position: absolute; left: 0; right: 0; top: calc(100% + 2px); z-index: 30; list-style: none; margin: 0; padding: 4px 0; background: var(--white); border: 1px solid var(--line-strong); box-shadow: 0 4px 12px rgba(0, 0, 0, .1); }
 .suggestions li[role="option"] { padding: 8px 12px; cursor: pointer; display: grid; line-height: 1.3; }
 .suggestions strong { color: var(--text-strong); font-weight: 600; }
@@ -209,6 +211,12 @@ textarea.input { height: auto; padding: 8px 12px; resize: vertical; }
 .origin-home > .icon { width: 22px; height: 22px; color: var(--blue); flex: none; }
 .origin-home p { color: var(--text-strong); font-size: 15px; }
 .origin-home small { display: block; color: var(--text); font-size: 12.5px; }
+/* Logged-in member searching elsewhere: one line and one way back */
+.origin-away { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.origin-away p { color: var(--text-strong); font-size: 15px; min-width: 0; }
+.origin-home-btn { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid var(--blue); border-radius: 18px; background: var(--white); color: var(--blue); font-size: 14px; font-weight: 600; cursor: pointer; }
+.origin-home-btn:hover { background: #EEF5FE; }
+.origin-home-btn .icon { width: 16px; height: 16px; }
 .results-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 13px; padding: 10px 0; border-top: 1px solid var(--line); }
 .results-meta strong { color: var(--text-strong); }
 .loading { color: var(--blue); }
@@ -436,7 +444,6 @@ legend { color: var(--label); font-weight: 600; font-size: 14px; margin-bottom: 
 .call-strip { display: none; align-items: center; justify-content: center; gap: 10px; color: var(--blue); font-size: 16px; font-weight: 600; text-decoration: none; background: var(--white); border: 1px solid var(--blue); border-radius: var(--radius); }
 .call-strip:hover, .call-strip:focus-visible { background: #EEF5FE; }
 .call-strip-icon { width: 20px; height: 20px; flex: none; }
-.call-fab { display: none; }
 /* Location contact block: the advice line is the one primary action */
 .advice-call { height: 52px; font-size: 17px; margin-top: 6px; }
 .advice-call .icon { width: 20px; height: 20px; }
@@ -479,6 +486,32 @@ body.device-mode .proto-settings { display: none; }
 .phone-app .phone-status { background: #0E6BEA; color: var(--white); }
 .phone-app .phone-icons { color: var(--white); }
 .phone-app .phone-island { background: #000; }
+
+/* ── App bottom sheet for a chosen location ────────────────────────── */
+.sheet-backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(17, 44, 92, .4); opacity: 0; transition: opacity .28s ease; }
+.sheet-backdrop.is-open { opacity: 1; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 51; display: flex; flex-direction: column; max-height: 84vh; max-height: 84dvh; background: var(--white); border-radius: 18px 18px 0 0; box-shadow: 0 -10px 30px rgba(17, 44, 92, .2); transform: translateY(100%); transition: transform .32s cubic-bezier(.22, .8, .24, 1); }
+.sheet.is-open { transform: translateY(0); }
+.sheet.is-dragging { transition: none; }
+.sheet-top { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 16px 10px 20px; touch-action: none; cursor: grab; user-select: none; border-bottom: 1px solid var(--line); }
+.sheet.is-dragging .sheet-top { cursor: grabbing; }
+.sheet-handle { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 48px; height: 5px; border-radius: 3px; background: #C9D0DA; }
+.sheet-hint { font-size: 13px; color: var(--text); }
+.sheet-close { display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 18px; border: 1px solid var(--line-strong); border-radius: 22px; background: var(--white); color: var(--navy); font-size: 16px; font-weight: 600; cursor: pointer; }
+.sheet-close:hover { border-color: var(--navy); }
+.sheet-close .icon { width: 18px; height: 18px; }
+.sheet-body { overflow-y: auto; overscroll-behavior: contain; padding: 4px 20px 40px; }
+.sheet .detail .back { display: none; }
+/* Sheet contact area: a plain line of context and one row of three equal actions */
+.advice-note { font-size: 14.5px; color: var(--text-strong); }
+.quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.qa { display: grid; justify-items: center; align-content: center; gap: 3px; min-height: 70px; padding: 8px 4px; border: 0; border-radius: 12px; background: #EEF5FE; color: var(--blue); font-size: 15px; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer; }
+.qa .icon { width: 22px; height: 22px; }
+.qa small { font-size: 11.5px; font-weight: 400; }
+.qa:hover { background: #E2EEFD; }
+.qa-primary, .qa-primary:hover { background: var(--blue); color: var(--white); }
+.callback-line { font-size: 14px; margin-top: -8px; }
+body.sheet-open { overflow: hidden; }
 
 /* ── Inside a frame ────────────────────────────────────────────────── */
 body[data-embed] .proto-bar, body[data-embed] .proto-gear { display: none !important; }
@@ -579,11 +612,6 @@ body[data-app-screen="more"] .app-head-back { visibility: hidden; }
   .us-account .btn { min-width: 0; }
   .impersonation { padding: 10px 16px; flex-wrap: wrap; }
   .impersonation .imp-meta { display: none; }
-  /* The fixed "Call us" bar carries the number on phones, so the top strip shrinks to one line. */
   body[data-view="guest"] .call-strip { display: flex; min-height: 50px; padding: 0 14px; margin-bottom: 18px; }
-  body[data-view="guest"] .call-fab { display: flex; position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 35; height: 54px; align-items: center; justify-content: center; gap: 10px; border-radius: 27px; background: var(--blue); color: var(--white); font-size: 17px; font-weight: 600; text-decoration: none; box-shadow: 0 6px 18px rgba(14, 113, 242, .35); }
-  body[data-view="guest"] .call-fab svg { width: 22px; height: 22px; }
-  body[data-view="guest"] { padding-bottom: 80px; }
 }
-body.device-mode .call-fab { display: none !important; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

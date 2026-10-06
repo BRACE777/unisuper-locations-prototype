@@ -65,10 +65,11 @@ Restrict the key to the referrer `http://localhost:5173/*`. **Without a key** th
 
 **All views**
 - **Phone first:**
-  - Guest pages on phones show "Prefer to talk? Call 1800 823 842" near the top, and a "Call us · 1800 823 842" bar stays fixed at the bottom of the screen.
+  - Guest pages on phones show "Prefer to talk? Call 1800 823 842" near the top.
   - Each location's details have one contact block. **Call 1800 823 842** (the advice line) is the main button, with Book an appointment underneath and Request a call back as a small link. The office's own number sits with its opening hours, labelled "for directions or general questions".
   - Members far from a location are offered a call before video.
 - **Booking and call-back placeholders:** advice booking links (Book an appointment, Book, Book a video or phone appointment) open a full-screen "LINK TO ADVICE BOOKINGS FORM". **Request a call back** opens "LINK TO REQUEST A CALL BACK FORM". These mark where UniSuper's existing forms would take over.
+- **On phones (website and app), a chosen location opens in a bottom sheet** over the results. It closes with a large Close button, a swipe or drag down, a tap on the dimmed area behind it, or Escape. On wider screens, the details open in the side panel instead.
 - **On phones, search comes first:** the search box sits above the map, at 52px tall with 17px text. The map moves the way people expect, with no "use two fingers" or "Ctrl + scroll" messages: one finger pans it on phones, and the mouse wheel zooms it on desktop. The page still scrolls around it: on phones the map takes under half the screen, and on desktop the results panel sits beside it.
 - Results sorted **nearest first** (road distance), with drive time. Live times are fetched for the 10 nearest locations, so API cost stays low. The details panel shows car, public transport and walking times.
 - Appointment-type filter: walk-ins accepted, or appointment only.
