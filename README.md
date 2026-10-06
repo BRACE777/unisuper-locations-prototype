@@ -28,7 +28,7 @@ To swap in the official logo, replace the inline SVG in `.us-logo` in `index.htm
 
 - **Map:** a search panel with the results list on the left and the map on the right. Clicking a result opens its details in the panel and draws the route.
 - **List:** full width with no map. Enter a location and every office and campus is listed in a table, **nearest first**, with distance, travel time, appointment type and Book / Map actions.
-- **Filter (both layouts):** one control for appointment type: *All locations · Walk-ins accepted · Appointment needed*.
+- **Filter (both layouts):** one control for appointment type: *All locations · Walk-ins accepted · Appointment only*.
 
 ## Run it
 
@@ -71,7 +71,7 @@ Restrict the key to the referrer `http://localhost:5173/*`. **Without a key** th
 - **Booking and call-back placeholders:** advice booking links (Book an appointment, Book, Book a video or phone appointment) open a full-screen "LINK TO ADVICE BOOKINGS FORM". **Request a call back** opens "LINK TO REQUEST A CALL BACK FORM". These mark where UniSuper's existing forms would take over.
 - **On phones, search comes first:** the search box sits above the map, at 52px tall with 17px text. The map needs two fingers to move, so one finger always scrolls the page.
 - Results sorted **nearest first** (road distance), with drive time. Live times are fetched for the 10 nearest locations, so API cost stays low. The details panel shows car, public transport and walking times.
-- Appointment-type filter: walk-ins accepted, or appointment needed.
+- Appointment-type filter: walk-ins accepted, or appointment only.
 - Live **"Open now · closes 5pm"** status, worked out in each office's own time zone.
 - Details panel: travel time for all three modes, hours, services, **book an appointment**, and **directions** in Google Maps.
 - **Virtual fallback:** if the nearest location is more than 90 minutes by car, suggests a video or phone appointment.

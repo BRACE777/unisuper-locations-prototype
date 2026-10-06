@@ -27,7 +27,7 @@ const DEVICE_VIEWS = {
 };
 const EMBED = new URLSearchParams(location.search).get('embed'); // 'web' | 'app' | null
 const URL_MEMBER = findMember(new URLSearchParams(location.search).get('member') || '');
-const ACCESS = { all: 'All locations', walkin: 'Walk-ins accepted', appointment: 'Appointment needed' };
+const ACCESS = { all: 'All locations', walkin: 'Walk-ins accepted', appointment: 'Appointment only' };
 const MODE_NAME = { drive: 'Car', transit: 'Public transport', walk: 'Walk' };
 const MODE_UNIT = { drive: 'drive', transit: 'by transit', walk: 'walk' };
 const KEYS = { view: 'us-locations-proto:view', layout: 'us-locations-proto:layout', lookup: 'us-locations-proto:guest-lookup' };
@@ -634,7 +634,7 @@ function wireSearch() {
 // ── Results ──────────────────────────────────────────────────────────────
 
 const kindLabel = loc => (loc.type === 'office' ? 'Office' : 'Campus');
-const accessLabel = loc => (servicesFor(loc).walkIn ? 'Walk-ins accepted' : 'Appointment needed');
+const accessLabel = loc => (servicesFor(loc).walkIn ? 'Walk-ins accepted' : 'Appointment only');
 
 function statusText(loc) {
   const s = openStatus(loc);
