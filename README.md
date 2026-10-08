@@ -110,13 +110,16 @@ Services, campus visit days, **arrival information** and **location phone number
 
 ## Data quality issues found on the live site
 
-These were found while extracting the data and are fixed in `js/data/locations.js`, where each fix is noted in a `dataFix` field:
+`js/data/locations.js` uses the official names, address lines and hours **word for word** for 29 of the 36 locations; the only edit is dropping stray trailing commas. The other 7 correct errors on the official site, checked against Google's address data and noted in each entry's `dataFix` field:
 
-- **Bond University** shows Curtin University's room and campus ("Building 106A, Room 111, Bentley campus").
-- **RMIT** postcode is "VIC 300" (should be 3000).
-- **UWA** postcode is 6099 (Nedlands is 6009).
-- **Swinburne, Curtin, Edith Cowan** are missing suburb, state and postcode. **UQ** is missing the state.
-- **Monash** address HTML contains pasted inline colour styles.
+- **Bond University** shows Curtin University's room and campus ("Building 106A, Room 111, Bentley campus"). The prototype shows Bond's street address (14 University Drive, Robina QLD 4226); the actual UniSuper room at Bond isn't published anywhere.
+- **RMIT** postcode is "VIC 300". UniSuper's own Melbourne office record at the same address says VIC 3000.
+- **UWA** postcode is 6099. Google gives 43 Broadway, Nedlands WA 6009.
+- **Swinburne, Curtin, Edith Cowan** are missing suburb, state and postcode (added: Hawthorn VIC 3122, Bentley WA 6102, Joondalup WA 6027).
+- **UQ** is missing the state ("QLD" added; UQ's own postcode 4072 is kept).
+- **Monash** address HTML contains pasted inline colour styles (display only; the text is unaffected).
+
+Office names such as "Melbourne office" are the prototype's own labels; the official site titles each office by its street address, which is the first address line.
 
 ## Files
 
