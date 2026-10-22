@@ -29,7 +29,7 @@ const EMBED = new URLSearchParams(location.search).get('embed'); // 'web' | 'app
 const URL_MEMBER = findMember(new URLSearchParams(location.search).get('member') || '');
 const ACCESS = { all: 'All locations', walkin: 'Walk-ins accepted', appointment: 'Appointment only' };
 const MODE_NAME = { drive: 'Car', transit: 'Public transport', walk: 'Walk' };
-const MODE_UNIT = { drive: 'drive', transit: 'by transit', walk: 'walk' };
+const MODE_UNIT = { drive: 'drive', transit: 'by public transport', walk: 'walk' };
 const KEYS = { view: 'us-locations-proto:view', layout: 'us-locations-proto:layout', lookup: 'us-locations-proto:guest-lookup' };
 const LIST_LIMIT = 10;
 
@@ -812,6 +812,15 @@ function detailView(loc, { compact = false } = {}) {
   const driveSecs = state.origin ? travelFor(loc, 'drive').seconds : null;
   const farAway = driveSecs != null && driveSecs > CONFIG.VIRTUAL_THRESHOLD_MINUTES * 60;
 
+  // Opening hours sit right under the contact actions: "is it open?" comes before "how far?".
+  const hoursSection = `
+      <section class="detail-section detail-hours">
+        <h4>Opening hours</h4>
+        <p>${esc(hoursSummary(loc))}</p>
+        <p>${statusText(loc) || esc(svc.note)}</p>
+        <p class="office-phone">${loc.type === 'office' ? 'Office' : 'Campus'} phone: <a href="${telHref(phoneFor(loc))}">${phoneFor(loc)}</a> <span>for directions or general questions</span></p>
+      </section>`;
+
   return `
     <div class="detail">
       <button class="link back" data-action="back">${icon('back', 'icon-xs')} Back to results</button>
@@ -831,6 +840,7 @@ function detailView(loc, { compact = false } = {}) {
         <a class="qa" href="${directionsUrl}" target="_blank" rel="noopener">${icon('directions')}<span>Directions</span></a>
       </div>
       <p class="callback-line">Prefer we call you? <button class="link" data-action="callback">Request a call back</button></p>
+      ${hoursSection}
       ${tiles}` : `
       <!-- One contact block: the advice line leads; the office's own number sits with its hours below -->
       <div class="advice-callout">
@@ -843,6 +853,7 @@ function detailView(loc, { compact = false } = {}) {
         </div>
       </div>
 
+      ${hoursSection}
       ${tiles}
       <div class="btn-row">
         <a class="btn btn-outline" href="${directionsUrl}" target="_blank" rel="noopener">Get directions</a>
@@ -855,13 +866,6 @@ function detailView(loc, { compact = false } = {}) {
           ${[['building', 'Entrance & level', 'entrance'], ['car', 'Parking', 'parking'], ['transit', 'Public transport', 'transit'], ['access', 'Accessibility', 'access'], ['user', 'When you arrive', 'arrival']]
             .map(([ic, label, k]) => `<div>${icon(ic)}<dt>${label}</dt><dd>${esc(arrivalFor(loc)[k])}</dd></div>`).join('')}
         </dl>
-      </section>
-
-      <section class="detail-section">
-        <h4>Opening hours</h4>
-        <p>${esc(hoursSummary(loc))}</p>
-        <p>${statusText(loc) || esc(svc.note)}</p>
-        <p class="office-phone">${loc.type === 'office' ? 'Office' : 'Campus'} phone: <a href="${telHref(phoneFor(loc))}">${phoneFor(loc)}</a> <span>for directions or general questions</span></p>
       </section>
 
       <section class="detail-section">
