@@ -1,0 +1,432 @@
+{
+  "topic": "Account and fees",
+  "cards": [
+    {
+      "id": "acc-admin-fee",
+      "products": [
+        "super"
+      ],
+      "q": "What is the accumulation administration fee?",
+      "aliases": [
+        "admin fee",
+        "96",
+        "8 per month",
+        "4800",
+        "fees super"
+      ],
+      "a": "The lesser of $96 or 2% of the balance a year: at most $8 a month, at month end. Under $4,800 at month end: one month of the 2% fee.",
+      "detail": "Balanced investment fee 0.39% plus 0.06% transaction costs. On $50,000: $321 a year.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "If at the end of the month your account balance is less than $4,800 (including investment returns, where applied) you'll be charged one month's worth of the 2% annual fee."
+        },
+        {
+          "doc": "acc1",
+          "quote": "be charged fees and costs of $321 for the superannuation product."
+        }
+      ]
+    },
+    {
+      "id": "low-balance-cap",
+      "products": [
+        "super",
+        "rp",
+        "ttr",
+        "bis"
+      ],
+      "q": "Is there a fee cap for small balances?",
+      "aliases": [
+        "3% cap",
+        "low balance fees",
+        "refund fees"
+      ],
+      "a": "Yes. Under $6,000 at the end of UniSuper's income year, certain admin and investment fees are capped at 3% of the balance; any excess is refunded.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "If your account balance is less than $6,000 at the end of UniSuper's income year, certain fees and costs charged to you in relation to administration and investment are capped at 3% of the account balance."
+        }
+      ]
+    },
+    {
+      "id": "fee-changes",
+      "products": [],
+      "q": "Can fees change?",
+      "aliases": [
+        "fee increase",
+        "fee notice",
+        "negotiate fees"
+      ],
+      "a": "Yes, generally reviewed each year; 30 days' written notice before a new or increased direct fee. Fees aren't negotiable by members.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "We'll give you 30 days' written notice before a new or increased fee that we charge directly takes effect."
+        },
+        {
+          "doc": "acc1",
+          "quote": "UniSuper's fees are set at a competitive level that is consistent with effective management and are not negotiable by members."
+        }
+      ]
+    },
+    {
+      "id": "adviser-fees",
+      "products": [],
+      "q": "Can financial adviser fees come from the account?",
+      "aliases": [
+        "adviser fee",
+        "advice fee",
+        "soa"
+      ],
+      "a": "Yes, an agreed advice fee can be paid from the account. It's stated in the Statement of Advice.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "Those fees will be stated in a Statement of Advice that is provided to you."
+        }
+      ]
+    },
+    {
+      "id": "switch-timing",
+      "products": [],
+      "q": "When does an investment switch take effect?",
+      "aliases": [
+        "switch",
+        "switch time",
+        "2pm",
+        "investment change"
+      ],
+      "a": "Online before 2pm on a Melbourne business day: processed two Melbourne business days later. Up to three business days overall. Online switches count as received on Submit; paper ones when entered into the system.",
+      "detail": "No switching fee. An online switch can be replaced before 2pm the same day.",
+      "sources": [
+        {
+          "doc": "inv",
+          "quote": "Requests received before 2pm on a Melbourne business day are processed two Melbourne business days later."
+        },
+        {
+          "doc": "inv",
+          "quote": "you can replace it with a new online switch before 2pm that same day and the first switch won't get processed"
+        }
+      ]
+    },
+    {
+      "id": "default-option",
+      "products": [
+        "super"
+      ],
+      "q": "Where is super invested if the member hasn't chosen?",
+      "aliases": [
+        "default investment",
+        "mysuper",
+        "balanced",
+        "future contributions strategy"
+      ],
+      "a": "Balanced (MySuper). Members can set a future contributions strategy and a rollover strategy, and switch existing balances.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "we'll automatically invest any contributions and transfers to your account in our default investment option, Balanced (MySuper)."
+        }
+      ]
+    },
+    {
+      "id": "crediting-rates",
+      "products": [],
+      "q": "How are investment returns applied?",
+      "aliases": [
+        "crediting rate",
+        "returns",
+        "interim final rate"
+      ],
+      "a": "Daily interim crediting rates, then a final rate each quarter. Returns are applied as a transaction after 30 June and 31 December, and on a switch or withdrawal.",
+      "sources": [
+        {
+          "doc": "inv",
+          "quote": "following 30 June and 31 December each year when the final crediting rates are declared"
+        }
+      ]
+    },
+    {
+      "id": "transfers-out",
+      "products": [
+        "super"
+      ],
+      "q": "Are there limits on rolling super out?",
+      "aliases": [
+        "rollover out",
+        "transfer out",
+        "partial rollover",
+        "eight times"
+      ],
+      "a": "Up to eight transfers in any 12 months. A partial transfer must leave at least $6,000, and is taken pro-rata across options.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "You may request a transfer up to eight times in each 12-month period."
+        },
+        {
+          "doc": "hsw",
+          "quote": "If you're not transferring the entire amount out of your UniSuper account then you must leave at least $6,000 in your account."
+        }
+      ]
+    },
+    {
+      "id": "ilba",
+      "products": [
+        "super"
+      ],
+      "q": "When is an inactive account sent to the ATO?",
+      "aliases": [
+        "inactive low balance",
+        "ilba",
+        "ato sent",
+        "16 months"
+      ],
+      "a": "Inactive for 16 months with a balance under $6,000 (DBD excluded). The ATO tries to combine it with another active account.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "If your account has been identified as inactive for a period of 16 months and has a balance of less than $6,000, we're required to send it to the ATO"
+        }
+      ]
+    },
+    {
+      "id": "lost-member",
+      "products": [
+        "super"
+      ],
+      "q": "When is a member treated as lost?",
+      "aliases": [
+        "lost member",
+        "lost super",
+        "returned mail"
+      ],
+      "a": "Broadly: no address ever held, or mail returned, and no contact, online access, contribution or rollover in the last 12 months. Lost members under $6,000 go to the ATO.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "you have not electronically accessed details about your superannuation account within the last 12 months"
+        }
+      ]
+    },
+    {
+      "id": "unclaimed",
+      "products": [
+        "super"
+      ],
+      "q": "When does super become unclaimed money?",
+      "aliases": [
+        "unclaimed money",
+        "eligibility age ato"
+      ],
+      "a": "At eligibility age with no contributions for two years and no contact for five years; or a former temporary resident after six months and an ATO notice. The member then claims from the ATO.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "UniSuper hasn't had contact with you in the last five years"
+        }
+      ]
+    },
+    {
+      "id": "multiple-accounts",
+      "products": [
+        "super"
+      ],
+      "q": "What if a member has two UniSuper accounts?",
+      "aliases": [
+        "merge accounts",
+        "duplicate account"
+      ],
+      "a": "We check every year and merge them where it's in the member's best interests, and tell them.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Super legislation requires us to check annually whether members have multiple super accounts with us."
+        }
+      ]
+    },
+    {
+      "id": "pa-eligibility",
+      "products": [
+        "super"
+      ],
+      "q": "Who can open a Personal Account?",
+      "aliases": [
+        "personal account",
+        "join",
+        "open account",
+        "minimum age to join",
+        "how old to join",
+        "age to join",
+        "who can join",
+        "who can open a personal account",
+        "join personal account",
+        "eligibility personal account",
+        "open a super account",
+        "15 years old"
+      ],
+      "a": "Anyone aged 15+, living in Australia, with a personal email. Apply online at unisuper.com.au/join. Starting with an eligible employer, the employer sets up an account instead.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "To be eligible to open a Personal Account with UniSuper, you must:"
+        },
+        {
+          "doc": "hsw",
+          "quote": "have a valid personal email address."
+        }
+      ]
+    },
+    {
+      "id": "acc1-eligibility",
+      "products": [
+        "super"
+      ],
+      "q": "How does an Accumulation 1 account get opened?",
+      "aliases": [
+        "accumulation 1",
+        "acc1 join",
+        "who can join accumulation 1",
+        "how do i join"
+      ],
+      "a": "The eligible employer opens it; no application needed. Defaults: Balanced investment, and default insurance if eligible.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "Your employer is able to open an account on your behalf, so there's no need to complete an application."
+        }
+      ]
+    },
+    {
+      "id": "acc2-move",
+      "products": [
+        "super",
+        "dbd"
+      ],
+      "q": "What happens to Accumulation 2 when a member leaves their eligible employer?",
+      "aliases": [
+        "accumulation 2",
+        "acc2 leave",
+        "rejoin acc2"
+      ],
+      "a": "They're moved to Accumulation 1, and can't rejoin Accumulation 2.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Accumulation 2 members will be automatically transferred to Accumulation 1 if they're no longer employed by an eligible employer."
+        },
+        {
+          "doc": "hsw",
+          "quote": "Once a member has exited Accumulation 2 they cannot re-join this product."
+        }
+      ]
+    },
+    {
+      "id": "dbd-change-jobs",
+      "products": [
+        "dbd"
+      ],
+      "q": "What happens to DBD when a member changes jobs?",
+      "aliases": [
+        "dbd change jobs",
+        "defer dbd"
+      ],
+      "a": "Within higher education and still eligible: stays in DBD. Outside the sector: needs to defer membership to stay in DBD.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "If you change to a job outside the sector, you will need to defer your membership to remain a DBD member."
+        }
+      ]
+    },
+    {
+      "id": "errors",
+      "products": [],
+      "q": "Will a member be compensated for an error?",
+      "aliases": [
+        "error",
+        "compensation",
+        "unit pricing error"
+      ],
+      "a": "For material errors caused by UniSuper, generally where the error is 0.30% of the account or more. On closed accounts, under $20 (unit pricing) or $5 (other) isn't usually paid.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "UniSuper will generally use a materiality threshold of 0.30% of the account when compared to the amount of the error"
+        }
+      ]
+    },
+    {
+      "id": "confirm-transaction",
+      "products": [],
+      "q": "How does a member get confirmation of a transaction?",
+      "aliases": [
+        "confirmation",
+        "proof of transaction"
+      ],
+      "a": "Call and quote the member number, write to Level 1, 385 Bourke Street, Melbourne, or view and download it online.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "To obtain confirmation of a transaction or change, call and quote your member number."
+        }
+      ]
+    },
+    {
+      "id": "complaints",
+      "products": [],
+      "q": "How long do complaints take?",
+      "aliases": [
+        "complaint",
+        "afca",
+        "45 days"
+      ],
+      "a": "Super complaints 45 days; advice complaints 30 days; death benefit objections 90 days after the 28-day objection window. If unresolved, AFCA on 1800 931 678.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "45 days for super complaints"
+        },
+        {
+          "doc": "flexi",
+          "quote": "90 days for objections to death benefit distributions (starting after the 28-day deadline to submit your objection)."
+        }
+      ]
+    },
+    {
+      "id": "advice-contact",
+      "products": [],
+      "q": "Where do members get financial advice?",
+      "aliases": [
+        "advice",
+        "adviser",
+        "unisuper advice"
+      ],
+      "a": "UniSuper Advice: 1800 823 842 or advice@unisuper.com.au.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "Email advice@unisuper.com.au or call UniSuper Advice on 1800 823 842."
+        }
+      ]
+    },
+    {
+      "id": "family-law",
+      "products": [],
+      "q": "Can super be split on separation?",
+      "aliases": [
+        "family law",
+        "divorce",
+        "separation split"
+      ],
+      "a": "Yes, by agreement or court order. See the Super and family law fact sheet, or request information with the Family law information request form.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "can be split between the parties by agreement or court order."
+        }
+      ]
+    }
+  ]
+}

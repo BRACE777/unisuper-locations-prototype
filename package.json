@@ -6,6 +6,13 @@
   "description": "Prototype of an improved UniSuper 'Our locations' map: personalisation, travel times, filters and booking.",
   "scripts": {
     "start": "node server.js",
-    "build": "node build.js"
+    "build": "node build.js",
+    "companion:sources": "node companion/tools/fetch-sources.mjs && node companion/tools/extract-pages.mjs",
+    "companion:forms": "node companion/tools/fetch-forms.mjs",
+    "companion:check": "node companion/tools/check-data.mjs",
+    "companion:build": "node companion/build.mjs && python -I companion/tools/build_workbook.py",
+    "companion:test": "node --test companion/test/companion.test.mjs",
+    "companion:workbook-check": "powershell -NoProfile -ExecutionPolicy Bypass -File companion/tools/check-workbook.ps1",
+    "companion:serve": "node companion/tools/serve.mjs"
   }
 }

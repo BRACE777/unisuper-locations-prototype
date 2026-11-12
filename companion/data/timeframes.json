@@ -1,0 +1,622 @@
+{
+  "note": "Timeframes members ask about. kind: 'pds' (stated in a UniSuper PDS document) or 'law' (a legal deadline the PDS quotes). Internal processing times are not in the PDS: put them in timeframes.local.json with kind 'internal'. 'calc' lets the date calculator offer the timeframe as a preset.",
+  "items": [
+    {
+      "id": "pension-lump-sum",
+      "topic": "Pension",
+      "task": "Flexi Pension lump sum withdrawal paid",
+      "timeframe": "Usually within 5 business days",
+      "starts": "When we receive the request",
+      "kind": "pds",
+      "calc": {
+        "type": "business_days",
+        "n": 5
+      },
+      "say": "Withdrawals from a Flexi Pension are usually paid into your nominated bank account within five business days of us receiving your request.",
+      "source": {
+        "doc": "flexi",
+        "quote": "Withdrawals are paid into your nominated bank account, usually within five business days of receiving your request."
+      }
+    },
+    {
+      "id": "pension-pay-fortnightly",
+      "topic": "Pension",
+      "task": "Fortnightly pension payment",
+      "timeframe": "By every second Friday",
+      "starts": "Ongoing",
+      "kind": "pds",
+      "say": "Fortnightly payments are made by every second Friday. Some credit unions take longer to clear funds.",
+      "source": {
+        "doc": "flexi",
+        "quote": "by every second Friday for fortnightly payments"
+      }
+    },
+    {
+      "id": "pension-pay-other",
+      "topic": "Pension",
+      "task": "Monthly, quarterly, half-yearly or annual pension payment",
+      "timeframe": "By the 28th of the payment month",
+      "starts": "Ongoing",
+      "kind": "pds",
+      "say": "Monthly, quarterly, half-yearly and annual payments are made by the 28th of the month they're due.",
+      "source": {
+        "doc": "flexi",
+        "quote": "or by the 28th of each month, for all other payment frequencies"
+      }
+    },
+    {
+      "id": "pension-pay-months",
+      "topic": "Pension",
+      "task": "Which months quarterly and half-yearly payments fall in",
+      "timeframe": "Quarterly: March, June, September, December. Half-yearly: June and December. Annual: any month chosen",
+      "starts": "Ongoing",
+      "kind": "pds",
+      "say": "Quarterly payments are paid in March, June, September and December, half-yearly in June and December, and annual payments in the month you choose.",
+      "source": {
+        "doc": "flexi",
+        "quote": "quarterly (March, June, September and December)"
+      }
+    },
+    {
+      "id": "pension-cooling-off",
+      "topic": "Pension",
+      "task": "Cooling-off period for a new Flexi Pension",
+      "timeframe": "14 days",
+      "starts": "The earlier of receiving the welcome letter or the end of the fifth business day after opening",
+      "kind": "pds",
+      "calc": {
+        "type": "days",
+        "n": 14
+      },
+      "say": "You have 14 days to change your mind. It starts from when you receive your welcome letter, or five business days after the account opens if that's earlier. You need to tell us in writing.",
+      "source": {
+        "doc": "flexi",
+        "quote": "You have 14 days from when your Flexi Pension is opened to decide if it's right for you."
+      }
+    },
+    {
+      "id": "acc-cooling-off",
+      "topic": "Super",
+      "task": "Cooling-off for an Accumulation 1 account we opened for you",
+      "timeframe": "14 days",
+      "starts": "The sooner of the welcome email or the end of the fifth business day after opening",
+      "kind": "pds",
+      "calc": {
+        "type": "days",
+        "n": 14
+      },
+      "say": "If we opened an Accumulation 1 account in your name, you can ask us in writing to cancel it within 14 days.",
+      "source": {
+        "doc": "hsw",
+        "quote": "You can request to cancel an Accumulation 1 account opened in your name within 14 days from the sooner of"
+      }
+    },
+    {
+      "id": "temp-account",
+      "topic": "Pension",
+      "task": "Temporary Accumulation 1 account before a pension starts",
+      "timeframe": "Closes when all transfers arrive, or at 90 days, whichever is first",
+      "starts": "When we receive the first transfer or contribution",
+      "kind": "pds",
+      "calc": {
+        "type": "days",
+        "n": 90
+      },
+      "say": "Your pension starts once all your transfers are in, or 90 days after the first one arrives, whichever comes first. Anything that arrives later stays in super.",
+      "source": {
+        "doc": "flexi",
+        "quote": "or 90 days after we receive the first transfer or contribution, whichever happens first"
+      }
+    },
+    {
+      "id": "rb-membership",
+      "topic": "Pension",
+      "task": "Membership needed for the Retirement Bonus",
+      "timeframe": "12 continuous months before the transfer",
+      "starts": "Joining UniSuper (super or TTR account)",
+      "kind": "pds",
+      "calc": {
+        "type": "months",
+        "n": 12
+      },
+      "say": "To be eligible for the Retirement Bonus you need to have held a UniSuper super or TTR account for 12 continuous months immediately before the transfer.",
+      "source": {
+        "doc": "flexi",
+        "quote": "for a continuous 12-month period immediately before the transfer"
+      }
+    },
+    {
+      "id": "rb-clawback",
+      "topic": "Pension",
+      "task": "Retirement Bonus clawback window",
+      "timeframe": "12 months after the pension starts",
+      "starts": "Retirement Phase Flexi Pension start date",
+      "kind": "pds",
+      "calc": {
+        "type": "months",
+        "n": 12
+      },
+      "say": "If you withdraw half or more of your opening balance in the first 12 months, the Retirement Bonus may be clawed back.",
+      "source": {
+        "doc": "flexi",
+        "quote": "If you withdraw 50% or more of your opening balance within 12 months of starting your Retirement Phase Flexi Pension, the Trustee may claw back the Retirement Bonus."
+      }
+    },
+    {
+      "id": "tbc-excess",
+      "topic": "Pension",
+      "task": "Reducing a pension that exceeds the transfer balance cap",
+      "timeframe": "Within 60 days of the ATO's notice to the fund",
+      "starts": "ATO notice",
+      "kind": "law",
+      "calc": {
+        "type": "days",
+        "n": 60
+      },
+      "say": "If the ATO tells us you're over your transfer balance cap and you haven't acted, we're required to reduce your balance within 60 days.",
+      "source": {
+        "doc": "flexi",
+        "quote": "require that reduction be made within 60 days"
+      }
+    },
+    {
+      "id": "switch",
+      "topic": "Investments",
+      "task": "Investment switch becomes effective",
+      "timeframe": "Before 2pm on a Melbourne business day: processed two Melbourne business days later. Up to three business days in total",
+      "starts": "When the switch is received (online: when Submit is pressed)",
+      "kind": "pds",
+      "calc": {
+        "type": "business_days",
+        "n": 2
+      },
+      "say": "If you submit a switch online before 2pm Melbourne time on a business day, it's processed two business days later. Online switches count as received the moment you press Submit.",
+      "source": {
+        "doc": "inv",
+        "quote": "Requests received before 2pm on a Melbourne business day are processed two Melbourne business days later."
+      }
+    },
+    {
+      "id": "switch-replace",
+      "topic": "Investments",
+      "task": "Replacing an online switch",
+      "timeframe": "Before 2pm the same Melbourne business day",
+      "starts": "The day the first switch was submitted",
+      "kind": "pds",
+      "say": "You can replace an online switch with a new one before 2pm the same day, and the first one won't be processed.",
+      "source": {
+        "doc": "inv",
+        "quote": "you can replace it with a new online switch before 2pm that same day and the first switch won't get processed"
+      }
+    },
+    {
+      "id": "crediting",
+      "topic": "Investments",
+      "task": "Final crediting rates applied",
+      "timeframe": "After 30 June and 31 December each year, and on a switch or withdrawal",
+      "starts": "End of each half-year",
+      "kind": "pds",
+      "say": "Investment returns are applied as a transaction after 30 June and 31 December, and whenever you switch or withdraw.",
+      "source": {
+        "doc": "inv",
+        "quote": "following 30 June and 31 December each year when the final crediting rates are declared"
+      }
+    },
+    {
+      "id": "noi-deadline",
+      "topic": "Contributions",
+      "task": "Notice of intent to claim a tax deduction",
+      "timeframe": "Before lodging the tax return, or by the end of the next financial year, whichever is first. Also before any rollover, withdrawal, split or pension start",
+      "starts": "The financial year the contributions were made",
+      "kind": "law",
+      "say": "The notice has to reach us, and be acknowledged, before you lodge your tax return for that year or by the end of the following financial year, whichever comes first. It also has to be done before the money is rolled over, withdrawn, split or used to start a pension.",
+      "source": {
+        "doc": "hsw",
+        "quote": "You must submit your claim (and we must acknowledge receipt in writing) before whichever of the following occurs first"
+      }
+    },
+    {
+      "id": "split-deadline",
+      "topic": "Contributions",
+      "task": "Contribution splitting request",
+      "timeframe": "By 30 June of the year after the contributions were made",
+      "starts": "End of the financial year the contributions were made",
+      "kind": "law",
+      "say": "To split last financial year's contributions with your spouse, we need the request by 30 June this financial year.",
+      "source": {
+        "doc": "hsw",
+        "quote": "To split contributions made for the previous financial year, you must lodge"
+      },
+      "ato": [
+        {
+          "doc": "ato-split",
+          "quote": "Note: You can only apply once to split contributions made to a particular super fund in a financial year."
+        }
+      ]
+    },
+    {
+      "id": "downsizer",
+      "topic": "Contributions",
+      "task": "Downsizer contribution",
+      "timeframe": "Generally within 90 days of settlement",
+      "starts": "Settlement of the home sale",
+      "kind": "law",
+      "calc": {
+        "type": "days",
+        "n": 90
+      },
+      "say": "Send the ATO downsizer form with the contribution, generally within 90 days of settlement.",
+      "source": {
+        "doc": "hsw",
+        "quote": "generally within 90 days of settlement"
+      },
+      "ato": [
+        {
+          "doc": "ato-downsizer",
+          "quote": "You contribute within 90 days of receiving the home sale proceeds (usually at settlement) unless you apply for, and we grant you an extension of time."
+        }
+      ]
+    },
+    {
+      "id": "contrib-75",
+      "topic": "Contributions",
+      "task": "Last day for voluntary contributions after turning 75",
+      "timeframe": "28 days after the end of the month of the 75th birthday",
+      "starts": "End of the birthday month",
+      "kind": "law",
+      "say": "After 75 we can accept voluntary contributions only up to 28 days after the end of the month you turned 75.",
+      "source": {
+        "doc": "hsw",
+        "quote": "We can accept contributions up to 28 days after the end of the month in which you turn 75."
+      }
+    },
+    {
+      "id": "tfn-refund",
+      "topic": "Contributions",
+      "task": "Providing a TFN to recover no-TFN tax",
+      "timeframe": "Within three financial years after the contribution",
+      "starts": "The financial year of the contribution",
+      "kind": "law",
+      "say": "If you give us your TFN within three financial years of the contribution, we may be able to claim the extra no-TFN tax back from the ATO.",
+      "source": {
+        "doc": "hsw",
+        "quote": "If you provide your TFN within the three financial years following the contribution"
+      }
+    },
+    {
+      "id": "carry-forward",
+      "topic": "Contributions",
+      "task": "Unused concessional cap expires",
+      "timeframe": "After five years",
+      "starts": "The financial year the cap went unused",
+      "kind": "law",
+      "say": "Unused concessional cap can be carried forward for up to five years. For example, unused 2021-22 cap expires at the end of 2026-27.",
+      "source": {
+        "doc": "hsw",
+        "quote": "Unused concessional contributions can be carried forward for up to five years"
+      },
+      "ato": [
+        {
+          "doc": "ato-cc",
+          "quote": "You can carry forward unused cap amounts from up to 5 previous financial years, including when you were not a member of a super fund."
+        }
+      ]
+    },
+    {
+      "id": "covid-recontrib",
+      "topic": "Contributions",
+      "task": "COVID-19 early release re-contributions",
+      "timeframe": "Until 30 June 2030",
+      "starts": "Now",
+      "kind": "law",
+      "say": "If you withdrew super under the COVID-19 scheme, you can put it back until 30 June 2030 without it counting to the non-concessional cap.",
+      "source": {
+        "doc": "hsw",
+        "quote": "This is only available until 30 June 2030"
+      }
+    },
+    {
+      "id": "ins-new-employee",
+      "topic": "Insurance",
+      "task": "Apply for cover without health evidence after starting with an eligible employer",
+      "timeframe": "180 days",
+      "starts": "First day of employment with an eligible employer",
+      "kind": "pds",
+      "calc": {
+        "type": "days",
+        "n": 180
+      },
+      "say": "You have 180 days from starting with an eligible employer to apply for cover without health evidence.",
+      "source": {
+        "doc": "acc1",
+        "quote": "You have 180 days from the date you first start employment with an eligible employer to apply for insurance cover without having to provide health evidence to the Insurer."
+      }
+    },
+    {
+      "id": "ins-topup",
+      "topic": "Insurance",
+      "task": "Top-up cover without health evidence after default cover starts",
+      "timeframe": "180 days",
+      "starts": "The day default cover starts",
+      "kind": "pds",
+      "calc": {
+        "type": "days",
+        "n": 180
+      },
+      "say": "You can apply for up to 10 units of top-up cover without health evidence within 180 days of default cover starting.",
+      "source": {
+        "doc": "acc1",
+        "quote": "within 180 days of your default cover automatically starting"
+      }
+    },
+    {
+      "id": "ins-contribution",
+      "topic": "Insurance",
+      "task": "Employer contribution needed for cover to start",
+      "timeframe": "Within 180 days",
+      "starts": "Turning 25 with a $6,000 balance, or the application date",
+      "kind": "pds",
+      "calc": {
+        "type": "days",
+        "n": 180
+      },
+      "say": "Cover only starts once an employer contribution arrives, and it must arrive within 180 days, otherwise you'd need to reapply with health evidence.",
+      "source": {
+        "doc": "acc1",
+        "quote": "Your cover will only start if an employer contribution is received within 180 days."
+      }
+    },
+    {
+      "id": "ins-inactive",
+      "topic": "Insurance",
+      "task": "Cover stops with no contributions or rollovers",
+      "timeframe": "16 consecutive months",
+      "starts": "The last contribution or rollover",
+      "kind": "law",
+      "calc": {
+        "type": "months",
+        "n": 16
+      },
+      "say": "If no contribution or rollover is received for 16 months in a row, cover stops unless you've told us you want to keep it.",
+      "source": {
+        "doc": "ins",
+        "quote": "Your account hasn't received a contribution or rollover for 16 consecutive months, and prior to that you didn't elect to keep cover"
+      }
+    },
+    {
+      "id": "ins-restart",
+      "topic": "Insurance",
+      "task": "Restarting cover that stopped",
+      "timeframe": "Apply within 90 days",
+      "starts": "The day cover stopped",
+      "kind": "pds",
+      "calc": {
+        "type": "days",
+        "n": 90
+      },
+      "say": "If your cover stopped because of low funds or no contributions, you can apply to restart it within 90 days, and it restarts from the date it stopped.",
+      "source": {
+        "doc": "ins",
+        "quote": "apply within 90 days of your cover being stopped"
+      }
+    },
+    {
+      "id": "ins-professional",
+      "topic": "Insurance",
+      "task": "Professional occupation classification applied from 28 November 2026",
+      "timeframe": "Applications accepted before 28 November 2026 apply from that date; later ones from acceptance",
+      "starts": "Acceptance of the application",
+      "kind": "pds",
+      "say": "If your Professional classification application is accepted before 28 November 2026 it applies from that date, otherwise from the date we accept it.",
+      "source": {
+        "doc": "acc1",
+        "quote": "If the request is received and accepted before 28 November 2026, then the change to the occupation classification and premiums will be applied from 28 November 2026"
+      }
+    },
+    {
+      "id": "ins-pce",
+      "topic": "Insurance",
+      "task": "Pre-existing condition exclusion when not in active employment",
+      "timeframe": "At least 12 months",
+      "starts": "When cover starts",
+      "kind": "pds",
+      "calc": {
+        "type": "months",
+        "n": 12
+      },
+      "say": "If you weren't in active employment when cover started, a pre-existing condition exclusion of at least 12 months applies to TPD and Income Protection.",
+      "source": {
+        "doc": "acc1",
+        "quote": "a minimum 12 month pre-existing condition exclusion will apply to your TPD and Income Protection cover"
+      }
+    },
+    {
+      "id": "lapsing-bdbn",
+      "topic": "Beneficiaries",
+      "task": "Lapsing binding nomination expires",
+      "timeframe": "3 years",
+      "starts": "The date it was signed, last confirmed or amended",
+      "kind": "pds",
+      "calc": {
+        "type": "years",
+        "n": 3
+      },
+      "say": "A lapsing binding nomination lasts three years from when it was signed or last confirmed. A non-lapsing one doesn't expire.",
+      "source": {
+        "doc": "hsw",
+        "quote": "A valid binding death benefit nomination (lapsing) remains in effect for three years from the date it was first signed, last amended or confirmed."
+      }
+    },
+    {
+      "id": "death-objection",
+      "topic": "Complaints",
+      "task": "Objecting to a proposed death benefit distribution",
+      "timeframe": "28 days to object, then an outcome within 90 days",
+      "starts": "Notice of the proposed distribution",
+      "kind": "pds",
+      "calc": {
+        "type": "days",
+        "n": 28
+      },
+      "say": "You have 28 days to lodge an objection. Once that window closes, we aim to give an outcome within 90 days.",
+      "source": {
+        "doc": "flexi",
+        "quote": "90 days for objections to death benefit distributions (starting after the 28-day deadline to submit your objection)"
+      }
+    },
+    {
+      "id": "complaint-super",
+      "topic": "Complaints",
+      "task": "Outcome for a super complaint",
+      "timeframe": "45 days",
+      "starts": "When we receive the complaint",
+      "kind": "pds",
+      "calc": {
+        "type": "days",
+        "n": 45
+      },
+      "say": "You can expect an outcome within 45 days. If we can't manage that, we'll tell you in writing.",
+      "source": {
+        "doc": "flexi",
+        "quote": "45 days for super complaints"
+      }
+    },
+    {
+      "id": "complaint-advice",
+      "topic": "Complaints",
+      "task": "Outcome for a financial advice complaint",
+      "timeframe": "30 days",
+      "starts": "When we receive the complaint",
+      "kind": "pds",
+      "calc": {
+        "type": "days",
+        "n": 30
+      },
+      "say": "For a financial advice complaint you can expect an outcome within 30 days.",
+      "source": {
+        "doc": "flexi",
+        "quote": "30 days for financial advice complaints"
+      }
+    },
+    {
+      "id": "ilba",
+      "topic": "Account",
+      "task": "Inactive low-balance account sent to the ATO",
+      "timeframe": "16 months inactive with under $6,000",
+      "starts": "Last activity on the account",
+      "kind": "law",
+      "calc": {
+        "type": "months",
+        "n": 16
+      },
+      "say": "If an account under $6,000 has been inactive for 16 months, we're required to send it to the ATO, which tries to combine it with another account you hold.",
+      "source": {
+        "doc": "hsw",
+        "quote": "If your account has been identified as inactive for a period of 16 months and has a balance of less than $6,000"
+      }
+    },
+    {
+      "id": "nil-balance",
+      "topic": "Account",
+      "task": "Nil balance account closed",
+      "timeframe": "Generally after 12 months without contributions or activity",
+      "starts": "Last activity",
+      "kind": "pds",
+      "calc": {
+        "type": "months",
+        "n": 12
+      },
+      "say": "An account with a nil balance and no activity for 12 months may be closed.",
+      "source": {
+        "doc": "hsw",
+        "quote": "Generally, if your balance is nil and your account hasn't had any contributions or activity within the last 12 months, then your account may be closed"
+      }
+    },
+    {
+      "id": "unclaimed-age",
+      "topic": "Account",
+      "task": "Unclaimed money: eligibility age reached",
+      "timeframe": "No contributions for 2 years and no contact for 5 years",
+      "starts": "Last contribution and last contact",
+      "kind": "law",
+      "say": "Once you've reached eligibility age, the account goes to the ATO if we've had no contributions for two years and no contact for five years.",
+      "source": {
+        "doc": "hsw",
+        "quote": "UniSuper hasn't had contact with you in the last five years"
+      }
+    },
+    {
+      "id": "dasp",
+      "topic": "Account",
+      "task": "Former temporary resident's super sent to the ATO",
+      "timeframe": "6 months after departing Australia",
+      "starts": "Departure date, or visa expiry or cancellation",
+      "kind": "law",
+      "calc": {
+        "type": "months",
+        "n": 6
+      },
+      "say": "If you don't claim within six months of leaving Australia, the super is transferred to the ATO and you claim it from them.",
+      "source": {
+        "doc": "hsw",
+        "quote": "If temporary residents don't claim their super within six months of departing Australia, we'll transfer it to the ATO"
+      }
+    },
+    {
+      "id": "transfers-out",
+      "topic": "Account",
+      "task": "Transfers out to another fund",
+      "timeframe": "Up to eight requests in any 12 months",
+      "starts": "Rolling 12 months",
+      "kind": "pds",
+      "say": "You can request a transfer out up to eight times in any 12-month period. A partial transfer must leave at least $6,000.",
+      "source": {
+        "doc": "hsw",
+        "quote": "You may request a transfer up to eight times in each 12-month period."
+      }
+    },
+    {
+      "id": "portability",
+      "topic": "Account",
+      "task": "Moving super from an employer's fund that doesn't offer choice",
+      "timeframe": "Once a year",
+      "starts": "Ongoing",
+      "kind": "pds",
+      "say": "Portability rules generally let you transfer super from your employer's fund to UniSuper once a year.",
+      "source": {
+        "doc": "hsw",
+        "quote": "portability legislation generally allows you to transfer the super you accrue in your employer's fund into your UniSuper account once a year"
+      }
+    },
+    {
+      "id": "fee-notice",
+      "topic": "Account",
+      "task": "Notice of a new or increased fee",
+      "timeframe": "30 days before it takes effect",
+      "starts": "Notice date",
+      "kind": "pds",
+      "calc": {
+        "type": "days",
+        "n": 30
+      },
+      "say": "We give 30 days' written notice before a new or increased fee that we charge directly takes effect.",
+      "source": {
+        "doc": "acc1",
+        "quote": "We'll give you 30 days' written notice before a new or increased fee that we charge directly takes effect."
+      }
+    },
+    {
+      "id": "terminal",
+      "topic": "Access",
+      "task": "Terminal medical condition certification period",
+      "timeframe": "Less than 24 months to live (12 months for DBD inbuilt benefits)",
+      "starts": "Date of certification",
+      "kind": "law",
+      "say": "Two medical practitioners, one a specialist, must certify less than 24 months to live. For DBD inbuilt benefits the period is 12 months.",
+      "source": {
+        "doc": "hsw",
+        "quote": "the inbuilt terminal medical condition benefits is 12 months"
+      }
+    }
+  ]
+}

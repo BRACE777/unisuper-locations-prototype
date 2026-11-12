@@ -1,0 +1,415 @@
+{
+  "topic": "Insurance",
+  "cards": [
+    {
+      "id": "cover-types",
+      "products": [
+        "super"
+      ],
+      "q": "What insurance cover is offered, and when does it stop by age?",
+      "aliases": [
+        "cover types",
+        "insurance",
+        "death tpd income protection",
+        "cease age",
+        "75 70 67",
+        "age limit insurance",
+        "insurance age",
+        "when does insurance end"
+      ],
+      "a": "Death (including terminal illness) to 75, TPD to 70, Income Protection to 67. Premiums come from the super account. Insurer: MetLife.",
+      "sources": [
+        {
+          "doc": "ins",
+          "quote": "Death cover ceases at age 75."
+        },
+        {
+          "doc": "ins",
+          "quote": "TPD cover ceases at age 70."
+        },
+        {
+          "doc": "ins",
+          "quote": "Income Protection cover ceases at age 67."
+        }
+      ]
+    },
+    {
+      "id": "default-cover",
+      "products": [
+        "super"
+      ],
+      "q": "When does default cover start automatically?",
+      "aliases": [
+        "default cover",
+        "age 25",
+        "6000 cover",
+        "automatic insurance",
+        "minimum age insurance",
+        "insurance under 25",
+        "insurance age 25"
+      ],
+      "a": "Accumulation 1: 10 units of Death and TPD once the member is 25 with a balance of $6,000, starting with the next employer contribution (which must arrive within 180 days).",
+      "detail": "Opt out with the Accumulation 1 - Changing your default insurance cover form. Opting back in later needs health evidence.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "you'll automatically receive 10 units of default Death and/or TPD cover after you're aged 25 and have an account balance of at least $6,000"
+        },
+        {
+          "doc": "acc1",
+          "quote": "Your cover will only start if an employer contribution is received within 180 days."
+        }
+      ],
+      "see": [
+        "cover-early",
+        "opt-out"
+      ]
+    },
+    {
+      "id": "cover-early",
+      "products": [
+        "super"
+      ],
+      "q": "Can a new member start cover before 25 or $6,000?",
+      "aliases": [
+        "start cover early",
+        "20 units",
+        "180 days new employee"
+      ],
+      "a": "Yes: up to 20 units of Death and TPD regardless of age or balance, applied for within 180 days of starting with an eligible employer, without health evidence.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "Alternatively, you can start your cover earlier and apply for up to 20 units of Death and/or TPD cover regardless of your age or your account balance"
+        },
+        {
+          "doc": "acc1",
+          "quote": "You have 180 days from the date you first start employment with an eligible employer to apply for insurance cover without having to provide health evidence to the Insurer."
+        }
+      ]
+    },
+    {
+      "id": "topup-cover",
+      "products": [
+        "super"
+      ],
+      "q": "Can default cover be topped up without health evidence?",
+      "aliases": [
+        "top up cover",
+        "top-up",
+        "10 units extra"
+      ],
+      "a": "Yes, up to 10 units more within 180 days of default cover starting.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "You can also apply for up to 10 units of top-up Death and/or TPD cover within 180 days of your default cover automatically starting"
+        }
+      ]
+    },
+    {
+      "id": "unit-value",
+      "products": [
+        "super"
+      ],
+      "q": "How much is a unit of Death and TPD cover worth?",
+      "aliases": [
+        "unit value",
+        "units cover",
+        "how much cover",
+        "27500"
+      ],
+      "a": "It depends on age: from $27,500 at 38 down to $400 for Death at 74 and $1,100 for TPD at 69. 10 units at 35 is $266,000; at 55, $86,000.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "ranges from $27,500 for death and TPD (at age 38) to $400 for death (at age 74) and $1,100 for TPD (at age 69)"
+        }
+      ],
+      "see": [
+        "fixed-cover"
+      ]
+    },
+    {
+      "id": "ip-cover",
+      "products": [
+        "super"
+      ],
+      "q": "How much Income Protection can a member get?",
+      "aliases": [
+        "income protection",
+        "ip",
+        "23 units",
+        "85% salary",
+        "waiting period"
+      ],
+      "a": "Up to 23 units without health evidence, each $100 a week, capped at 85% of income. Default terms: 90-day waiting period, two-year benefit period. Apply within 180 days of starting with an eligible employer.",
+      "detail": "Benefits can be reduced by other income such as workers' compensation. Not all occupations are eligible.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "you can apply for up to 23 units of Income Protection cover (equivalent to a maximum pre-tax benefit of $9,967 per month), subject to a maximum of 85% of your pre-disability income"
+        },
+        {
+          "doc": "ins",
+          "quote": "Income Protection cover is available in units of cover where each unit is valued at $100 per week."
+        }
+      ]
+    },
+    {
+      "id": "ip-dbd",
+      "products": [
+        "dbd"
+      ],
+      "q": "Can DBD members have Income Protection?",
+      "aliases": [
+        "dbd income protection"
+      ],
+      "a": "No, Income Protection isn't available to DBD members.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "Income Protection cover is not available to Defined Benefit Division members."
+        }
+      ]
+    },
+    {
+      "id": "premium-cost",
+      "products": [
+        "super"
+      ],
+      "q": "How are premiums worked out and charged?",
+      "aliases": [
+        "premium",
+        "cost of cover",
+        "4% fee",
+        "tax adjustment",
+        "how much does insurance cost",
+        "insurance cost",
+        "premiums"
+      ],
+      "a": "By cover type, amount, age and sex at birth (and IP waiting and benefit periods). Includes stamp duty and a 4% admin fee. Deducted monthly; a 15% tax adjustment is credited back.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "The cost of insurance includes stamp duty and an administration fee of 4% of the insurance premium charged"
+        },
+        {
+          "doc": "acc1",
+          "quote": "Premiums are deducted from your super account on a monthly basis."
+        }
+      ]
+    },
+    {
+      "id": "pce",
+      "products": [
+        "super"
+      ],
+      "q": "Is there a pre-existing condition exclusion?",
+      "aliases": [
+        "pre-existing",
+        "pce",
+        "not working when cover starts"
+      ],
+      "a": "If the member isn't in active employment when default, top-up or IP cover starts, at least 12 months' exclusion applies to TPD and IP.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "a minimum 12 month pre-existing condition exclusion will apply to your TPD and Income Protection cover"
+        }
+      ]
+    },
+    {
+      "id": "cover-stops",
+      "products": [
+        "super"
+      ],
+      "q": "When does insurance cover stop?",
+      "aliases": [
+        "cover stopped",
+        "insurance cancelled",
+        "16 months",
+        "insufficient funds",
+        "when does insurance stop",
+        "insurance cancelled automatically"
+      ],
+      "a": "At the cessation age, on request, leaving UniSuper, death, not enough money for premiums, or 16 consecutive months with no contribution or rollover (unless the member elected to keep cover).",
+      "sources": [
+        {
+          "doc": "ins",
+          "quote": "Your account has insufficient funds to pay the insurance premiums when due"
+        },
+        {
+          "doc": "ins",
+          "quote": "Your account hasn't received a contribution or rollover for 16 consecutive months, and prior to that you didn't elect to keep cover"
+        }
+      ],
+      "see": [
+        "cover-restart"
+      ]
+    },
+    {
+      "id": "cover-restart",
+      "products": [
+        "super"
+      ],
+      "q": "Can stopped cover be restarted?",
+      "aliases": [
+        "restart cover",
+        "reinstate",
+        "90 days"
+      ],
+      "a": "If it stopped for low funds, 16 months without contributions, or a DBD transfer: apply within 90 days, be under the cessation age and in active employment. It restarts from the date it stopped, same type and level.",
+      "sources": [
+        {
+          "doc": "ins",
+          "quote": "apply within 90 days of your cover being stopped"
+        }
+      ]
+    },
+    {
+      "id": "opt-out",
+      "products": [
+        "super"
+      ],
+      "q": "How does a member opt out of or cancel cover?",
+      "aliases": [
+        "cancel insurance",
+        "opt out",
+        "reduce cover",
+        "stop my insurance",
+        "cancel my insurance",
+        "turn off insurance"
+      ],
+      "a": "Online, with the Changing your insurance cover form, or by calling 1800 331 685. Getting cover back later needs health evidence.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "You can also cancel your cover by calling 1800 331 685."
+        }
+      ]
+    },
+    {
+      "id": "transfer-cover",
+      "products": [
+        "super"
+      ],
+      "q": "Can cover from another fund be transferred in?",
+      "aliases": [
+        "transfer cover",
+        "bring insurance"
+      ],
+      "a": "If under 65: online or with the Transfer of insurance cover form. From 28 November 2026, IP with a shorter benefit or longer waiting period elsewhere may transfer and get the two-year, 90-day terms.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "If you are less than age 65 and have Death, TPD, or Income Protection cover with another super fund or other provider, you may be eligible to transfer this cover to UniSuper."
+        }
+      ]
+    },
+    {
+      "id": "life-events",
+      "products": [
+        "super"
+      ],
+      "q": "Can cover be increased after a life event?",
+      "aliases": [
+        "life events",
+        "marriage",
+        "baby",
+        "mortgage",
+        "salary increase cover"
+      ],
+      "a": "Under 55: yes, without health evidence, using the Life Events cover application.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "If you are under age 55, you may be eligible to apply to increase your existing Death, TPD or Income Protection cover when your life changes"
+        }
+      ]
+    },
+    {
+      "id": "fixed-cover",
+      "products": [
+        "super"
+      ],
+      "q": "Can unitised cover be changed to fixed cover?",
+      "aliases": [
+        "fixed cover",
+        "unitised",
+        "cover reduces with age"
+      ],
+      "a": "Yes, so the cover amount doesn't fall with age. Use the Accumulation 1 - Changing your default insurance cover form.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "you can apply to convert that cover to a fixed amount of cover so that your Death and/or TPD cover will not change as you age"
+        }
+      ]
+    },
+    {
+      "id": "occupation-class",
+      "products": [
+        "super",
+        "dbd"
+      ],
+      "q": "What changes to occupation classifications from 28 November 2026?",
+      "aliases": [
+        "occupation",
+        "white collar",
+        "professional",
+        "0.88",
+        "130000",
+        "rating factor"
+      ],
+      "a": "Members with cover default to White Collar (rating factor 1.00). Professional (0.88, lower premiums) needs a degree or five years as a manager, 90%+ office-based work, and income of $130,000+; apply with the Professional classification form.",
+      "detail": "Accepted before 28 November 2026: applies from that date. Otherwise from acceptance.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "Effective 28 November 2026, members with insurance will have a White Collar occupation classification unless they meet all the Professional occupation classification criteria"
+        },
+        {
+          "doc": "acc1",
+          "quote": "you earn at least $130,000 per annum excluding superannuation contributions"
+        }
+      ]
+    },
+    {
+      "id": "claims",
+      "products": [],
+      "q": "How does a member make an insurance or death claim?",
+      "aliases": [
+        "claim",
+        "uclaim",
+        "1800 825 246",
+        "tpd claim"
+      ],
+      "a": "Call 1800 825 246 (1800 UCLAIM) or write. Insurance claims can also go through the Insurer's portal from the online account.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "To make a claim, you or your beneficiaries will need to call us on 1800 825 246 (1800 UCLAIM)"
+        }
+      ]
+    },
+    {
+      "id": "insurance-calculator",
+      "products": [
+        "super"
+      ],
+      "q": "Is there a tool to estimate cover and premiums?",
+      "aliases": [
+        "insurance calculator",
+        "premium calculator"
+      ],
+      "a": "Yes: unisuper.com.au/insurance-calculator.",
+      "sources": [
+        {
+          "doc": "acc1",
+          "quote": "using the Insurance calculator available at unisuper.com.au/insurance-calculator."
+        }
+      ]
+    }
+  ]
+}

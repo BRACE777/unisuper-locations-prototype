@@ -1,0 +1,4 @@
+{
+  "note": "Victorian public holidays are worked out by rule in src/dates.js (New Year, Australia Day, Labour Day, Easter, Anzac Day, King's Birthday, Melbourne Cup, Christmas, Boxing Day, with substitute days). Two assumptions to check: Anzac Day has no substitute when it falls on a weekend, and Melbourne Cup is counted as a Melbourne business-day holiday. The Friday before the AFL Grand Final is set by the Victorian Government each year: add it here when announced, as { \"date\": \"YYYY-MM-DD\", \"name\": \"Friday before the AFL Grand Final\" }.",
+  "extra": []
+}

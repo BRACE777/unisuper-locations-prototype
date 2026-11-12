@@ -1,0 +1,656 @@
+{
+  "note": "Acronyms and member phrasing. The lookup expands a query with 'expands_to' before searching, so 'noi' finds notice of intent cards. Team-only shorthand goes in glossary.local.json (same shape, not committed).",
+  "terms": [
+    {
+      "term": "TTR",
+      "means": "Transition to retirement (Flexi Pension while still working, from preservation age)",
+      "expands_to": "transition to retirement ttr"
+    },
+    {
+      "term": "BIS",
+      "means": "Beneficiary Income Stream (Flexi Pension for a spouse from a death benefit)",
+      "expands_to": "beneficiary income stream bis death benefit spouse"
+    },
+    {
+      "term": "RP",
+      "means": "Retirement Phase Flexi Pension",
+      "expands_to": "retirement phase"
+    },
+    {
+      "term": "ABP",
+      "means": "Account-based pension (Flexi Pension is one)",
+      "expands_to": "account-based pension flexi pension"
+    },
+    {
+      "term": "DBD",
+      "means": "Defined Benefit Division",
+      "expands_to": "defined benefit division dbd"
+    },
+    {
+      "term": "DB",
+      "means": "Defined benefit",
+      "expands_to": "defined benefit dbd"
+    },
+    {
+      "term": "Acc1",
+      "means": "Accumulation 1",
+      "expands_to": "accumulation 1"
+    },
+    {
+      "term": "Acc2",
+      "means": "Accumulation 2",
+      "expands_to": "accumulation 2"
+    },
+    {
+      "term": "PA",
+      "means": "Personal Account",
+      "expands_to": "personal account"
+    },
+    {
+      "term": "SG",
+      "means": "Superannuation guarantee (compulsory employer contributions)",
+      "expands_to": "superannuation guarantee employer contributions sg"
+    },
+    {
+      "term": "CC",
+      "means": "Concessional (before-tax) contributions",
+      "expands_to": "concessional before-tax contributions"
+    },
+    {
+      "term": "NCC",
+      "means": "Non-concessional (after-tax) contributions",
+      "expands_to": "non-concessional after-tax contributions"
+    },
+    {
+      "term": "SS",
+      "means": "Salary sacrifice",
+      "expands_to": "salary sacrifice"
+    },
+    {
+      "term": "NOI",
+      "means": "Notice of intent to claim a tax deduction",
+      "expands_to": "notice of intent tax deduction"
+    },
+    {
+      "term": "S290",
+      "means": "Section 290-170 notice (the notice of intent to claim a deduction)",
+      "expands_to": "notice of intent tax deduction"
+    },
+    {
+      "term": "TFN",
+      "means": "Tax file number",
+      "expands_to": "tax file number tfn"
+    },
+    {
+      "term": "TBC",
+      "means": "Transfer balance cap",
+      "expands_to": "transfer balance cap"
+    },
+    {
+      "term": "TBA",
+      "means": "Transfer balance account (tracks amounts moved into retirement phase)",
+      "expands_to": "transfer balance account cap"
+    },
+    {
+      "term": "TSB",
+      "means": "Total super balance",
+      "expands_to": "total super balance tsb"
+    },
+    {
+      "term": "Div 293",
+      "means": "Division 293 tax: extra 15% on concessional contributions for incomes over $250,000",
+      "expands_to": "division 293 high income"
+    },
+    {
+      "term": "Div 296",
+      "means": "Division 296 tax on earnings for total super balances over $3 million",
+      "expands_to": "division 296 large balances"
+    },
+    {
+      "term": "LISTO",
+      "means": "Low income superannuation tax offset",
+      "expands_to": "low income superannuation tax offset listo"
+    },
+    {
+      "term": "FHSS",
+      "means": "First home super saver scheme",
+      "expands_to": "first home super saver fhss"
+    },
+    {
+      "term": "DASP",
+      "means": "Departing Australia superannuation payment (temporary residents)",
+      "expands_to": "departing australia temporary resident dasp"
+    },
+    {
+      "term": "PPLSC",
+      "means": "Paid parental leave superannuation contribution",
+      "expands_to": "paid parental leave"
+    },
+    {
+      "term": "CGT",
+      "means": "Capital gains tax",
+      "expands_to": "capital gains tax retirement bonus"
+    },
+    {
+      "term": "BDBN",
+      "means": "Binding death benefit nomination",
+      "expands_to": "binding death benefit nomination"
+    },
+    {
+      "term": "NLBN",
+      "means": "Non-lapsing binding nomination",
+      "expands_to": "non-lapsing binding nomination"
+    },
+    {
+      "term": "LBN",
+      "means": "Lapsing binding nomination",
+      "expands_to": "lapsing binding nomination"
+    },
+    {
+      "term": "NBN",
+      "means": "Non-binding nomination",
+      "expands_to": "non-binding nomination"
+    },
+    {
+      "term": "RB",
+      "means": "Reversionary beneficiary",
+      "expands_to": "reversionary beneficiary"
+    },
+    {
+      "term": "LPR",
+      "means": "Legal personal representative (executor or administrator)",
+      "expands_to": "legal personal representative estate"
+    },
+    {
+      "term": "TPD",
+      "means": "Total and permanent disablement cover",
+      "expands_to": "total permanent disablement tpd"
+    },
+    {
+      "term": "IP",
+      "means": "Income Protection cover",
+      "expands_to": "income protection"
+    },
+    {
+      "term": "TI",
+      "means": "Terminal illness",
+      "expands_to": "terminal illness terminal medical condition"
+    },
+    {
+      "term": "PCE",
+      "means": "Pre-existing condition exclusion",
+      "expands_to": "pre-existing condition exclusion"
+    },
+    {
+      "term": "ILBA",
+      "means": "Inactive low-balance account",
+      "expands_to": "inactive low-balance account ato"
+    },
+    {
+      "term": "PYS",
+      "means": "Protecting Your Super (cover stops after 16 months without contributions)",
+      "expands_to": "16 months inactive cover stops keep cover"
+    },
+    {
+      "term": "COR",
+      "means": "Condition of release",
+      "expands_to": "condition of release access"
+    },
+    {
+      "term": "UNP",
+      "means": "Unrestricted non-preserved benefits",
+      "expands_to": "unrestricted non-preserved"
+    },
+    {
+      "term": "RNP",
+      "means": "Restricted non-preserved benefits",
+      "expands_to": "restricted non-preserved"
+    },
+    {
+      "term": "TMD",
+      "means": "Target market determination",
+      "expands_to": "target market determination tmd"
+    },
+    {
+      "term": "PDS",
+      "means": "Product disclosure statement",
+      "expands_to": "product disclosure statement pds"
+    },
+    {
+      "term": "AFCA",
+      "means": "Australian Financial Complaints Authority",
+      "expands_to": "afca complaint"
+    },
+    {
+      "term": "ATO",
+      "means": "Australian Taxation Office",
+      "expands_to": "ato"
+    },
+    {
+      "term": "POI",
+      "means": "Proof of identity",
+      "expands_to": "proof of identity"
+    },
+    {
+      "term": "TPA",
+      "means": "Third party authority",
+      "expands_to": "third party authority"
+    },
+    {
+      "term": "MOL",
+      "means": "Member online (the member's online account)",
+      "expands_to": "online account log in"
+    },
+    {
+      "term": "SOA",
+      "means": "Statement of advice",
+      "expands_to": "statement of advice adviser fee"
+    },
+    {
+      "term": "ORR",
+      "means": "Operational risk reserve",
+      "expands_to": "operational risk reserve"
+    },
+    {
+      "term": "MySuper",
+      "means": "The default Balanced (MySuper) option",
+      "expands_to": "mysuper balanced default"
+    },
+    {
+      "term": "min",
+      "means": "Minimum annual pension payment",
+      "expands_to": "minimum annual payment drawdown"
+    },
+    {
+      "term": "max",
+      "means": "Maximum annual payment (TTR only)",
+      "expands_to": "maximum 10%"
+    },
+    {
+      "term": "drawdown",
+      "means": "Pension payments, or the order investment options are drawn from",
+      "expands_to": "drawdown income payments"
+    },
+    {
+      "term": "pro rata",
+      "means": "Proportioned for part of a year",
+      "expands_to": "pro-rata"
+    },
+    {
+      "term": "rollover",
+      "means": "Moving super between funds",
+      "expands_to": "rollover transfer combine"
+    },
+    {
+      "term": "rollin",
+      "means": "Rollover into UniSuper",
+      "expands_to": "rollover combine transfer in"
+    },
+    {
+      "term": "rollout",
+      "means": "Rollover out of UniSuper",
+      "expands_to": "rollover transfer out portability"
+    },
+    {
+      "term": "commute",
+      "means": "Convert all or part of a pension to a lump sum",
+      "expands_to": "commute commutation lump sum close pension"
+    },
+    {
+      "term": "hardship",
+      "means": "Severe financial hardship early release",
+      "expands_to": "severe financial hardship"
+    },
+    {
+      "term": "compassionate",
+      "means": "Compassionate grounds early release (ATO)",
+      "expands_to": "compassionate grounds ato"
+    },
+    {
+      "term": "beneficiary",
+      "means": "Person nominated to receive a death benefit",
+      "expands_to": "beneficiary nomination death benefit"
+    },
+    {
+      "term": "nom",
+      "means": "Nomination (beneficiary)",
+      "expands_to": "nomination beneficiary"
+    },
+    {
+      "term": "witness",
+      "means": "Paper binding nominations need two adult witnesses",
+      "expands_to": "witness binding nomination form"
+    },
+    {
+      "term": "cooling off",
+      "means": "14-day period to cancel",
+      "expands_to": "cooling-off"
+    },
+    {
+      "term": "switch",
+      "means": "Changing investment options",
+      "expands_to": "switch investment option"
+    },
+    {
+      "term": "fees",
+      "means": "Administration and investment fees",
+      "expands_to": "fee fees administration investment costs"
+    },
+    {
+      "term": "units",
+      "means": "Units of insurance cover",
+      "expands_to": "units cover"
+    },
+    {
+      "term": "preservation",
+      "means": "Preservation age and preserved benefits",
+      "expands_to": "preservation age preserved"
+    },
+    {
+      "term": "downsizer",
+      "means": "Downsizer contribution from selling a home",
+      "expands_to": "downsizer home sale"
+    },
+    {
+      "term": "spouse",
+      "means": "Spouse contributions, splitting, offset",
+      "expands_to": "spouse"
+    },
+    {
+      "term": "split",
+      "means": "Contribution splitting with a spouse",
+      "expands_to": "contribution splitting spouse"
+    },
+    {
+      "term": "carry forward",
+      "means": "Carry-forward of unused concessional cap",
+      "expands_to": "carry-forward unused concessional"
+    },
+    {
+      "term": "bring forward",
+      "means": "Bring-forward of non-concessional cap",
+      "expands_to": "bring-forward non-concessional"
+    },
+    {
+      "term": "lost super",
+      "means": "Lost or unclaimed super",
+      "expands_to": "lost member unclaimed money ato"
+    },
+    {
+      "term": "kiwisaver",
+      "means": "Transfer to New Zealand",
+      "expands_to": "kiwisaver new zealand"
+    },
+    {
+      "term": "uk pension",
+      "means": "Transfers from UK pensions",
+      "expands_to": "uk pension kiwisaver unable to accept"
+    }
+  ],
+  "phrases": [
+    {
+      "phrase": "take money out",
+      "expands_to": "withdrawal lump sum access condition of release"
+    },
+    {
+      "phrase": "get my super",
+      "expands_to": "access condition of release withdrawal"
+    },
+    {
+      "phrase": "early access",
+      "expands_to": "financial hardship compassionate grounds terminal medical condition"
+    },
+    {
+      "phrase": "change my bank",
+      "expands_to": "bank account change details pension"
+    },
+    {
+      "phrase": "change address",
+      "expands_to": "change of details"
+    },
+    {
+      "phrase": "who gets my super",
+      "expands_to": "beneficiary nomination death benefit"
+    },
+    {
+      "phrase": "when i die",
+      "expands_to": "death benefit beneficiary nomination"
+    },
+    {
+      "phrase": "how much do i have to take",
+      "expands_to": "minimum annual payment"
+    },
+    {
+      "phrase": "how much can i take",
+      "expands_to": "maximum minimum annual payment lump sum"
+    },
+    {
+      "phrase": "add money",
+      "expands_to": "contribution personal after-tax"
+    },
+    {
+      "phrase": "top up pension",
+      "expands_to": "can't add money to pension new account"
+    },
+    {
+      "phrase": "put more in",
+      "expands_to": "contribution personal"
+    },
+    {
+      "phrase": "tax deduction",
+      "expands_to": "notice of intent tax deduction"
+    },
+    {
+      "phrase": "stop insurance",
+      "expands_to": "cancel cover opt out"
+    },
+    {
+      "phrase": "cancel insurance",
+      "expands_to": "cancel cover opt out"
+    },
+    {
+      "phrase": "keep my insurance",
+      "expands_to": "keep cover 16 months inactive"
+    },
+    {
+      "phrase": "insurance stopped",
+      "expands_to": "cover stops restart 16 months insufficient funds"
+    },
+    {
+      "phrase": "move my super",
+      "expands_to": "rollover transfer portability combine"
+    },
+    {
+      "phrase": "combine",
+      "expands_to": "combine rollover consolidate"
+    },
+    {
+      "phrase": "leaving australia",
+      "expands_to": "departing australia temporary resident dasp"
+    },
+    {
+      "phrase": "first home",
+      "expands_to": "first home super saver fhss"
+    },
+    {
+      "phrase": "sold my house",
+      "expands_to": "downsizer contribution"
+    },
+    {
+      "phrase": "stopped working",
+      "expands_to": "retire condition of release"
+    },
+    {
+      "phrase": "turning 65",
+      "expands_to": "age 65 condition of release ttr convert"
+    },
+    {
+      "phrase": "turning 60",
+      "expands_to": "age 60 tax-free ceasing employment"
+    },
+    {
+      "phrase": "separation",
+      "expands_to": "family law split"
+    },
+    {
+      "phrase": "divorce",
+      "expands_to": "family law split"
+    },
+    {
+      "phrase": "when will i get paid",
+      "expands_to": "payment dates income payments"
+    },
+    {
+      "phrase": "how long",
+      "expands_to": "days timeframe processing"
+    },
+    {
+      "phrase": "complain",
+      "expands_to": "complaint afca"
+    },
+    {
+      "phrase": "centrelink",
+      "expands_to": "centrelink age pension assets income test deeming"
+    },
+    {
+      "phrase": "age pension",
+      "expands_to": "centrelink age pension"
+    },
+    {
+      "phrase": "minimum age",
+      "expands_to": "age aged eligible join open preservation 15 25 60 65"
+    },
+    {
+      "phrase": "how old",
+      "expands_to": "age aged"
+    },
+    {
+      "phrase": "what age",
+      "expands_to": "age aged"
+    },
+    {
+      "phrase": "age limit",
+      "expands_to": "age aged cease 75 70 67 eligible"
+    },
+    {
+      "phrase": "year old",
+      "expands_to": "age aged"
+    },
+    {
+      "phrase": "years old",
+      "expands_to": "age aged"
+    },
+    {
+      "phrase": "too young",
+      "expands_to": "age aged eligible 15 preservation"
+    },
+    {
+      "phrase": "too old",
+      "expands_to": "age 75 cease contribution"
+    },
+    {
+      "phrase": "who can",
+      "expands_to": "eligible eligibility"
+    },
+    {
+      "phrase": "can i join",
+      "expands_to": "join open account eligible personal account"
+    },
+    {
+      "phrase": "open an account",
+      "expands_to": "join open personal account"
+    },
+    {
+      "phrase": "open account",
+      "expands_to": "join open personal account"
+    },
+    {
+      "phrase": "sign up",
+      "expands_to": "join open personal account"
+    },
+    {
+      "phrase": "how much can i put in",
+      "expands_to": "contribution cap"
+    },
+    {
+      "phrase": "access my super",
+      "expands_to": "condition release access preservation age"
+    },
+    {
+      "phrase": "when can i",
+      "expands_to": "condition release access age"
+    },
+    {
+      "phrase": "pay out",
+      "expands_to": "lump sum withdrawal"
+    },
+    {
+      "phrase": "money out",
+      "expands_to": "withdrawal lump sum access"
+    },
+    {
+      "phrase": "how much does",
+      "expands_to": "fee cost premium"
+    },
+    {
+      "phrase": "cost",
+      "expands_to": "fee cost premium"
+    },
+    {
+      "phrase": "kids",
+      "expands_to": "child children dependant"
+    },
+    {
+      "phrase": "children",
+      "expands_to": "child dependant"
+    },
+    {
+      "phrase": "wife",
+      "expands_to": "spouse"
+    },
+    {
+      "phrase": "husband",
+      "expands_to": "spouse"
+    },
+    {
+      "phrase": "partner",
+      "expands_to": "spouse"
+    },
+    {
+      "phrase": "de facto",
+      "expands_to": "spouse"
+    },
+    {
+      "phrase": "will",
+      "expands_to": "legal personal representative estate"
+    },
+    {
+      "phrase": "deadline",
+      "expands_to": "deadline 30 june days"
+    },
+    {
+      "phrase": "due date",
+      "expands_to": "deadline days"
+    },
+    {
+      "phrase": "overseas",
+      "expands_to": "moving overseas departing australia"
+    },
+    {
+      "phrase": "lost super",
+      "expands_to": "lost member unclaimed ato"
+    },
+    {
+      "phrase": "no tfn",
+      "expands_to": "tfn tax file number"
+    },
+    {
+      "phrase": "put money into my pension",
+      "expands_to": "can't add pension new account"
+    },
+    {
+      "phrase": "add money to my pension",
+      "expands_to": "can't add pension new account"
+    }
+  ]
+}

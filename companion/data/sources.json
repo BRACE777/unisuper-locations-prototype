@@ -1,0 +1,75 @@
+{
+  "note": "UniSuper PDS documents the companion is built from (the primary source for every card). fetch-sources.mjs downloads them to companion/sources/ and records the hash and size it saw. Supplementary ATO material lives in ato-excerpts.json.",
+  "documents": [
+    {
+      "id": "flexi",
+      "title": "Flexi Pension PDS",
+      "issued": "2026-09-28",
+      "url": "https://www.unisuper.com.au/-/media/files/pds/pensions/flexi-pension/flexi-pension-pds.pdf",
+      "bytes": 1689107,
+      "sha256": "47bc292e1e69a8e2f4a57255d49f29b0d88c37b86507a3ca6f3a562f66a1d2c4",
+      "fetched": "2026-11-12",
+      "kind": "pds"
+    },
+    {
+      "id": "acc1",
+      "title": "Accumulation 1 PDS",
+      "issued": "2026-09-28",
+      "url": "https://www.unisuper.com.au/-/media/files/pds/accumulation-1/accumulation-1-pds.pdf",
+      "bytes": 886989,
+      "sha256": "d41bb06b09086a2699dc726b6d696a87476d139e5a80d914a3a88d871ff1101f",
+      "fetched": "2026-11-12",
+      "kind": "pds"
+    },
+    {
+      "id": "pa",
+      "title": "Personal Account PDS",
+      "issued": "2026-09-28",
+      "url": "https://www.unisuper.com.au/-/media/files/pds/personal-account/personal-account-pds.pdf",
+      "bytes": 902659,
+      "sha256": "a5847c541d0e48800429f096185d7fcf7038585a2aade4efec5da1498f7a1d2c",
+      "fetched": "2026-11-12",
+      "kind": "pds"
+    },
+    {
+      "id": "hsw",
+      "title": "How super works",
+      "issued": "2026-09-28",
+      "url": "https://www.unisuper.com.au/-/media/files/pds/ibr/how-super-works.pdf",
+      "bytes": 834400,
+      "sha256": "76543d28995d1e302f61eaf1a79889851fcf98f15fdc7607c8b0e662c3e829b0",
+      "fetched": "2026-11-12",
+      "kind": "pds"
+    },
+    {
+      "id": "fees",
+      "title": "Fees and costs",
+      "issued": "2026-09-28",
+      "url": "https://www.unisuper.com.au/-/media/files/pds/ibr/fees-and-costs.pdf",
+      "bytes": 811253,
+      "sha256": "b5c8f7d9e9e5cde8f7d0ec3b5f18df8ce3312205dee54b116d229823a47f9931",
+      "fetched": "2026-11-12",
+      "kind": "pds"
+    },
+    {
+      "id": "ins",
+      "title": "Insurance in your super",
+      "issued": "2026-09-28",
+      "url": "https://www.unisuper.com.au/-/media/files/pds/ibr/insurance-in-your-super.pdf",
+      "bytes": 1000489,
+      "sha256": "25dd6066462454d2b4cb02d882a10e838cbf252454419d834e5b45eccf9588e9",
+      "fetched": "2026-11-12",
+      "kind": "pds"
+    },
+    {
+      "id": "inv",
+      "title": "How we invest your money",
+      "issued": "2026-09-28",
+      "url": "https://www.unisuper.com.au/-/media/files/pds/ibr/how-we-invest-your-money.pdf",
+      "bytes": 929535,
+      "sha256": "e95b74ae024abbc20b28d5211a75112b46738048d2a7a8bee989f761e9e72d02",
+      "fetched": "2026-11-12",
+      "kind": "pds"
+    }
+  ]
+}

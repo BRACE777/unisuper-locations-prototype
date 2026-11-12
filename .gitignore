@@ -5,3 +5,9 @@ js/config.local.js
 dist/
 node_modules/
 .claude/
+
+# Call companion: downloaded PDFs and the page text extracted from them
+companion/sources/
+companion/data/pages.json
+# Local-only notes (team shorthand, internal processing times)
+companion/data/*.local.json

@@ -1,0 +1,139 @@
+{
+  "note": "Supplementary ATO material. The UniSuper PDS stays the primary source for every card; these excerpts back it up or add context. ato.gov.au refuses automated downloads, so each page was opened in an ordinary browser visit and the relevant sentences were copied here word for word. check-data.mjs verifies every 'ato' quote on a card against these excerpts. To refresh: open the page, compare, update 'excerpts', 'updated' and 'retrieved'.",
+  "retrieved": "2026-11-13",
+  "pages": [
+    {
+      "id": "ato-cc", "title": "Concessional contributions cap", "updated": "2 July 2026",
+      "url": "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/growing-and-keeping-track-of-your-super/caps-limits-and-tax-on-super-contributions/concessional-contributions-cap",
+      "excerpts": [
+        "From 1 July 2026, the concessional contributions cap is $32,500.",
+        "Contributions count towards a cap in the year your super fund receives them.",
+        "You can carry forward unused cap amounts from up to 5 previous financial years, including when you were not a member of a super fund.",
+        "Your available carry-forward contribution amounts are shown on ATO online services External Link (select Super, Information, then Carry forward concessional contributions).",
+        "You can withdraw up to 85% of your ECC from your super fund to pay your income tax liability."
+      ]
+    },
+    {
+      "id": "ato-ncc", "title": "Non-concessional contributions cap", "updated": "7 May 2026",
+      "url": "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/growing-and-keeping-track-of-your-super/caps-limits-and-tax-on-super-contributions/non-concessional-contributions-cap",
+      "excerpts": [
+        "From 1 July 2026, the non-concessional contributions cap is $130,000. This is now reviewed annually to remain in line with average weekly ordinary time earnings (AWOTE). If you contribute more, you may have to pay extra tax.",
+        "If your total super balance is equal to or more than the general transfer balance cap ($1.7 million from 2021–22, $1.9 million from 2023–24, $2 million from 2025–26, $2.1 million from 2026-27) at the end of the previous financial year, your non-concessional contributions cap is nil ($0) for the current financial year.",
+        "If you're under 75 years of age at any time in a financial year, you're eligible to use the bring-forward arrangement in that financial year, subject to the age-related and other restrictions on the types of non-concessional contributions your fund may be able to accept.",
+        "This allows you to bring forward the equivalent of 1 or 2 years of your annual cap from future years. This means you can make contributions up to 2 or 3 times the annual cap amount in the first year of the bring-forward period."
+      ]
+    },
+    {
+      "id": "ato-div293", "title": "Division 293 tax on concessional contributions by high-income earners", "updated": "24 August 2026",
+      "url": "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/growing-and-keeping-track-of-your-super/caps-limits-and-tax-on-super-contributions/division-293-tax-on-concessional-contributions-by-high-income-earners",
+      "excerpts": [
+        "Division 293 tax is an additional tax on super contributions, reducing the tax concession for individuals whose combined income and concessional contributions for Division 293 purposes is more than $250,000.",
+        "Division 293 tax is charged at 15% of the excess over the threshold or the taxable super contributions, whichever is less."
+      ]
+    },
+    {
+      "id": "ato-tbc", "title": "Transfer balance cap", "updated": "27 April 2026",
+      "url": "https://www.ato.gov.au/tax-rates-and-codes/key-superannuation-rates-and-thresholds/transfer-balance-cap",
+      "excerpts": [
+        "The transfer balance cap applies from 1 July 2017. It is a limit on the total amount of superannuation that can be transferred into the retirement phase.",
+        "You can make transfers into the retirement phase as long as you remain below the transfer balance cap."
+      ]
+    },
+    {
+      "id": "ato-payments", "title": "Payments from super", "updated": "16 September 2026",
+      "url": "https://www.ato.gov.au/tax-rates-and-codes/key-superannuation-rates-and-thresholds/payments-from-super",
+      "excerpts": [
+        "A minimum amount must be paid each year from pensions or annuities that started on or after 1 July 2007.",
+        "This reduction has not been extended for the 2023–24 income year and onwards.",
+        "Superannuation and annuity providers calculate the minimum annual payment required as at 1 July each year, based on the account balance of the member or annuitant.",
+        "As the pension commenced on 1 January 2020, the required minimum amount is calculated proportionately from the commencement day to the end of the financial year:",
+        "From 1 July 2026, the low rate cap is $260,000."
+      ]
+    },
+    {
+      "id": "ato-access", "title": "When you can withdraw your super", "updated": "10 July 2026",
+      "url": "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/withdrawing-and-using-your-super/super-withdrawal-options",
+      "excerpts": [
+        "You turn 65 years old, even if you're still working.",
+        "You reach your preservation age and choose to retire.",
+        "You reach your preservation age, continue working, and start a transition to retirement income stream.",
+        "Your preservation age is the age at which you can access your super if you're either retired or you have started a transition to retirement income stream.",
+        "Your preservation age depends on when you were born, as shown in this table.",
+        "Your preservation age is not the same as your pension age. Check with Services Australia External Link for the rules about accessing an age pension."
+      ]
+    },
+    {
+      "id": "ato-cocontrib", "title": "Super co-contribution", "updated": "2 August 2023",
+      "url": "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/growing-and-keeping-track-of-your-super/how-to-save-more-in-your-super/government-super-contributions/super-co-contribution",
+      "excerpts": [
+        "If you're a low or middle-income earner and make personal non-concessional (after-tax) contributions to your super fund, the government may also make a co-contribution up to a maximum of $500.",
+        "be less than 71 years old at the end of the financial year",
+        "The minimum co-contribution payment is $20 and the maximum is $500. Payment amounts are rounded up to the nearest multiple of 5 cents."
+      ]
+    },
+    {
+      "id": "ato-listo", "title": "Low income super tax offset", "updated": "2 August 2023",
+      "url": "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/growing-and-keeping-track-of-your-super/how-to-save-more-in-your-super/government-super-contributions/low-income-super-tax-offset",
+      "excerpts": [
+        "If you earn up to $37,000 a year, you may be eligible to receive a low income super tax offset (LISTO) payment of up to $500.",
+        "The maximum payment you can receive for a financial year is $500 and the minimum is $10 – but if you're eligible for less than $10, we will round this up to $10."
+      ]
+    },
+    {
+      "id": "ato-offsets", "title": "Superannuation-related tax offsets", "updated": "8 June 2026",
+      "url": "https://www.ato.gov.au/individuals-and-families/income-deductions-offsets-and-records/tax-offsets/superannuation-related-tax-offsets",
+      "excerpts": [
+        "You may be able to claim a tax offset if you make an eligible super contribution on behalf of your spouse (married or de facto). They need to earn under $40,000 or not work for the income year.",
+        "The tax offset amount reduces when your spouse's income is greater than $37,000. It phases out when your spouse’s income reaches $40,000."
+      ]
+    },
+    {
+      "id": "ato-split", "title": "Superannuation contributions splitting", "updated": "5 August 2019",
+      "url": "https://www.ato.gov.au/forms-and-instructions/superannuation-contributions-splitting",
+      "excerpts": [
+        "Note: You can only apply once to split contributions made to a particular super fund in a financial year.",
+        "You can ask your super fund to transfer to your spouse, up to 85% of a financial year's taxed splittable contributions.",
+        "aged between their preservation age and 65 years, and not retired."
+      ]
+    },
+    {
+      "id": "ato-downsizer", "title": "Downsizer super contributions", "updated": "20 January 2026",
+      "url": "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/growing-and-keeping-track-of-your-super/how-to-save-more-in-your-super/downsizer-super-contributions",
+      "excerpts": [
+        "A downsizer contribution does not count towards contributions caps (concessional or non-concessional).",
+        "You contribute within 90 days of receiving the home sale proceeds (usually at settlement) unless you apply for, and we grant you an extension of time.",
+        "You can contribute up to $300,000 per eligible person. For couples, each eligible spouse can contribute up to $300,000. The total downsizer contributions made cannot exceed the total proceeds from the home sale."
+      ]
+    },
+    {
+      "id": "ato-early", "title": "Early access to super", "updated": "",
+      "url": "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/withdrawing-and-using-your-super/early-access-to-super",
+      "excerpts": [
+        "Your super is for retirement, but you may be able to access it earlier on compassionate and other hardship grounds.",
+        "How to access your super early if you have a terminal medical condition.",
+        "When you can access super early due to severe financial hardship and how to apply."
+      ]
+    },
+    {
+      "id": "ato-compassionate", "title": "Access on compassionate grounds", "updated": "",
+      "url": "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/withdrawing-and-using-your-super/early-access-to-super/access-on-compassionate-grounds",
+      "excerpts": [
+        "Eligibility criteria, required evidence and what to do before applying to access super on compassionate grounds."
+      ]
+    },
+    {
+      "id": "ato-fhss", "title": "First home super saver scheme", "updated": "",
+      "url": "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/withdrawing-and-using-your-super/early-access-to-super/first-home-super-saver-scheme",
+      "excerpts": [
+        "How much you can access, the maximum release amounts and when you need to request a determination."
+      ]
+    },
+    {
+      "id": "ato-temp", "title": "Temporary residents and superannuation", "updated": "",
+      "url": "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/temporary-residents-and-superannuation",
+      "excerpts": [
+        "How to deal with superannuation if you are a temporary visa holder."
+      ]
+    }
+  ]
+}

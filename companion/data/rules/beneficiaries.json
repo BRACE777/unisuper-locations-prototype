@@ -1,0 +1,404 @@
+{
+  "topic": "Beneficiaries",
+  "cards": [
+    {
+      "id": "nom-types",
+      "products": [],
+      "q": "What kinds of beneficiary nomination are there?",
+      "aliases": [
+        "nomination types",
+        "who gets my super",
+        "beneficiary options"
+      ],
+      "a": "Super: binding (lapsing or non-lapsing) or non-binding. Flexi Pension also has reversionary (not for BIS). With no nomination, the Trustee decides.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "Binding nomination (non-lapsing or lapsing), or"
+        }
+      ],
+      "see": [
+        "bdbn-types",
+        "nonbinding",
+        "reversionary-what"
+      ]
+    },
+    {
+      "id": "pension-not-estate",
+      "products": [
+        "rp",
+        "ttr",
+        "bis"
+      ],
+      "q": "Does a pension balance go to the member's estate automatically?",
+      "aliases": [
+        "estate pension",
+        "will super"
+      ],
+      "a": "No. Super and pensions don't automatically form part of the estate, so a nomination matters.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "Your Flexi Pension account doesn't automatically form part of your estate"
+        }
+      ]
+    },
+    {
+      "id": "reversionary-what",
+      "products": [
+        "rp",
+        "ttr"
+      ],
+      "q": "What is a reversionary beneficiary?",
+      "aliases": [
+        "reversionary",
+        "rb",
+        "pension continues after death"
+      ],
+      "a": "Someone whose income continues from the pension after the member dies, instead of a lump sum being paid. It overrides any other nomination on that pension.",
+      "detail": "Can't be split with other dependants. Not available for BIS. Can be nominated in the pension application or with the Reversionary beneficiary form.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "A reversionary beneficiary nomination will override any other nomination you've made on your Flexi Pension account."
+        },
+        {
+          "doc": "flexi",
+          "quote": "Income payments can't be split between your reversionary beneficiary and other dependants."
+        }
+      ],
+      "see": [
+        "reversionary-who"
+      ]
+    },
+    {
+      "id": "reversionary-who",
+      "products": [
+        "rp",
+        "ttr"
+      ],
+      "q": "Who can be a reversionary beneficiary?",
+      "aliases": [
+        "reversionary eligible",
+        "reversionary child"
+      ],
+      "a": "A spouse, a child, a financial dependant at death, or an interdependent (at nomination and at death). Children 18+ only if 18 to 24 and financially dependent, or disabled.",
+      "detail": "A child receives income until 25 (then a lump sum), unless disabled.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "between age 18 and 24 and financially dependent on you immediately before your death, or"
+        },
+        {
+          "doc": "flexi",
+          "quote": "they'll continue to receive the income until age 25"
+        }
+      ]
+    },
+    {
+      "id": "reversionary-centrelink",
+      "products": [
+        "rp",
+        "ttr"
+      ],
+      "q": "Can adding or removing a reversionary beneficiary affect Centrelink?",
+      "aliases": [
+        "reversionary centrelink"
+      ],
+      "a": "It can, for example the assessable income for the income test. Suggest financial advice before changing it.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "updating or removing a reversionary beneficiary may affect your assessable income payments for the income test."
+        }
+      ]
+    },
+    {
+      "id": "bdbn-types",
+      "products": [],
+      "q": "What's the difference between lapsing and non-lapsing binding nominations?",
+      "aliases": [
+        "lapsing",
+        "non-lapsing",
+        "bdbn",
+        "binding nomination expire",
+        "3 years"
+      ],
+      "a": "Lapsing: expires three years after it was signed, last confirmed or amended. Non-lapsing: lasts until changed or revoked. A paper form with no choice ticked defaults to lapsing.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "A valid binding death benefit nomination (lapsing) remains in effect for three years from the date it was first signed, last amended or confirmed."
+        },
+        {
+          "doc": "hsw",
+          "quote": "If you don't make a choice when you complete your binding death benefit nomination paper form, your nomination will default to lapsing."
+        }
+      ],
+      "see": [
+        "bdbn-valid",
+        "bdbn-how"
+      ]
+    },
+    {
+      "id": "bdbn-how",
+      "products": [],
+      "q": "How is a binding nomination made?",
+      "aliases": [
+        "make binding nomination",
+        "binding online",
+        "binding form"
+      ],
+      "a": "Non-lapsing: online or on the paper form. Lapsing: paper form only, with two witnesses. It takes effect only once received and accepted.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Lapsing Binding death benefit nomination requests will need to be completed via the Binding death benefit nomination form"
+        },
+        {
+          "doc": "hsw",
+          "quote": "A binding death benefit nomination doesn't take effect until it has been received and accepted by the Trustee."
+        }
+      ]
+    },
+    {
+      "id": "bdbn-valid",
+      "products": [],
+      "q": "What makes a binding nomination valid?",
+      "aliases": [
+        "binding valid",
+        "witness",
+        "100%",
+        "power of attorney nomination"
+      ],
+      "a": "Only dependants or the legal personal representative; 100% allocated exactly; paper forms signed and dated by the member (not a power of attorney) in front of two witnesses aged 18+ who aren't beneficiaries, with their declaration.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "100% of your benefit must be allocated (the entire nomination will be invalid if the allocation doesn't equal exactly 100%)"
+        },
+        {
+          "doc": "hsw",
+          "quote": "must be signed and dated by you (not a power of attorney) in the presence of two witnesses, both of whom are over the age of 18 and not nominated to receive the benefit"
+        }
+      ],
+      "see": [
+        "bdbn-invalid"
+      ]
+    },
+    {
+      "id": "bdbn-invalid",
+      "products": [],
+      "q": "What happens if a binding nomination is invalid or expires?",
+      "aliases": [
+        "expired nomination",
+        "invalid nomination"
+      ],
+      "a": "It no longer binds the Trustee and is treated as non-binding.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "If a nominated person is not a beneficiary at your date of death, or if your binding nomination is invalid, the Trustee will treat your nomination as a non-binding death benefit nomination."
+        }
+      ]
+    },
+    {
+      "id": "bdbn-reconfirm",
+      "products": [],
+      "q": "How is a lapsing nomination renewed?",
+      "aliases": [
+        "renew nomination",
+        "confirm nomination"
+      ],
+      "a": "By a written notice signed and dated by the member before it expires. It's the member's responsibility.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "You can do this by providing us with a written notice, signed and dated by you, to that effect."
+        }
+      ]
+    },
+    {
+      "id": "bdbn-multi-account",
+      "products": [],
+      "q": "Does one binding nomination cover all of a member's accounts?",
+      "aliases": [
+        "nomination multiple accounts",
+        "pension and super nomination"
+      ],
+      "a": "It can: one nomination for all UniSuper accounts, or separate nominations for each.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "or submit a single valid binding death benefit nomination to apply to all your UniSuper accounts"
+        }
+      ]
+    },
+    {
+      "id": "bdbn-dbd-1990",
+      "products": [
+        "dbd"
+      ],
+      "q": "Are there special binding nomination issues for DBD members?",
+      "aliases": [
+        "dbd nomination 1990"
+      ],
+      "a": "Yes, for DBD members who joined before 1 January 1990. See the Binding death benefit nomination fact sheet.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "Binding death benefit nominations may have implications for DBD members who joined before 1 January 1990"
+        }
+      ]
+    },
+    {
+      "id": "nonbinding",
+      "products": [],
+      "q": "What is a non-binding nomination?",
+      "aliases": [
+        "non-binding",
+        "nbn",
+        "preferred beneficiary"
+      ],
+      "a": "A preference the Trustee considers but isn't bound by. It doesn't expire. Made or changed with the Change of details form.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "A non-binding death benefit nomination will remain in place until it's amended or replaced, or until you make a valid binding death benefit nomination."
+        },
+        {
+          "doc": "hsw",
+          "quote": "To make or update a non-binding death benefit nomination, you must complete the Change of details form available at unisuper.com.au/forms."
+        }
+      ]
+    },
+    {
+      "id": "no-nomination",
+      "products": [],
+      "q": "What happens with no nomination?",
+      "aliases": [
+        "no beneficiary",
+        "trustee decides"
+      ],
+      "a": "The Trustee pays dependants and/or the legal personal representative in proportions it decides. With neither, it pays whoever superannuation law allows.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "If you haven't nominated any beneficiaries, when you die the Trustee must pay the remaining balance of your Flexi Pension (if any) to one or more of your dependants and/or legal personal representatives in proportions determined by the Trustee."
+        }
+      ]
+    },
+    {
+      "id": "dependant-super",
+      "products": [],
+      "q": "Who counts as a dependant for super?",
+      "aliases": [
+        "dependant definition",
+        "who can i nominate",
+        "kids beneficiary",
+        "children beneficiary",
+        "can i leave my super to my kids"
+      ],
+      "a": "A spouse (including de facto, any sex), children of any age, an interdependent at death, and anyone the Trustee considers was financially dependent at death.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "your children (regardless of age)"
+        }
+      ],
+      "see": [
+        "dependant-tax",
+        "interdependency"
+      ]
+    },
+    {
+      "id": "dependant-tax",
+      "products": [],
+      "q": "Who counts as a dependant for tax on a death benefit?",
+      "aliases": [
+        "tax dependant",
+        "death benefit tax dependant"
+      ],
+      "a": "A spouse or former spouse, children under 18, an interdependent, or a financial dependant at the date of death. Adult children are usually not tax dependants.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "your child(ren) under the age of 18"
+        }
+      ],
+      "see": [
+        "death-tax-lump"
+      ]
+    },
+    {
+      "id": "interdependency",
+      "products": [],
+      "q": "What is an interdependency relationship?",
+      "aliases": [
+        "interdependent",
+        "statutory declaration"
+      ],
+      "a": "Two people living together in a close relationship where one or both provide financial and domestic support and care. A statutory declaration is needed before payment, on the Applying for a death benefit form.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "Before any benefit can be paid to a person with whom you had an interdependency relationship, the Trustee requires a statutory declaration"
+        }
+      ]
+    },
+    {
+      "id": "lpr",
+      "products": [],
+      "q": "What is the legal personal representative?",
+      "aliases": [
+        "lpr",
+        "estate",
+        "executor"
+      ],
+      "a": "The executor of the will, or the estate administrator. A benefit paid to them becomes part of the estate.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Your legal personal representative is the executor of your Will or the administrator of your estate if you die without a Will."
+        }
+      ]
+    },
+    {
+      "id": "death-tax-lump",
+      "products": [],
+      "q": "How are lump sum death benefits taxed?",
+      "aliases": [
+        "death benefit tax",
+        "17%",
+        "non dependant tax"
+      ],
+      "a": "Tax-free to a tax dependant. To a non-dependant: up to 17% on the taxed element and 32% on any untaxed element; the tax-free component is untaxed.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "up to 17% tax is withheld on any taxed element, and 32% on any untaxed element"
+        }
+      ]
+    },
+    {
+      "id": "death-tax-pension",
+      "products": [
+        "rp",
+        "ttr",
+        "bis"
+      ],
+      "q": "How is a death benefit pension taxed?",
+      "aliases": [
+        "reversionary tax",
+        "bis tax"
+      ],
+      "a": "Tax-free if the deceased was 60+ at death or the beneficiary is 60+ (and a tax dependant). If both are under 60, the taxable component is taxed at marginal rates with a 15% offset.",
+      "sources": [
+        {
+          "doc": "flexi",
+          "quote": "If the deceased was aged 60 or over at the date of death, and/or the beneficiary is age 60 or over when receiving the retirement income payments"
+        }
+      ]
+    }
+  ]
+}

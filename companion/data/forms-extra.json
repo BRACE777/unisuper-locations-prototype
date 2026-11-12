@@ -1,0 +1,317 @@
+{
+  "note": "Hand-written directions merged into forms.json. 'account_path' is the route inside the member's online account: verified=true only where a PDS states it word for word (quoted in 'account_source'); otherwise it's read from the link address and needs a consultant to confirm the menu labels. 'manual' lists ways to do things that aren't on the forms page.",
+  "forms": {
+    "super-withdraw-your-super-on-compassionate-grounds": {
+      "keywords": "compassionate grounds early release medical treatment mortgage ato",
+      "requirements": ["Compassionate grounds are approved by the ATO, not UniSuper: the member applies to the ATO first."],
+      "pds": { "doc": "hsw", "quote": "you must apply directly to the ATO" }
+    },
+    "super-withdraw-your-super-due-to-financial-hardship": {
+      "keywords": "hardship severe financial hardship early access centrelink income support",
+      "requirements": ["Must be receiving eligible Commonwealth income support.", "Applied for through the Trustee (UniSuper)."],
+      "account_path": { "path": "Super withdrawal", "verified": false },
+      "pds": { "doc": "hsw", "quote": "You must be receiving eligible government income support benefits to qualify." }
+    },
+    "super-withdraw-your-super": {
+      "keywords": "withdraw lump sum take money out cash retire condition of release",
+      "account_path": { "path": "Super withdrawal, eligibility check", "verified": false },
+      "requirements": ["A condition of release must be met.", "Proof of identity may be requested."]
+    },
+    "super-request-family-law-information": {
+      "keywords": "family law separation divorce split information request"
+    },
+    "super-change-your-personal-details": {
+      "keywords": "change details address name email phone tfn non-binding nomination",
+      "account_path": { "path": "Personal details", "verified": true },
+      "account_source": { "doc": "acc1", "quote": "You can provide your TFN within the `Personal details' section of your online account." },
+      "requirements": ["Also used to make or update a non-binding nomination for super members."],
+      "pds": { "doc": "hsw", "quote": "To make or update a non-binding death benefit nomination, you must complete the Change of details form available at unisuper.com.au/forms." }
+    },
+    "super-third-party-authority-form": {
+      "keywords": "third party authority tpa adviser accountant family speak on behalf",
+      "account_path": { "path": "Manage account, Third party authority", "verified": false }
+    },
+    "super-nominate-a-binding-beneficiary": {
+      "keywords": "binding nomination bdbn beneficiary death benefit lapsing non-lapsing witness",
+      "account_path": { "path": "Beneficiaries (non-lapsing only)", "verified": false },
+      "requirements": [
+        "Online: non-lapsing nominations only.",
+        "Lapsing nominations: paper form only, signed in front of two witnesses aged 18 or over who aren't beneficiaries.",
+        "Allocations must add up to exactly 100%.",
+        "Can't be signed by a power of attorney."
+      ],
+      "pds": { "doc": "hsw", "quote": "Lapsing Binding death benefit nomination requests will need to be completed via the Binding death benefit nomination form" }
+    },
+    "super-make-an-after-tax-voluntary-contribution-by-cheque": {
+      "keywords": "cheque after-tax personal contribution non-concessional voluntary",
+      "requirements": ["A TFN is needed before personal contributions can be accepted."],
+      "pds": { "doc": "hsw", "quote": "We need your TFN before we can accept your government co-contribution or personal contribution." }
+    },
+    "super-change-default-member-contributions": {
+      "keywords": "member contributions default rate dbd accumulation 2 change"
+    },
+    "super-notice-of-intent-to-claim-a-tax-deduction": {
+      "keywords": "noi notice of intent tax deduction personal contribution claim vary s290",
+      "account_path": { "path": "Manage account, Notice of intent to claim a tax deduction", "verified": true },
+      "account_source": { "doc": "hsw", "quote": "To claim a tax deduction, log in to your account, go to the `Manage account' section and complete a `Notice of intent to claim a tax deduction for personal super contributions'." },
+      "requirements": [
+        "Must be acknowledged before the tax return is lodged, or by the end of the next financial year, whichever is first.",
+        "Must be lodged before the contributions are rolled over, withdrawn, split or used to start a pension."
+      ]
+    },
+    "super-contribute-to-your-spouse-s-super": {
+      "keywords": "spouse contribution tax offset partner"
+    },
+    "super-split-contributions-with-your-spouse": {
+      "keywords": "contribution splitting spouse split concessional",
+      "requirements": [
+        "By 30 June of the year after the contributions.",
+        "Spouse must be under 60, or 60 to 64 and not retired.",
+        "Lodge any notice of intent first.",
+        "May be refused if the balance would fall below $6,000."
+      ]
+    },
+    "super-opt-into-the-defined-benefit-division": {
+      "keywords": "dbd opt in defined benefit"
+    },
+    "super-transfer-from-dbd-to-accumulation-2": {
+      "keywords": "dbd accumulation 2 transfer defined benefit"
+    },
+    "super-keep-your-low-balance-account-active": {
+      "keywords": "inactive low balance 16 months ato keep account active"
+    },
+    "super-nominate-unisuper-as-your-super-fund": {
+      "keywords": "choice of fund nominate employer sg stapled",
+      "account_path": { "path": "Profile, Choice of fund (pre-filled form to give the employer)", "verified": false },
+      "pds": { "doc": "hsw", "quote": "Existing UniSuper members can also download a pre-filled fund nomination form via their online account or mobile app" }
+    },
+    "super-download-a-trustee-compliance-letter": {
+      "keywords": "compliance letter employer complying fund"
+    },
+    "super-manage-your-investment-choices": {
+      "keywords": "switch investment option future contributions strategy rollover strategy",
+      "account_path": { "path": "Investment details, Switch investments", "verified": false },
+      "requirements": ["Online switches before 2pm on a Melbourne business day are processed two business days later."]
+    },
+    "super-combine-your-super": {
+      "keywords": "combine rollover consolidate transfer in other fund",
+      "say": "unisuper.com.au/combine",
+      "account_path": { "path": "Manage account, Combine my super tool", "verified": true },
+      "account_source": { "doc": "acc1", "quote": "by using the `Combine my super' tool available through your online account" },
+      "requirements": ["Check the effect on insurance in the other fund before combining.", "UniSuper can't accept transfers from UK pensions or KiwiSaver accounts."]
+    },
+    "super-transfer-your-super-to-kiwisaver": {
+      "keywords": "kiwisaver new zealand moving trans-tasman"
+    },
+    "super-roll-over-to-another-fund": {
+      "keywords": "rollover transfer out portability leave another fund",
+      "requirements": ["Up to eight transfers in any 12 months.", "A partial transfer must leave at least $6,000."]
+    },
+    "pension-withdraw-your-flexi-pension": {
+      "keywords": "pension lump sum withdrawal commute flexi",
+      "account_path": { "path": "Pension, Flexi withdrawal", "verified": false },
+      "requirements": ["Minimum $2,000.", "TTR pensions: only in limited circumstances.", "Usually paid within five business days."]
+    },
+    "pension-change-your-personal-details-or-pension-payments": {
+      "keywords": "pension payment amount frequency change details non-binding",
+      "account_path": { "path": "Pension payments tab, Your payments", "verified": true },
+      "account_source": { "doc": "flexi", "quote": "Log in to your account and select the `Your payments' option from the `pension payments' tab menu." }
+    },
+    "pension-change-your-bank-account-details": {
+      "keywords": "bank account pension change bsb",
+      "account_path": { "path": "Pension payments tab, Your payments", "verified": true },
+      "account_source": { "doc": "flexi", "quote": "You can change your bank account, income amount, payment frequency and other personal details online." }
+    },
+    "pension-nominate-a-reversionary-beneficiary": {
+      "keywords": "reversionary beneficiary pension continue spouse",
+      "requirements": ["Not available for BIS pensions.", "Overrides other nominations on that pension.", "May affect Centrelink assessment: suggest advice."]
+    },
+    "pension-manage-your-investment-choices": {
+      "keywords": "pension switch investment drawdown order",
+      "account_path": { "path": "Investment details, Switch investments", "verified": false }
+    },
+    "pension-rollover-your-flexi-pension": {
+      "keywords": "pension rollover transfer out another fund"
+    },
+    "pension-transfer-your-flexi-pension-to-a-super-account": {
+      "keywords": "close pension transfer back to super accumulation",
+      "pds": { "doc": "flexi", "quote": "make a Transfer your Flexi Pension to a super account application request available on our website or by calling us" }
+    },
+    "insurance-apply-for-cover": {
+      "keywords": "apply insurance additional cover health evidence",
+      "account_path": { "path": "Insurance", "verified": false },
+      "requirements": ["Requires health evidence.", "Can be done by phone: a consultant can call the member."]
+    },
+    "insurance-accumulation-1-changing-your-default-insurance-cover": {
+      "keywords": "opt out default cover opt in early income protection 180 days convert fixed",
+      "requirements": ["Used to opt out, start default cover early, apply for Income Protection, or convert unitised cover to fixed."]
+    },
+    "insurance-top-up-your-cover": {
+      "keywords": "top-up additional default cover 10 units"
+    },
+    "insurance-change-your-insurance-cover": {
+      "keywords": "change reduce cancel cover",
+      "account_path": { "path": "Insurance, Your Insurance", "verified": true },
+      "account_source": { "doc": "pa", "quote": "selecting Your Insurance under the Insurance tab" },
+      "requirements": ["Cover can also be cancelled by phone on 1800 331 685."]
+    },
+    "insurance-convert-between-fixed-and-unitised-cover": {
+      "keywords": "fixed cover unitised convert"
+    },
+    "insurance-apply-for-the-new-professional-classification": {
+      "keywords": "professional occupation classification rating factor 0.88",
+      "requirements": ["Degree or five years as a manager, 90% office-based, and income of at least $130,000."]
+    },
+    "insurance-update-your-current-occupation-classification-pa-members-only": {
+      "keywords": "occupation classification update personal account"
+    },
+    "insurance-elect-to-keep-your-insurance-cover": {
+      "keywords": "keep cover inactive 16 months protecting your super",
+      "account_path": { "path": "Insurance, Keep my insurance", "verified": false }
+    },
+    "insurance-reinstate-your-cover": {
+      "keywords": "reinstate restart cover stopped 90 days",
+      "requirements": ["Apply within 90 days of cover stopping."]
+    },
+    "insurance-increase-your-cover-after-a-life-event": {
+      "keywords": "life events marriage child mortgage salary increase",
+      "requirements": ["Under age 55."]
+    },
+    "insurance-transfer-your-cover": {
+      "keywords": "transfer cover from another fund",
+      "account_path": { "path": "Insurance", "verified": false },
+      "requirements": ["Under age 65."]
+    }
+  },
+  "manual": [
+    {
+      "id": "pension-apply-retirement-ttr",
+      "title": "Start a Retirement Phase or TTR Flexi Pension",
+      "group": "Pension",
+      "site_tab": null,
+      "topics": ["Start a pension"],
+      "summary": "Paper application for Retirement Phase and TTR. Existing Accumulation 1, Accumulation 2 and Personal Account members over 60 can apply for Retirement Phase online instead.",
+      "pdf": "https://www.unisuper.com.au/-/media/files/pds/pensions/flexi-pension/flexi_pension_application_retirement_and_ttr.pdf",
+      "pdf_name": "Retirement Phase and TTR Flexi Pension application",
+      "online": "https://memberonline.unisuper.com.au",
+      "online_label": "Log in and follow the prompts",
+      "say": "unisuper.com.au/pds",
+      "where": "On the Product Disclosure Statements page, under Flexi Pension, not on the forms page.",
+      "keywords": "start pension apply flexi retirement ttr application open",
+      "requirements": ["Minimum $25,000.", "Under 60: an ATO TFN declaration.", "Lodge any notice of intent first.", "Online only for Retirement Phase, members over 60."],
+      "pds": { "doc": "flexi", "quote": "Only available for UniSuper Accumulation 1, Accumulation 2 and Personal Account members over age 60." }
+    },
+    {
+      "id": "pension-apply-bis",
+      "title": "Start a Beneficiary Income Stream (BIS) Flexi Pension",
+      "group": "Pension",
+      "site_tab": null,
+      "topics": ["Start a pension"],
+      "summary": "For a spouse receiving a super death benefit. Lodge the death benefit claim first, then this application.",
+      "pdf": "https://www.unisuper.com.au/-/media/files/pds/pensions/flexi-pension/bis_flexi_pension_application.pdf",
+      "pdf_name": "BIS Flexi Pension application",
+      "say": "unisuper.com.au/pds",
+      "where": "On the Product Disclosure Statements page, under Flexi Pension.",
+      "keywords": "bis beneficiary income stream spouse death benefit pension",
+      "pds": { "doc": "flexi", "quote": "You can only start a BIS Flexi Pension if you're entitled to receive a super death benefit and you're the spouse of the deceased." }
+    },
+    {
+      "id": "manual-personal-account-join",
+      "title": "Open a Personal Account",
+      "group": "Super",
+      "site_tab": null,
+      "topics": ["Join"],
+      "summary": "Online application. Must be 15 or over, live in Australia and have a personal email address.",
+      "online": "https://www.unisuper.com.au/join",
+      "online_label": "Join online",
+      "say": "unisuper.com.au/join",
+      "keywords": "join open new account personal account",
+      "pds": { "doc": "hsw", "quote": "Complete an application online at unisuper.com.au/join" }
+    },
+    {
+      "id": "manual-death-benefit-claim",
+      "title": "Apply for a death benefit",
+      "group": "Claims",
+      "site_tab": null,
+      "topics": ["Claims"],
+      "summary": "The Applying for a death benefit form is sent on request. It's also where an interdependency statutory declaration can be made.",
+      "phone": "1800 331 685",
+      "say": "unisuper.com.au/claims",
+      "keywords": "death claim deceased passed away estate beneficiary statutory declaration interdependency",
+      "pds": { "doc": "flexi", "quote": "This statutory declaration can be made on the Applying for a death benefit form, which is available by calling us." }
+    },
+    {
+      "id": "manual-insurance-claim",
+      "title": "Make an insurance or inbuilt benefit claim",
+      "group": "Claims",
+      "site_tab": null,
+      "topics": ["Claims"],
+      "summary": "Call the claims line. Insurance claims can also be lodged on the Insurer's portal through the online account.",
+      "phone": "1800 825 246 (1800 UCLAIM)",
+      "say": "unisuper.com.au/claims",
+      "keywords": "claim tpd income protection terminal illness insurer metlife",
+      "pds": { "doc": "hsw", "quote": "To make a claim, you or your beneficiaries will need to call us on 1800 825 246 (1800 UCLAIM)" }
+    },
+    {
+      "id": "manual-complaint",
+      "title": "Make a complaint",
+      "group": "Account",
+      "site_tab": null,
+      "topics": ["Complaints"],
+      "summary": "Online form or chat, phone, or mail to the Complaints Officer. AFCA if unresolved: 1800 931 678.",
+      "online": "https://www.unisuper.com.au/complaints",
+      "online_label": "Complaints form or chat",
+      "phone": "1800 331 685",
+      "say": "unisuper.com.au/complaints",
+      "keywords": "complaint unhappy afca dispute",
+      "pds": { "doc": "flexi", "quote": "Online form or chat service accessible at unisuper.com.au/ complaints." }
+    },
+    {
+      "id": "ato-tfn-declaration",
+      "title": "Tax file number declaration (ATO form)",
+      "group": "ATO",
+      "site_tab": null,
+      "topics": ["ATO forms"],
+      "summary": "Needed for each Flexi Pension started by a member under 60.",
+      "say": "ato.gov.au",
+      "where": "From the ATO website, not UniSuper.",
+      "keywords": "tfn declaration pension under 60 ato",
+      "pds": { "doc": "flexi", "quote": "If you're under age 60, you'll need to complete an ATO Tax file number declaration for each Flexi Pension you start." }
+    },
+    {
+      "id": "ato-downsizer",
+      "title": "Downsizer contribution into super (ATO form)",
+      "group": "ATO",
+      "site_tab": null,
+      "topics": ["ATO forms"],
+      "summary": "Send the ATO form to UniSuper with the contribution, generally within 90 days of settlement.",
+      "say": "ato.gov.au, search 'downsizer contribution'",
+      "where": "From the ATO website, then sent to UniSuper.",
+      "keywords": "downsizer sold home house ato form",
+      "pds": { "doc": "flexi", "quote": "visit ato.gov.au and search `downsizer contribution'." }
+    },
+    {
+      "id": "ato-covid-recontribution",
+      "title": "COVID-19 re-contribution (ATO form)",
+      "group": "ATO",
+      "site_tab": null,
+      "topics": ["ATO forms"],
+      "summary": "Submit to UniSuper before or with the re-contribution. Available until 30 June 2030.",
+      "say": "ato.gov.au",
+      "where": "From the ATO website, then sent to UniSuper.",
+      "keywords": "covid re-contribution early release put back",
+      "pds": { "doc": "hsw", "quote": "You will also need to submit the relevant form available at ato.gov.au to the fund before or at the time you make the re-contribution." }
+    },
+    {
+      "id": "ato-fhss",
+      "title": "First home super saver determination (ATO)",
+      "group": "ATO",
+      "site_tab": null,
+      "topics": ["ATO forms"],
+      "summary": "The member requests a determination and release from the ATO, not UniSuper.",
+      "say": "ato.gov.au",
+      "keywords": "first home super saver fhss release determination",
+      "pds": { "doc": "hsw", "quote": "To withdraw your voluntary super contributions under the FHSS scheme, you need to request a FHSS determination from the ATO." }
+    }
+  ]
+}

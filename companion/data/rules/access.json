@@ -1,0 +1,285 @@
+{
+  "topic": "Access and tax",
+  "cards": [
+    {
+      "id": "preservation-age",
+      "products": [],
+      "q": "What is the member's preservation age?",
+      "aliases": [
+        "preservation age",
+        "when can i access",
+        "55 56 57 58 59 60",
+        "minimum age to access super",
+        "what age can i access my super",
+        "when can i access my super",
+        "access age"
+      ],
+      "age_table": "preservation_age",
+      "a": "Born before 1 July 1960: 55. 1 Jul 1960 to 30 Jun 1961: 56. 1961-62: 57. 1962-63: 58. 1963-64: 59. 1 July 1964 or later: 60.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "1 July 1964 or after PRESERVATION AGE 55 56 57 58 59 60",
+          "label": "Table: \"Your date of birth\" against \"Preservation age\""
+        }
+      ],
+      "see": [
+        "conditions-of-release"
+      ],
+      "ato": [
+        {
+          "doc": "ato-access",
+          "quote": "Your preservation age depends on when you were born, as shown in this table."
+        },
+        {
+          "doc": "ato-access",
+          "quote": "Your preservation age is not the same as your pension age."
+        }
+      ]
+    },
+    {
+      "id": "conditions-of-release",
+      "products": [],
+      "q": "What are the conditions of release?",
+      "aliases": [
+        "condition of release",
+        "cor",
+        "access super",
+        "retire",
+        "access my super",
+        "when can i get my super",
+        "how do i get my super",
+        "turned 65 still working",
+        "65 and still working"
+      ],
+      "a": "Retiring permanently at or after preservation age; leaving a job on or after 60; turning 65; permanent incapacity; a balance under $200 when leaving a contributing employer; death.",
+      "detail": "Early access in limited cases: compassionate grounds (ATO), severe financial hardship, terminal medical condition.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "ceasing an arrangement of employment on or after the age of 60,"
+        },
+        {
+          "doc": "hsw",
+          "quote": "having an account balance of less than $200 when you terminate employment with an employer who contributed to UniSuper"
+        }
+      ],
+      "see": [
+        "hardship",
+        "compassionate",
+        "terminal"
+      ],
+      "ato": [
+        {
+          "doc": "ato-access",
+          "quote": "You turn 65 years old, even if you're still working."
+        },
+        {
+          "doc": "ato-access",
+          "quote": "You reach your preservation age and choose to retire."
+        }
+      ]
+    },
+    {
+      "id": "preservation-status",
+      "products": [],
+      "q": "What do preserved, restricted and unrestricted non-preserved mean?",
+      "aliases": [
+        "preserved",
+        "unrestricted non-preserved",
+        "restricted non-preserved",
+        "unp",
+        "rnp"
+      ],
+      "a": "Preserved: needs a condition of release (most contributions and all earnings). Restricted non-preserved: usually released on leaving a contributing employer. Unrestricted non-preserved: available any time.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Member and employer contributions made into super and all investment earnings must be preserved."
+        },
+        {
+          "doc": "hsw",
+          "quote": "Unrestricted non-preserved benefits can generally be accessed at any time"
+        }
+      ]
+    },
+    {
+      "id": "hardship",
+      "products": [],
+      "q": "Can a member get super early for financial hardship?",
+      "aliases": [
+        "hardship",
+        "severe financial hardship",
+        "early release"
+      ],
+      "a": "Possibly, if receiving eligible Commonwealth income support. They apply to UniSuper (the Trustee). Call 1800 331 685 to go through options.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "You must be receiving eligible government income support benefits to qualify."
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-early",
+          "quote": "When you can access super early due to severe financial hardship and how to apply."
+        }
+      ]
+    },
+    {
+      "id": "compassionate",
+      "products": [],
+      "q": "How does early release on compassionate grounds work?",
+      "aliases": [
+        "compassionate grounds",
+        "medical treatment release"
+      ],
+      "a": "The member applies to the ATO directly, not UniSuper.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "you must apply directly to the ATO"
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-compassionate",
+          "quote": "Eligibility criteria, required evidence and what to do before applying to access super on compassionate grounds."
+        }
+      ]
+    },
+    {
+      "id": "terminal",
+      "products": [],
+      "q": "How does access for a terminal medical condition work?",
+      "aliases": [
+        "terminal illness",
+        "terminal medical condition",
+        "24 months"
+      ],
+      "a": "Two registered medical practitioners (one a specialist) certify less than 24 months to live. Apply to the Trustee. DBD inbuilt benefits use 12 months. Early access may end insurance or inbuilt benefits.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "if you get certification that you have less than 24 months to live from two registered medical practitioners"
+        },
+        {
+          "doc": "hsw",
+          "quote": "the inbuilt terminal medical condition benefits is 12 months"
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-early",
+          "quote": "How to access your super early if you have a terminal medical condition."
+        }
+      ]
+    },
+    {
+      "id": "lump-tax-60",
+      "products": [
+        "super"
+      ],
+      "q": "Is a lump sum withdrawal taxed?",
+      "aliases": [
+        "withdrawal tax",
+        "lump sum tax",
+        "tax free 60"
+      ],
+      "a": "From 60, generally tax-free. Under 60, drawn proportionally from taxable and tax-free components; below preservation age the taxable component is taxed at 22% or the marginal rate, whichever is lower.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "If you're age 60 or over, the lump sum benefit paid to you will generally be tax-free."
+        },
+        {
+          "doc": "hsw",
+          "quote": "tax will be withheld from the entire taxable component at a rate of 22% or your marginal tax rate, whichever is lower"
+        }
+      ]
+    },
+    {
+      "id": "no-tfn-withdrawal",
+      "products": [],
+      "q": "What tax is withheld from a benefit with no TFN?",
+      "aliases": [
+        "no tfn withdrawal",
+        "47% withdrawal"
+      ],
+      "a": "Under 60 with no TFN: 47% of the taxable component.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "If you're under 60 and haven't provided your TFN, we're required to withhold 47% tax of the taxable component of benefits paid to you."
+        }
+      ]
+    },
+    {
+      "id": "dasp",
+      "products": [],
+      "q": "How do temporary residents claim super when leaving Australia?",
+      "aliases": [
+        "dasp",
+        "leaving australia",
+        "temporary resident",
+        "visa"
+      ],
+      "a": "Through a Departing Australia Superannuation Payment once the visa has expired or been cancelled and they've left. Taxed 35% (65% for working holiday makers). Unclaimed after six months it goes to the ATO, with no exit statement.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "is generally subject to withholding tax of 35% (or 65% for working holiday makers)"
+        },
+        {
+          "doc": "hsw",
+          "quote": "If temporary residents don't claim their super within six months of departing Australia, we'll transfer it to the ATO and we won't provide an exit statement."
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-temp",
+          "quote": "How to deal with superannuation if you are a temporary visa holder."
+        }
+      ]
+    },
+    {
+      "id": "moving-overseas",
+      "products": [],
+      "q": "What happens to super when an Australian moves overseas?",
+      "aliases": [
+        "moving overseas",
+        "living overseas",
+        "leaving the country"
+      ],
+      "a": "It stays with UniSuper until a condition of release is met. Moving permanently to New Zealand, it can go to a KiwiSaver account tax-free.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Even if you're living and working in another country, your super can stay with UniSuper."
+        },
+        {
+          "doc": "hsw",
+          "quote": "Transfers to a New Zealand KiwiSaver Scheme aren't taxed."
+        }
+      ]
+    },
+    {
+      "id": "no-need-to-withdraw",
+      "products": [
+        "super"
+      ],
+      "q": "Does a retired member have to withdraw their super?",
+      "aliases": [
+        "must i withdraw",
+        "leave super"
+      ],
+      "a": "No. It can generally stay in UniSuper.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Even if you've stopped making contributions and have retired, you don't have to withdraw your super"
+        }
+      ]
+    }
+  ]
+}

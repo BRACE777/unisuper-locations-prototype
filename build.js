@@ -10,4 +10,7 @@ mkdirSync(out);
 for (const path of ['index.html', 'css', 'js']) {
   cpSync(new URL(path, root), new URL(path, out), { recursive: true });
 }
-console.log('Built dist/ (index.html, css, js). Drag the dist folder onto https://app.netlify.com/drop');
+// The call companion is prebuilt (it needs the PDS PDFs and Excel tooling) and committed in
+// companion/site/; it's published at /companion/.
+cpSync(new URL('companion/site/', root), new URL('companion/', out), { recursive: true });
+console.log('Built dist/ (index.html, css, js, companion/). Drag the dist folder onto https://app.netlify.com/drop');

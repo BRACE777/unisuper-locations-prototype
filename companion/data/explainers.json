@@ -1,0 +1,441 @@
+{
+  "note": "Plain-English explanations to read out, three versions each: short (about 10 seconds), walk (about 30 seconds), example (numbers or a comparison). 'general' marks where general information stops and personal advice would start. Every dollar figure must exist in rates.json, the source quote, or allow_numbers (check-data.mjs enforces this). Edit the wording to match how you speak. 'terms' are the phrases that get a hover-over explainer wherever they appear in a card.",
+  "items": [
+    {
+      "id": "min-payment",
+      "topic": "Pension",
+      "title": "Minimum annual payment",
+      "short": "The government sets a minimum you have to take from your pension each year, as a percentage of your balance based on your age.",
+      "walk": "Each 1 July we take your balance and multiply it by a percentage for your age: 4% under 65, 5% from 65, and it steps up from there. That's the least you can take that year. You can take more, but not less. If you make an extra withdrawal during the year, the minimum doesn't change.",
+      "example": "Someone who's 70 with $400,000 on 1 July has a 5% minimum, so at least $20,000 that year, which is about $1,670 a month.",
+      "allow_numbers": [
+        400000,
+        20000,
+        1670
+      ],
+      "general": "Explain how the minimum is worked out. Don't suggest how much above the minimum to take.",
+      "source": {
+        "doc": "flexi",
+        "quote": "Your minimum income amount is calculated by multiplying your opening account balance by your age-based percentage factor at the start of each financial year"
+      },
+      "terms": [
+        "minimum annual payment",
+        "minimum payment",
+        "minimum percentage",
+        "minimum income amount"
+      ]
+    },
+    {
+      "id": "first-year-pro-rata",
+      "topic": "Pension",
+      "title": "First-year pro-rata minimum",
+      "short": "Because your pension started part-way through the year, this year's minimum only covers the days from your start date to 30 June.",
+      "walk": "A full year's minimum assumes twelve months. Your pension started later than 1 July, so we only count the days from your start date to 30 June, and round to the nearest ten dollars. From the next 1 July it resets to a full-year amount based on your balance that day.",
+      "example": "Take someone aged 67 who starts with $500,000 on 1 October. A full year would be 5%, so $25,000. There are 273 days left out of 365, which brings this year's minimum to $18,700.",
+      "allow_numbers": [
+        500000,
+        25000,
+        18700
+      ],
+      "general": "Explain the calculation. Don't advise on the start date or amount.",
+      "source": {
+        "doc": "flexi",
+        "quote": "$25,000 (minimum amount) × 273 (days remaining in the financial year) ÷ 365 = $18,698.63"
+      },
+      "terms": [
+        "pro-rata minimum",
+        "pro-rated",
+        "pro-rata",
+        "pro rata"
+      ]
+    },
+    {
+      "id": "ttr-vs-rp",
+      "topic": "Pension",
+      "title": "TTR compared with Retirement Phase",
+      "short": "A TTR pension lets you draw some super while you're still working; a Retirement Phase pension is for once you've retired or turned 65.",
+      "walk": "With TTR you can start once you reach preservation age and keep working. You can take between the minimum and 10% of your balance a year, you generally can't take lump sums, and investment earnings are still taxed up to 15%. Once you retire, or turn 65, it becomes a Retirement Phase pension: no maximum, lump sums allowed, and earnings are tax-free.",
+      "example": "Think of TTR as a tap you can only open part way while you're working. Retiring or turning 65 lets you open it fully.",
+      "general": "Explain the differences. Whether TTR suits someone's tax or work situation is advice: refer to UniSuper Advice.",
+      "source": {
+        "doc": "flexi",
+        "quote": "Once you reach age 65 or let us know you've met a condition of release allowing unrestricted access to your super (e.g. retired from the workforce or terminate employment from age 60), your TTR Flexi Pension will be converted into a Retirement Phase Flexi Pension"
+      },
+      "terms": [
+        "Transition to Retirement",
+        "TTR pension",
+        "TTR Flexi Pension",
+        "Retirement Phase"
+      ]
+    },
+    {
+      "id": "ttr-max",
+      "topic": "Pension",
+      "title": "The TTR 10% maximum",
+      "short": "With a TTR pension you can take up to 10% of your balance each year, and that cap isn't reduced in the first year.",
+      "walk": "The maximum is 10% of your balance on 1 July, or of your opening balance in the first year. Unlike the minimum, it isn't pro-rated, so if you start late in the year, the whole 10% is spread over the months that are left, unless you tell us otherwise.",
+      "example": "Someone starting a $400,000 TTR pension in April can take up to $40,000 before 30 June, which is $13,330 a month for April, May and June.",
+      "allow_numbers": [
+        400000,
+        40000,
+        13330
+      ],
+      "general": "Explain the limit. Don't suggest an amount.",
+      "source": {
+        "doc": "flexi",
+        "quote": "The maximum amount for TTR Flexi Pension isn't subject to the pro-rata rules."
+      },
+      "terms": [
+        "10% maximum",
+        "TTR maximum",
+        "maximum of 10%"
+      ]
+    },
+    {
+      "id": "no-top-up",
+      "topic": "Pension",
+      "title": "Why money can't be added to a pension",
+      "short": "Once a pension starts, the law doesn't allow anything more to be added to it. You'd start a second pension instead.",
+      "walk": "A pension is set up with one starting balance. To add more later, the new money goes into super first and then starts a separate pension. That's why we suggest bringing all your super together before you start, and checking you won't lose insurance in another fund by moving it.",
+      "example": "It's like a fixed-term deposit: you can't add to it once it's opened, but you can open another one.",
+      "general": "Explain the rule. Whether to consolidate first, or open a second pension, can be a personal decision.",
+      "source": {
+        "doc": "flexi",
+        "quote": "Once you start a Flexi Pension, you can't add further amounts to it. If you want to add money to an existing Flexi Pension account, you'll have to start a new account. This is a legal requirement."
+      },
+      "terms": [
+        "can't be added",
+        "can't add further amounts",
+        "nothing more can be added"
+      ]
+    },
+    {
+      "id": "tbc",
+      "topic": "Pension",
+      "title": "Transfer balance cap",
+      "short": "There's a lifetime limit on how much super you can move into tax-free retirement pensions, across all your funds.",
+      "walk": "For someone starting their first retirement pension now, the limit is $2.1 million. People who started earlier may have a lower personal cap, somewhere between $1.6 and $2.1 million. Growth from investment returns doesn't count against it. The ATO keeps track, so they're the ones who can tell you your exact cap.",
+      "example": "If you moved $1.5 million into a pension, you'd have about $600,000 of cap left for any future pensions, even if your first pension later grows.",
+      "allow_numbers": [
+        1.5,
+        1500000,
+        600000
+      ],
+      "general": "Explain the cap. A member's own cap and options if they're near it: ATO, and advice.",
+      "source": {
+        "doc": "flexi",
+        "quote": "To view your transfer balance cap and your transfer balance account, please contact the ATO or log in to the ATO's online services via ato.gov.au."
+      },
+      "terms": [
+        "transfer balance cap"
+      ]
+    },
+    {
+      "id": "retirement-bonus",
+      "topic": "Pension",
+      "title": "Retirement Bonus",
+      "short": "When you move super into a Retirement Phase pension, we may add a bonus that passes on tax we no longer need to pay.",
+      "walk": "While your money is in super we set some aside for future capital gains tax. Once it's in a retirement pension, earnings are tax-free, so some of that may not be needed, and eligible members get it as a bonus, added automatically. You need 12 months' continuous membership first, and if you take out half or more in the first year, it may be clawed back.",
+      "example": "It's a bit like a deposit being returned because a cost you'd planned for didn't happen.",
+      "general": "Explain eligibility. Don't estimate a specific bonus amount: refer to unisuper.com.au/retirement-bonus.",
+      "source": {
+        "doc": "flexi",
+        "quote": "The Retirement Bonus represents tax savings that may be passed on to eligible members when they start a Retirement Phase Flexi Pension."
+      },
+      "terms": [
+        "Retirement Bonus"
+      ]
+    },
+    {
+      "id": "drawdown-order",
+      "topic": "Pension",
+      "title": "Drawdown order",
+      "short": "If your pension is spread across investment options, you can choose which ones your payments come out of.",
+      "walk": "There are three ways. Default takes payments from Cash first, then the more conservative options, then growth. Your choice lets you set the order. Pro-rata takes from every option in proportion. Over time the default order changes your mix, so it's worth reviewing now and then.",
+      "example": "With 20% in Cash and 80% in Balanced, pro-rata takes each payment 20% from Cash and 80% from Balanced; the default would use the Cash first.",
+      "general": "Explain the methods. Which suits the member is an investment decision.",
+      "source": {
+        "doc": "flexi",
+        "quote": "Pro-rata – payments are drawn in proportion to the amount held in each investment option at the time of payment."
+      },
+      "terms": [
+        "drawdown method",
+        "drawdown order",
+        "default order"
+      ]
+    },
+    {
+      "id": "temp-account",
+      "topic": "Pension",
+      "title": "Temporary account before a pension starts",
+      "short": "While we wait for your other super to arrive, we hold it in a temporary account so your pension can start with everything at once.",
+      "walk": "The temporary account has no admin fees and no insurance, and it's invested in Cash so the amount doesn't swing around. As soon as all your transfers arrive, or 90 days after the first one, whichever is sooner, it closes and your pension starts. Anything that arrives after that stays in super.",
+      "example": "It's a waiting room: it holds the money safely until everyone's arrived, but it won't wait forever.",
+      "general": "Factual.",
+      "source": {
+        "doc": "flexi",
+        "quote": "The temporary Accumulation 1 account will automatically close and your Flexi Pension will begin once we've received and processed all transfers and/or contributions, or 90 days after we receive the first transfer or contribution, whichever happens first."
+      },
+      "terms": [
+        "temporary Accumulation 1 account",
+        "temporary account"
+      ]
+    },
+    {
+      "id": "close-out",
+      "topic": "Pension",
+      "title": "The $10,000 close-out",
+      "short": "When your pension balance gets down to $10,000, we pay out what's left and close it.",
+      "walk": "For Retirement Phase and beneficiary pensions, the last $10,000 is paid to your bank account. For TTR, it goes back to a super account. How long it takes to get there depends on your starting balance, your payments and withdrawals, returns and fees.",
+      "example": "It's like the last few pages of a notebook: rather than tearing out one page a month, we hand you the rest in one go.",
+      "general": "Factual. How long a pension will last is a projection: refer to the Retirement income calculator or advice.",
+      "source": {
+        "doc": "flexi",
+        "quote": "Your Flexi Pension will continue until the balance reduces to $10,000"
+      },
+      "terms": [
+        "falls to $10,000",
+        "reduces to $10,000",
+        "down to $10,000"
+      ]
+    },
+    {
+      "id": "concessional-vs-non",
+      "topic": "Contributions",
+      "title": "Concessional and non-concessional contributions",
+      "short": "Concessional means before-tax money going in, taxed 15% in the fund. Non-concessional means after-tax money, with no tax going in.",
+      "walk": "Your employer's 12%, salary sacrifice, and personal contributions you claim a tax deduction for are all concessional, and count towards a $32,500 yearly cap. Money you put in from your bank account without claiming a deduction is non-concessional, and counts towards a separate $130,000 cap. Going over either can mean extra tax.",
+      "example": "If you put $5,000 in from savings and don't claim it, that's non-concessional. If you lodge a notice of intent and claim it, it becomes concessional.",
+      "allow_numbers": [
+        5000
+      ],
+      "general": "Explain the types and caps. Whether to claim a deduction is a tax decision: suggest an accountant or advice.",
+      "source": {
+        "doc": "hsw",
+        "quote": "Any contributions on which you claim a tax deduction will be treated as concessional contributions"
+      },
+      "terms": [
+        "non-concessional",
+        "concessional contributions",
+        "concessional cap",
+        "concessional"
+      ]
+    },
+    {
+      "id": "notice-of-intent",
+      "topic": "Contributions",
+      "title": "Notice of intent to claim a deduction",
+      "short": "To claim a tax deduction for money you put into super, you need to tell us first, and we need to confirm we got it.",
+      "walk": "You lodge the notice online under Manage account, and we send an acknowledgement. It has to be done before you lodge your tax return for that year, and before the money is moved, withdrawn, split or used to start a pension. If you do any of those first, the deduction can't be claimed.",
+      "example": "It's like getting a receipt before you can claim an expense: no acknowledgement from us, no deduction.",
+      "general": "Explain the process and timing. Whether to claim, and how much, is a tax question for the member's accountant.",
+      "source": {
+        "doc": "hsw",
+        "quote": "You must submit your claim (and we must acknowledge receipt in writing) before whichever of the following occurs first"
+      },
+      "terms": [
+        "notice of intent",
+        "Notice of intent"
+      ]
+    },
+    {
+      "id": "contribution-split",
+      "topic": "Contributions",
+      "title": "Contribution splitting",
+      "short": "You can move some of your before-tax contributions into your spouse's super, usually once a year for the previous year.",
+      "walk": "You can split up to 85% of last year's concessional contributions, as long as your spouse is under 60, or between 60 and 65 and not retired. The request needs to reach us by 30 June. If you're also claiming a tax deduction on some of that money, lodge the notice of intent before the split.",
+      "example": "If $20,000 of concessional contributions went in last year, up to $17,000 could be moved to your spouse's account this year.",
+      "allow_numbers": [
+        20000,
+        17000
+      ],
+      "general": "Explain eligibility. Whether splitting makes sense is advice.",
+      "source": {
+        "doc": "hsw",
+        "quote": "The maximum amount of contributions that can be split each financial year is the lesser of: 85% of your concessional contributions, and the concessional contributions cap applicable to you."
+      },
+      "terms": [
+        "contribution splitting",
+        "Contribution splitting",
+        "contribution split"
+      ]
+    },
+    {
+      "id": "carry-forward",
+      "topic": "Contributions",
+      "title": "Carry-forward of unused cap",
+      "short": "If you didn't use your full before-tax cap in recent years, you may be able to use the leftover now.",
+      "walk": "Unused concessional cap from the last five years can be used, as long as your total super was under $500,000 on the previous 30 June. Each year's unused amount expires after five years. The ATO tracks how much is available; it shows in ATO online services.",
+      "example": "If you used $20,000 of a $32,500 cap in a year, the $12,500 you didn't use could be added to a later year's cap, within five years.",
+      "allow_numbers": [
+        20000,
+        12500
+      ],
+      "general": "Explain the rule. The member's available amount comes from the ATO.",
+      "source": {
+        "doc": "hsw",
+        "quote": "Unused concessional contributions can be carried forward for up to five years, after which time they will no longer be available."
+      },
+      "terms": [
+        "carry-forward",
+        "carried forward",
+        "carry forward"
+      ]
+    },
+    {
+      "id": "bring-forward",
+      "topic": "Contributions",
+      "title": "Bring-forward of the after-tax cap",
+      "short": "If you're under 75, you may be able to put in up to three years' worth of after-tax contributions in one go.",
+      "walk": "Normally the after-tax cap is $130,000 a year. Under the bring-forward rule you can use up to $390,000 at once, which then covers that year and the next two. How much you can bring forward depends on your total super on the previous 30 June; at $2.1 million or more the cap is nil.",
+      "example": "Someone with $800,000 in super who sells an investment could put in $390,000 this year, but then can't make further after-tax contributions for the next two years.",
+      "allow_numbers": [
+        800000
+      ],
+      "general": "Explain the rule. Using it is a planning decision: refer to advice.",
+      "source": {
+        "doc": "hsw",
+        "quote": "The cap amount you can bring forward, and whether you have a two or three-year bring-forward period, will depend on your total super balance at the end of June of the previous financial year."
+      },
+      "terms": [
+        "bring-forward",
+        "bring forward"
+      ]
+    },
+    {
+      "id": "preservation",
+      "topic": "Access and tax",
+      "title": "Preservation age and conditions of release",
+      "short": "Super is generally locked away until you reach a certain age and meet a condition, like retiring.",
+      "walk": "Your preservation age is between 55 and 60 depending on when you were born; for anyone born from 1 July 1964 it's 60. You can then get your super if you retire. You can also get it if you leave a job after 60, or at 65 whether or not you're working. There are a few exceptions for hardship, compassionate grounds or a terminal illness.",
+      "example": "Someone born in 1966 can access super after retiring at 60 or later, or at 65 regardless.",
+      "general": "Factual. Whether someone has 'retired' for super purposes can depend on their circumstances: check the rules.",
+      "source": {
+        "doc": "hsw",
+        "quote": "Generally, you must keep your super in the super system until you permanently retire from the workforce on or after reaching your preservation age"
+      },
+      "terms": [
+        "preservation age",
+        "conditions of release",
+        "condition of release"
+      ]
+    },
+    {
+      "id": "tax-components",
+      "topic": "Access and tax",
+      "title": "Taxable and tax-free components",
+      "short": "Your super has a tax-free part and a taxable part. From 60 the split doesn't matter because withdrawals are tax-free.",
+      "walk": "The tax-free part mostly comes from after-tax contributions. The taxable part is employer contributions, salary sacrifice and earnings. Under 60, any withdrawal takes from both parts in the same proportion, and only the taxable part can be taxed. You can't choose to take just the tax-free part.",
+      "example": "If 10% of your balance is tax-free, a $10,000 withdrawal under 60 is $1,000 tax-free and $9,000 taxable.",
+      "allow_numbers": [
+        1000,
+        9000
+      ],
+      "general": "Explain the components. The member's actual components are on their statement.",
+      "source": {
+        "doc": "flexi",
+        "quote": "Any lump sum withdrawal you make must include taxable and tax-free components in the same proportions as your entire benefit."
+      },
+      "terms": [
+        "taxable component",
+        "tax-free component",
+        "taxable and tax-free"
+      ]
+    },
+    {
+      "id": "nomination-types",
+      "topic": "Beneficiaries",
+      "title": "Binding, non-binding and reversionary nominations",
+      "short": "A binding nomination tells us exactly who gets your super, a non-binding one is a preference, and a reversionary one keeps a pension paying to someone.",
+      "walk": "With a valid binding nomination the Trustee must pay the people you've named, in your proportions. A non-binding nomination is taken into account, but the Trustee decides. A reversionary beneficiary, only for pensions, keeps receiving your pension payments instead of a lump sum. Whatever you choose, the people must be dependants or your estate.",
+      "example": "Binding is like a will for your super. Non-binding is like a note saying what you'd like. Reversionary keeps the pension going for your partner.",
+      "general": "Explain the options. Which one suits someone's family and tax situation is advice.",
+      "source": {
+        "doc": "flexi",
+        "quote": "If the nomination is valid and still in effect at the date of your death, the Trustee must pay your account balance as a lump sum to the beneficiaries in the proportions you've nominated."
+      },
+      "terms": [
+        "binding nomination",
+        "non-binding nomination",
+        "reversionary beneficiary",
+        "reversionary"
+      ]
+    },
+    {
+      "id": "lapsing-vs-nonlapsing",
+      "topic": "Beneficiaries",
+      "title": "Lapsing and non-lapsing binding nominations",
+      "short": "A lapsing nomination expires after three years unless you renew it. A non-lapsing one stays until you change it.",
+      "walk": "Non-lapsing nominations can be made online in a few minutes. Lapsing ones need the paper form, signed in front of two adult witnesses who aren't beneficiaries, and you'll need to confirm it in writing before the three years are up. If a paper form doesn't say which type, it's treated as lapsing.",
+      "example": "Non-lapsing is like a subscription that keeps going until you cancel; lapsing is like a three-year membership you need to renew.",
+      "general": "Factual.",
+      "source": {
+        "doc": "hsw",
+        "quote": "A valid binding death nomination (non-lapsing) won't expire unless you amend or revoke it, so it doesn't need to be confirmed or updated every three years."
+      },
+      "terms": [
+        "non-lapsing",
+        "lapsing"
+      ]
+    },
+    {
+      "id": "default-cover-start",
+      "topic": "Insurance",
+      "title": "When default cover starts",
+      "short": "Default Death and TPD cover starts automatically once you're 25 and have $6,000 in your account, with the next employer contribution.",
+      "walk": "You get 10 units of cover without answering health questions. It starts when your employer next pays in, and that payment has to come within 180 days. If you don't want it, you can opt out before it starts so no premiums come out. You can also ask for cover earlier, within 180 days of starting with your employer.",
+      "example": "Someone who turns 25 in March with $7,000 in super would see cover start with their next pay's contribution.",
+      "allow_numbers": [
+        7000
+      ],
+      "general": "Explain when cover starts. Whether to keep, change or cancel cover is the member's decision.",
+      "source": {
+        "doc": "acc1",
+        "quote": "Your Death and/or TPD cover (including any top-up cover) and Income Protection cover will start on the date we next receive an employer contribution into your Accumulation 1 account after you're aged 25 and have an account balance of at least $6,000"
+      },
+      "terms": [
+        "default cover",
+        "default Death and TPD"
+      ]
+    },
+    {
+      "id": "unitised-cover",
+      "topic": "Insurance",
+      "title": "Why unitised cover goes down with age",
+      "short": "With unitised cover you keep the same number of units, but each unit is worth less as you get older.",
+      "walk": "A unit's value is set by your age, so cover peaks in your late 30s and falls after that, while the cost stays roughly steady. If you'd rather the amount stay the same, you can convert to fixed cover; then the premium changes with age instead.",
+      "example": "Ten units are worth $266,000 at 35, but $86,000 at 55.",
+      "general": "Explain how it works. Whether unitised or fixed suits someone is a personal decision.",
+      "source": {
+        "doc": "acc1",
+        "quote": "The amount of cover you receive from each unit depends on your age and ranges from $27,500 for death and TPD (at age 38)"
+      },
+      "allow_numbers": [
+        266000,
+        86000
+      ],
+      "terms": [
+        "unitised cover",
+        "unitised",
+        "units of cover"
+      ]
+    },
+    {
+      "id": "inactive-accounts",
+      "topic": "Account",
+      "title": "Inactive accounts and insurance",
+      "short": "If nothing goes into your account for 16 months, insurance stops, and if the balance is under $6,000, the account goes to the ATO.",
+      "walk": "These are legal requirements to stop small, forgotten accounts being eaten up by fees and premiums. If you want to keep your cover even without contributions, you can tell us you want to keep it. If the account goes to the ATO, they'll try to move it into another active account you have.",
+      "example": "Someone who changed jobs and stopped contributing in January 2026 would have cover stop around May 2027 unless they'd asked to keep it.",
+      "general": "Factual. Whether to keep cover is the member's decision.",
+      "source": {
+        "doc": "ins",
+        "quote": "Your account hasn't received a contribution or rollover for 16 consecutive months, and prior to that you didn't elect to keep cover"
+      },
+      "terms": [
+        "16 consecutive months",
+        "16 months"
+      ]
+    }
+  ]
+}

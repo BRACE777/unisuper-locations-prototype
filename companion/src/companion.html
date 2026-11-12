@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Call Companion</title>
+<style>/*STYLES*/</style>
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <div class="brand"><span class="label">Member services</span><span class="brand-name">Call companion</span></div>
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="What did the member ask? Rules, forms, timeframes, explainers" autocomplete="off" spellcheck="false" aria-label="Search">
+      <kbd>/</kbd>
+    </label>
+    <button class="theme" id="theme" type="button" aria-label="Change light or dark theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg>
+      <span>Auto</span>
+    </button>
+  </div>
+  <div class="context">
+    <div class="chips" id="products" role="radiogroup" aria-label="Product"></div>
+    <label class="field"><span class="label">Member</span><input id="member" type="text" autocomplete="off" placeholder="age or date of birth" title="Type an age (67) or a date of birth in any format: 14/5/1959, 14.05.59, 14 May 1959, 14051959"></label>
+    <span class="echo" id="member-echo"></span>
+    <button class="link" id="clear-context" type="button">Clear</button>
+  </div>
+  <div class="tabs-wrap"><nav class="tabs" id="tabs" aria-label="Sections"></nav></div>
+</header>
+<main id="main" tabindex="-1"></main>
+<footer class="foot" id="foot"></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="application/json" id="data">/*DATA*/</script>
+<script>/*SCRIPTS*/</script>
+</body>
+</html>

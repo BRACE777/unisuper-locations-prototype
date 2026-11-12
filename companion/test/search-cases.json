@@ -1,0 +1,431 @@
+{
+  "note": "Each query must return the expected item in the top three of its type. 'typos' are misspellings that must still work. Add a case whenever a search lets you down on a call.",
+  "cases": [
+    {
+      "q": "ttr max",
+      "expect": "ttr-max"
+    },
+    {
+      "q": "ttr maximum",
+      "product": "ttr",
+      "expect": "ttr-max"
+    },
+    {
+      "q": "10%",
+      "expect": "ttr-max"
+    },
+    {
+      "q": "min",
+      "expect": "min-pct"
+    },
+    {
+      "q": "minimum drawdown",
+      "expect": "min-pct"
+    },
+    {
+      "q": "pro rata first year",
+      "expect": "min-first-year"
+    },
+    {
+      "q": "6000",
+      "expect": "pension-residual"
+    },
+    {
+      "q": "$6k",
+      "expect": "pension-residual"
+    },
+    {
+      "q": "six thousand",
+      "expect": "pension-residual"
+    },
+    {
+      "q": "25000",
+      "expect": "pension-min-start"
+    },
+    {
+      "q": "$2.1 million",
+      "expect": "tbc-what"
+    },
+    {
+      "q": "tbc",
+      "expect": "tbc-what"
+    },
+    {
+      "q": "noi",
+      "expect": "noi-deadline"
+    },
+    {
+      "q": "noi deadline",
+      "expect": "noi-deadline"
+    },
+    {
+      "q": "notice of intent",
+      "expect": "noi-deadline"
+    },
+    {
+      "q": "split",
+      "expect": "split-rules"
+    },
+    {
+      "q": "contribution splitting spouse",
+      "expect": "split-rules"
+    },
+    {
+      "q": "bdbn",
+      "expect": "bdbn-types"
+    },
+    {
+      "q": "witness",
+      "expect": "bdbn-valid"
+    },
+    {
+      "q": "lapsing",
+      "expect": "bdbn-types"
+    },
+    {
+      "q": "reversionary",
+      "expect": "reversionary-what"
+    },
+    {
+      "q": "preservation age",
+      "expect": "preservation-age"
+    },
+    {
+      "q": "condition of release",
+      "expect": "conditions-of-release"
+    },
+    {
+      "q": "hardship",
+      "expect": "hardship"
+    },
+    {
+      "q": "compassionate",
+      "expect": "compassionate"
+    },
+    {
+      "q": "cc cap",
+      "expect": "cc-cap"
+    },
+    {
+      "q": "32500",
+      "expect": "cc-cap"
+    },
+    {
+      "q": "bring forward",
+      "expect": "bring-forward"
+    },
+    {
+      "q": "carry forward",
+      "expect": "carry-forward"
+    },
+    {
+      "q": "div 293",
+      "expect": "div293"
+    },
+    {
+      "q": "listo",
+      "expect": "listo"
+    },
+    {
+      "q": "co-contribution",
+      "expect": "co-contribution"
+    },
+    {
+      "q": "downsizer",
+      "expect": "downsizer"
+    },
+    {
+      "q": "top up pension",
+      "expect": "pension-no-additions"
+    },
+    {
+      "q": "retirement bonus clawback",
+      "expect": "rb-clawback"
+    },
+    {
+      "q": "default cover",
+      "expect": "default-cover"
+    },
+    {
+      "q": "16 months",
+      "expect": "cover-stops"
+    },
+    {
+      "q": "insurance stopped",
+      "expect": "cover-stops"
+    },
+    {
+      "q": "switch time",
+      "expect": "switch-timing"
+    },
+    {
+      "q": "admin fee",
+      "expect": "acc-admin-fee"
+    },
+    {
+      "q": "when will i get paid",
+      "expect": "pay-dates"
+    },
+    {
+      "q": "dasp",
+      "expect": "dasp"
+    },
+    {
+      "q": "bis",
+      "expect": "bis-eligibility"
+    },
+    {
+      "q": "centrelink",
+      "expect": "pension-centrelink"
+    },
+    {
+      "q": "change my bank",
+      "type": "form",
+      "expect": "pension-change-your-bank-account-details"
+    },
+    {
+      "q": "beneficiary",
+      "type": "form",
+      "expect": "super-nominate-a-binding-beneficiary"
+    },
+    {
+      "q": "rollover",
+      "type": "form",
+      "expect": "super-roll-over-to-another-fund"
+    },
+    {
+      "q": "tfn",
+      "type": "form",
+      "expect": "ato-tfn-declaration"
+    },
+    {
+      "q": "hardship",
+      "type": "form",
+      "expect": "super-withdraw-your-super-due-to-financial-hardship"
+    },
+    {
+      "q": "start pension",
+      "type": "form",
+      "expect": "pension-apply-retirement-ttr"
+    },
+    {
+      "q": "death claim",
+      "type": "form",
+      "expect": "manual-death-benefit-claim"
+    },
+    {
+      "q": "how long withdrawal",
+      "type": "timeframe",
+      "expect": "pension-lump-sum"
+    },
+    {
+      "q": "cooling off",
+      "type": "timeframe",
+      "expect": "pension-cooling-off"
+    },
+    {
+      "q": "complaint",
+      "type": "timeframe",
+      "expect": "complaint-super"
+    },
+    {
+      "q": "pro rata",
+      "type": "explainer",
+      "expect": "first-year-pro-rata"
+    }
+  ],
+  "hidden": [
+    {
+      "q": "ttr max",
+      "product": "super",
+      "absent": "ttr-max"
+    }
+  ],
+  "typos": [
+    {
+      "q": "perservation age",
+      "expect": "preservation-age"
+    },
+    {
+      "q": "contribtion spliting",
+      "expect": "split-rules"
+    },
+    {
+      "q": "reversonary",
+      "expect": "reversionary-what"
+    },
+    {
+      "q": "nio",
+      "expect": "noi-deadline"
+    },
+    {
+      "q": "binding nomniation",
+      "expect": "bdbn-types"
+    },
+    {
+      "q": "chnage my bank",
+      "type": "form",
+      "expect": "pension-change-your-bank-account-details"
+    },
+    {
+      "q": "hardshp",
+      "expect": "hardship"
+    },
+    {
+      "q": "dwonsizer",
+      "expect": "downsizer"
+    },
+    {
+      "q": "transfer balence cap",
+      "expect": "tbc-what"
+    },
+    {
+      "q": "retirment bonus",
+      "expect": "rb-what"
+    },
+    {
+      "q": "minimun",
+      "expect": "min-pct"
+    },
+    {
+      "q": "insurence stoped",
+      "expect": "cover-stops"
+    },
+    {
+      "q": "ttr maxium",
+      "expect": "ttr-max"
+    },
+    {
+      "q": "dvi 293",
+      "expect": "div293"
+    },
+    {
+      "q": "benificiary",
+      "type": "form",
+      "expect": "super-nominate-a-binding-beneficiary"
+    },
+    {
+      "q": "compasionate grounds",
+      "expect": "compassionate"
+    },
+    {
+      "q": "cooling of perid",
+      "type": "timeframe",
+      "expect": "pension-cooling-off"
+    }
+  ],
+  "situations": [
+    {
+      "q": "minimum age member",
+      "expect": "pa-eligibility"
+    },
+    {
+      "q": "how old to join",
+      "expect": "pa-eligibility"
+    },
+    {
+      "q": "can a 16 year old open an account",
+      "expect": "pa-eligibility"
+    },
+    {
+      "q": "who can open a personal account",
+      "expect": "pa-eligibility"
+    },
+    {
+      "q": "what age can i access my super",
+      "expect": "preservation-age"
+    },
+    {
+      "q": "when can i get my super",
+      "expect": "conditions-of-release"
+    },
+    {
+      "q": "how old for ttr",
+      "expect": "ttr-eligibility"
+    },
+    {
+      "q": "too old to contribute",
+      "expect": "contrib-age"
+    },
+    {
+      "q": "when does insurance stop",
+      "expect": "cover-stops"
+    },
+    {
+      "q": "my wife wants to put money in my super",
+      "expect": "spouse-offset"
+    },
+    {
+      "q": "can i leave my super to my kids",
+      "expect": "dependant-super"
+    },
+    {
+      "q": "how much does insurance cost",
+      "expect": "premium-cost"
+    },
+    {
+      "q": "can i put money into my pension",
+      "expect": "pension-no-additions"
+    },
+    {
+      "q": "moving overseas",
+      "expect": "moving-overseas"
+    },
+    {
+      "q": "what if i have no tfn",
+      "expect": "no-tfn-contrib"
+    },
+    {
+      "q": "retired at 62 can i get my super",
+      "expect": "conditions-of-release"
+    },
+    {
+      "q": "how long does a switch take",
+      "expect": "switch-timing"
+    },
+    {
+      "q": "insurance under 25",
+      "expect": "default-cover"
+    },
+    {
+      "q": "minimum to start a pension",
+      "expect": "pension-min-start"
+    },
+    {
+      "q": "fees on a pension",
+      "expect": "pension-fees"
+    },
+    {
+      "q": "how do i stop my insurance",
+      "expect": "opt-out"
+    },
+    {
+      "q": "can i split super with my husband",
+      "expect": "split-rules"
+    },
+    {
+      "q": "member turned 65 still working",
+      "expect": "conditions-of-release"
+    },
+    {
+      "q": "is there an age limit to join",
+      "expect": "pa-eligibility"
+    },
+    {
+      "q": "can my partner keep getting my pension when i die",
+      "expect": "reversionary-what"
+    },
+    {
+      "q": "whats the cap on before tax contributions",
+      "expect": "cc-cap"
+    },
+    {
+      "q": "do i pay tax on withdrawals at 58",
+      "expect": "lump-tax-60"
+    },
+    {
+      "q": "can i take a lump sum from my ttr",
+      "expect": "ttr-lump-sum"
+    }
+  ]
+}

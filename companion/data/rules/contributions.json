@@ -1,0 +1,671 @@
+{
+  "topic": "Contributions",
+  "cards": [
+    {
+      "id": "sg-rate",
+      "products": [
+        "super"
+      ],
+      "q": "What is the SG rate?",
+      "aliases": [
+        "sg",
+        "12%",
+        "employer contribution rate",
+        "superannuation guarantee"
+      ],
+      "a": "12% of qualifying earnings at minimum. 15% contributions tax is deducted from employer and concessional contributions.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "The minimum SG percentage rate is 12%."
+        }
+      ]
+    },
+    {
+      "id": "cc-cap",
+      "products": [
+        "super"
+      ],
+      "q": "What is the concessional contributions cap?",
+      "aliases": [
+        "cc cap",
+        "32500",
+        "before tax cap",
+        "salary sacrifice cap"
+      ],
+      "a": "$32,500 for 2026-27, across all funds. Includes SG, salary sacrifice and personal contributions claimed as a deduction.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "A cap of $32,500 applies to concessional contributions during the 2026-27 financial year."
+        }
+      ],
+      "see": [
+        "carry-forward",
+        "cc-excess"
+      ],
+      "ato": [
+        {
+          "doc": "ato-cc",
+          "quote": "From 1 July 2026, the concessional contributions cap is $32,500."
+        },
+        {
+          "doc": "ato-cc",
+          "quote": "Contributions count towards a cap in the year your super fund receives them."
+        }
+      ]
+    },
+    {
+      "id": "cc-excess",
+      "products": [
+        "super"
+      ],
+      "q": "What happens if concessional contributions go over the cap?",
+      "aliases": [
+        "excess concessional",
+        "over cap",
+        "release authority"
+      ],
+      "a": "The excess is taxed at the member's marginal rate with a 15% non-refundable offset. Up to 85% can be released from super; anything left counts towards the non-concessional cap.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "You can release up to 85% of your excess concessional contributions from your accumulation super account."
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-cc",
+          "quote": "You can withdraw up to 85% of your ECC from your super fund to pay your income tax liability."
+        }
+      ]
+    },
+    {
+      "id": "ncc-cap",
+      "products": [
+        "super"
+      ],
+      "q": "What is the non-concessional contributions cap?",
+      "aliases": [
+        "ncc cap",
+        "130000",
+        "after tax cap"
+      ],
+      "a": "$130,000 a year if total super balance at the previous 30 June was under $2.1 million; nil at or above $2.1 million.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "you can generally contribute up to the annual non-concessional contributions cap of $130,000"
+        }
+      ],
+      "see": [
+        "bring-forward",
+        "ncc-excess"
+      ],
+      "ato": [
+        {
+          "doc": "ato-ncc",
+          "quote": "From 1 July 2026, the non-concessional contributions cap is $130,000."
+        },
+        {
+          "doc": "ato-ncc",
+          "quote": "your non-concessional contributions cap is nil ($0) for the current financial year."
+        }
+      ]
+    },
+    {
+      "id": "bring-forward",
+      "products": [
+        "super"
+      ],
+      "q": "How does the bring-forward rule work?",
+      "aliases": [
+        "bring forward",
+        "390000",
+        "260000",
+        "three years ncc"
+      ],
+      "age_table": "bring_forward",
+      "a": "Under 75 at any time in the year, up to three years' non-concessional cap at once. Total super balance at 30 June 2026: under $1.84m: $390,000 (three years); $1.84m to under $1.97m: $260,000 (two years); $1.97m to under $2.1m: $130,000; $2.1m+: nil.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Less than $1.84 million $390,000 Three years $1.84 million to less than $1.97 million $260,000 Two years",
+          "label": "Table: \"Total super balance on 30 June 2026\" against the non-concessional cap and bring-forward period"
+        },
+        {
+          "doc": "hsw",
+          "quote": "If you're under 75 years of age at any time during a financial year, you may be able to `bring forward' up to three years of non-concessional contributions in a financial year"
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-ncc",
+          "quote": "If you're under 75 years of age at any time in a financial year, you're eligible to use the bring-forward arrangement in that financial year"
+        },
+        {
+          "doc": "ato-ncc",
+          "quote": "This means you can make contributions up to 2 or 3 times the annual cap amount in the first year of the bring-forward period."
+        }
+      ]
+    },
+    {
+      "id": "ncc-excess",
+      "products": [
+        "super"
+      ],
+      "q": "What happens if non-concessional contributions go over the cap?",
+      "aliases": [
+        "excess non-concessional",
+        "47%"
+      ],
+      "a": "Release the excess plus 85% of associated earnings (earnings taxed at marginal rate with a 15% offset), or leave it in and pay 47% on the excess.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "If you choose not to release your excess non-concessional contributions they will remain in your super account and the excess will be taxed at 47%."
+        }
+      ]
+    },
+    {
+      "id": "carry-forward",
+      "products": [
+        "super"
+      ],
+      "q": "Can unused concessional cap be carried forward?",
+      "aliases": [
+        "carry forward",
+        "unused cap",
+        "500000"
+      ],
+      "a": "Yes, for up to five years, if total super balance was under $500,000 at the previous 30 June. Unused 2021-22 cap expires at the end of 2026-27.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "you must have a total super balance of less than $500,000 as at 30 June of the financial year immediately preceding"
+        },
+        {
+          "doc": "hsw",
+          "quote": "For example, a 2021-22 unused cap amount that is not used by the end of 2026-27 will expire."
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-cc",
+          "quote": "You can carry forward unused cap amounts from up to 5 previous financial years, including when you were not a member of a super fund."
+        },
+        {
+          "doc": "ato-cc",
+          "quote": "Your available carry-forward contribution amounts are shown on ATO online services"
+        }
+      ]
+    },
+    {
+      "id": "noi-deadline",
+      "products": [
+        "super",
+        "dbd"
+      ],
+      "q": "When must a notice of intent to claim a deduction be lodged?",
+      "aliases": [
+        "noi",
+        "notice of intent",
+        "tax deduction deadline",
+        "s290"
+      ],
+      "a": "Acknowledged before the earlier of lodging that year's tax return or the end of the following financial year. And before the contributions are rolled over, withdrawn, or used to start a pension.",
+      "detail": "Online: log in, Manage account, Notice of intent. Lodge it before any contribution split too.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "You must submit your claim (and we must acknowledge receipt in writing) before whichever of the following occurs first"
+        },
+        {
+          "doc": "hsw",
+          "quote": "In addition, UniSuper must still hold these contributions and can't have begun paying a superannuation income stream based on all or part of these contributions"
+        }
+      ],
+      "see": [
+        "pension-noi-first",
+        "split-rules"
+      ]
+    },
+    {
+      "id": "noi-effect",
+      "products": [
+        "super",
+        "dbd"
+      ],
+      "q": "What happens to contributions claimed as a deduction?",
+      "aliases": [
+        "deduction concessional",
+        "noi tax"
+      ],
+      "a": "They become concessional contributions, generally taxed 15% in the fund, and count towards the concessional cap.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Any contributions on which you claim a tax deduction will be treated as concessional contributions"
+        }
+      ]
+    },
+    {
+      "id": "salary-sacrifice",
+      "products": [
+        "super"
+      ],
+      "q": "How does salary sacrifice work?",
+      "aliases": [
+        "salary sacrifice",
+        "ss"
+      ],
+      "a": "Arranged through the employer's payroll. It's a concessional contribution (15% tax) and counts in some income tests, including the co-contribution and Division 293.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Salary sacrifice is organised through your employer's payroll department."
+        }
+      ]
+    },
+    {
+      "id": "no-tfn-contrib",
+      "products": [
+        "super"
+      ],
+      "q": "What if we don't have the member's TFN?",
+      "aliases": [
+        "no tfn",
+        "tfn tax",
+        "32%",
+        "what if i have no tfn",
+        "haven't given tfn"
+      ],
+      "a": "An extra 32% (47% total) may be taken from assessable contributions, and member, spouse and co-contributions can't be accepted. Provide the TFN within three financial years to recover the extra tax.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "If you haven't provided your TFN, an additional tax of 32% may be deducted (totalling 47%) from assessable contributions"
+        },
+        {
+          "doc": "hsw",
+          "quote": "If you haven't provided us with your TFN, we can't accept certain types of contributions (e.g. member contributions and spouse contributions)."
+        }
+      ]
+    },
+    {
+      "id": "co-contribution",
+      "products": [
+        "super"
+      ],
+      "q": "How does the government co-contribution work?",
+      "aliases": [
+        "co-contribution",
+        "government contribution",
+        "49293",
+        "64293"
+      ],
+      "a": "For total income up to $49,293 (2026-27), the government adds 50c per $1 of non-concessional contributions, up to $500. It phases out at $64,293. Paid automatically the next year; needs a TFN.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "If your total income is $49,293 per annum or less for 2026-27"
+        },
+        {
+          "doc": "hsw",
+          "quote": "before phasing out completely if you earn $64,293 per annum or more"
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-cocontrib",
+          "quote": "be less than 71 years old at the end of the financial year"
+        },
+        {
+          "doc": "ato-cocontrib",
+          "quote": "The minimum co-contribution payment is $20 and the maximum is $500."
+        }
+      ]
+    },
+    {
+      "id": "listo",
+      "products": [
+        "super"
+      ],
+      "q": "What is LISTO?",
+      "aliases": [
+        "listo",
+        "low income tax offset"
+      ],
+      "a": "15% of concessional contributions, up to $500, for adjusted taxable income up to $37,000. The ATO pays it into super automatically.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "The amount of the offset for eligible members is 15% of the total amount of eligible concessional (before-tax) contributions for the year up to a maximum payment of $500."
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-listo",
+          "quote": "If you earn up to $37,000 a year, you may be eligible to receive a low income super tax offset (LISTO) payment of up to $500."
+        }
+      ]
+    },
+    {
+      "id": "spouse-offset",
+      "products": [
+        "super"
+      ],
+      "q": "How does the spouse contribution tax offset work?",
+      "aliases": [
+        "spouse contribution",
+        "spouse offset",
+        "540",
+        "18%",
+        "spouse add money",
+        "wife contribute",
+        "husband contribute",
+        "partner contribute"
+      ],
+      "a": "18% offset on up to $3,000 contributed for a spouse: maximum $540 if the spouse's income is $37,000 or less, phasing out at $40,000. Not available if the spouse's total super balance is $2.1m+ or they're over their non-concessional cap.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "The maximum spouse contribution tax offset of $540 is available if you make contributions of up to $3,000 on behalf of your spouse"
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-offsets",
+          "quote": "The tax offset amount reduces when your spouse's income is greater than $37,000. It phases out when your spouse’s income reaches $40,000."
+        }
+      ]
+    },
+    {
+      "id": "split-rules",
+      "products": [
+        "super"
+      ],
+      "q": "How does contribution splitting work?",
+      "aliases": [
+        "split",
+        "contribution splitting",
+        "spouse split",
+        "85%",
+        "split super with my husband",
+        "split super with my wife",
+        "split with spouse",
+        "split super with spouse"
+      ],
+      "a": "Up to the lesser of 85% of concessional contributions or the concessional cap, to a spouse under 60, or 60 to 64 and not retired. Usually last year's contributions, by 30 June; once a year. Lodge any notice of intent first.",
+      "detail": "Can be done in the same year if the whole balance is leaving. May be refused if the balance would fall below $6,000. Non-concessional contributions, rollovers and co-contributions can't be split.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "The maximum amount of contributions that can be split each financial year is the lesser of: 85% of your concessional contributions, and the concessional contributions cap applicable to you."
+        },
+        {
+          "doc": "hsw",
+          "quote": "You can't split contributions with your spouse if they're age 65 or over."
+        },
+        {
+          "doc": "hsw",
+          "quote": "we may refuse the application if it would result in your accumulation balance falling below $6,000"
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-split",
+          "quote": "You can ask your super fund to transfer to your spouse, up to 85% of a financial year's taxed splittable contributions."
+        },
+        {
+          "doc": "ato-split",
+          "quote": "Note: You can only apply once to split contributions made to a particular super fund in a financial year."
+        }
+      ]
+    },
+    {
+      "id": "downsizer",
+      "products": [
+        "super"
+      ],
+      "q": "What is a downsizer contribution?",
+      "aliases": [
+        "downsizer",
+        "sold house",
+        "300000"
+      ],
+      "a": "From age 55, after owning the home 10+ years: up to $300,000 each ($600,000 a couple) from the sale. Doesn't count to the caps or need a total super balance test, but counts to the transfer balance cap. ATO form plus payment, generally within 90 days of settlement.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "If you're aged 55 or older and have owned your house for at least 10 years, you may be able to contribute up to $300,000 ($600,000 per couple) into super from the proceeds of selling your home."
+        },
+        {
+          "doc": "hsw",
+          "quote": "generally within 90 days of settlement"
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-downsizer",
+          "quote": "A downsizer contribution does not count towards contributions caps (concessional or non-concessional)."
+        },
+        {
+          "doc": "ato-downsizer",
+          "quote": "You contribute within 90 days of receiving the home sale proceeds (usually at settlement) unless you apply for, and we grant you an extension of time."
+        }
+      ]
+    },
+    {
+      "id": "covid-recontrib",
+      "products": [
+        "super"
+      ],
+      "q": "Can COVID early release be put back?",
+      "aliases": [
+        "covid",
+        "re-contribution"
+      ],
+      "a": "Yes, up to the amount withdrawn, until 30 June 2030, without counting to the non-concessional cap. No deduction can be claimed. ATO form before or with the payment.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "This is only available until 30 June 2030, and can't exceed the amount you withdrew under the scheme."
+        }
+      ]
+    },
+    {
+      "id": "pplsc",
+      "products": [
+        "super"
+      ],
+      "q": "Is super paid on government Paid Parental Leave?",
+      "aliases": [
+        "parental leave super",
+        "pplsc"
+      ],
+      "a": "Yes, the ATO may pay it at the SG rate. It's taxed 15% and counts to the concessional cap.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "The ATO may pay superannuation on government funded Parental Leave Pay to your super account."
+        }
+      ]
+    },
+    {
+      "id": "contrib-age",
+      "products": [
+        "super"
+      ],
+      "q": "Which contributions can be accepted at what age?",
+      "aliases": [
+        "age 75 contributions",
+        "contributions after 75",
+        "too old to contribute",
+        "age limit contributions",
+        "maximum age contributions"
+      ],
+      "a": "Under 75: all types (downsizer from 55). 75 and over: only mandated employer contributions and downsizer; voluntary ones until 28 days after the end of the month the member turns 75.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "We can accept contributions up to 28 days after the end of the month in which you turn 75."
+        }
+      ],
+      "see": [
+        "work-test"
+      ]
+    },
+    {
+      "id": "work-test",
+      "products": [
+        "super"
+      ],
+      "q": "Is there a work test for claiming a deduction?",
+      "aliases": [
+        "work test",
+        "40 hours",
+        "67 to 74"
+      ],
+      "a": "Yes, for ages 67 to 74: 40 hours' work within 30 consecutive days in the year the contribution is made. The ATO checks it at tax time.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Individuals aged 67-74 are required to meet the work test (or exemption) to claim a deduction on personal contributions."
+        }
+      ]
+    },
+    {
+      "id": "div293",
+      "products": [
+        "super"
+      ],
+      "q": "What is Division 293 tax?",
+      "aliases": [
+        "div 293",
+        "250000",
+        "high income super tax"
+      ],
+      "a": "An extra 15% on concessional contributions when income plus concessional contributions exceed $250,000, applied to the lower of the contributions or the amount over $250,000. Paid personally or released from super.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Division 293 super contributions of more than $250,000 within a financial year, an additional tax of 15%"
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-div293",
+          "quote": "Division 293 tax is charged at 15% of the excess over the threshold or the taxable super contributions, whichever is less."
+        }
+      ]
+    },
+    {
+      "id": "div296",
+      "products": [
+        "super"
+      ],
+      "q": "What is Division 296 tax?",
+      "aliases": [
+        "div 296",
+        "3 million",
+        "large balance tax"
+      ],
+      "a": "From 1 July 2026: 15% on the share of earnings relating to a total super balance over $3 million, plus 10% more on the share over $10 million. The ATO assesses it.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "If your TSB exceeds $3 million, you will be subject to Division 296 tax of 15% on the proportion of earnings relating to your TSB that exceeds $3 million."
+        }
+      ]
+    },
+    {
+      "id": "fhss",
+      "products": [
+        "super"
+      ],
+      "q": "How does the First Home Super Saver scheme work?",
+      "aliases": [
+        "fhss",
+        "first home",
+        "house deposit"
+      ],
+      "a": "Voluntary contributions since 1 July 2017 (up to $15,000 a year, $50,000 total) can be released for a first home. The member requests a determination from the ATO. Not SG, not DB.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "You can make up to $15,000 of voluntary (concessional or non-concessional) contributions to your accumulation super per financial year and up to $50,000 in total under the scheme."
+        }
+      ],
+      "ato": [
+        {
+          "doc": "ato-fhss",
+          "quote": "How much you can access, the maximum release amounts and when you need to request a determination."
+        }
+      ]
+    },
+    {
+      "id": "uk-kiwisaver-in",
+      "products": [
+        "super"
+      ],
+      "q": "Can UniSuper accept a UK pension or KiwiSaver transfer?",
+      "aliases": [
+        "uk pension",
+        "kiwisaver in",
+        "overseas transfer in"
+      ],
+      "a": "No, UniSuper can't accept transfers from UK pension or KiwiSaver accounts.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "Please note that UniSuper is unable to accept transfers from UK pension or KiwiSaver accounts."
+        }
+      ]
+    },
+    {
+      "id": "untaxed-transfer",
+      "products": [
+        "super",
+        "rp",
+        "ttr"
+      ],
+      "q": "Is tax payable on a rollover in?",
+      "aliases": [
+        "rollover tax",
+        "untaxed element"
+      ],
+      "a": "No, unless it contains an untaxed element (for example from some public sector funds), which is taxed 15% on arrival.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "An untaxed element transferred into UniSuper attracts 15% contributions tax."
+        }
+      ]
+    },
+    {
+      "id": "choice-of-fund",
+      "products": [
+        "super"
+      ],
+      "q": "Can a member choose UniSuper for their employer contributions?",
+      "aliases": [
+        "choice of fund",
+        "stapled fund",
+        "nominate unisuper"
+      ],
+      "a": "Usually, if eligible for choice. Give the employer the Super choice form (or the pre-filled form from the online account). Without a choice, contributions may go to the member's stapled fund. Enterprise agreements from 1 January 2021 must follow the member's choice.",
+      "detail": "DBD members aren't eligible for choice while in a DBD-eligible role.",
+      "sources": [
+        {
+          "doc": "hsw",
+          "quote": "If you're covered by an Enterprise Agreement made on or after 1 January 2021, your employer must pay your SG contributions in accordance with your choice of fund election"
+        },
+        {
+          "doc": "hsw",
+          "quote": "If you don't choose a fund, most employers are required to make SG contributions to your stapled fund (if you have one)."
+        }
+      ]
+    }
+  ]
+}

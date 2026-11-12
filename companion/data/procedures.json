@@ -1,0 +1,289 @@
+{
+  "note": "Step-by-step checklists for specific call tasks, in the order you'd do them. Each step is one action. 'source' quotes the PDS (checked word for word). 'member' adds a note when a loaded test member matches a condition (see src/members.js for condition names). 'form', 'rule' and 'calc' link to other parts of the companion.",
+  "items": [
+    {
+      "id": "noi",
+      "title": "Notice of intent to claim a tax deduction (NOI)",
+      "topic": "Contributions",
+      "aliases": ["noi", "notice of intent", "tax deduction", "claim a deduction", "s290", "noi steps", "noi checklist"],
+      "when": "The member made personal (after-tax) contributions and wants to claim them as a tax deduction.",
+      "steps": [
+        { "do": "Confirm which contributions: personal after-tax contributions the member paid into this UniSuper account, and the financial year they were made.",
+          "source": { "doc": "hsw", "quote": "then you may be eligible to claim a tax deduction on those contributions" } },
+        { "do": "Check the money is still with UniSuper: not rolled out, withdrawn, or used to start a pension. If any of it has gone, the notice can't cover that part.",
+          "source": { "doc": "hsw", "quote": "In addition, UniSuper must still hold these contributions and can't have begun paying a superannuation income stream based on all or part of these contributions" },
+          "member": [{ "cond": "has_pension", "text": "{name} has a pension. Contributions used to start it can't be claimed." }] },
+        { "do": "Check the deadline: the notice must be acknowledged before the member lodges that year's tax return, or by the end of the next financial year, whichever comes first.",
+          "source": { "doc": "hsw", "quote": "You must submit your claim (and we must acknowledge receipt in writing) before whichever of the following occurs first" } },
+        { "do": "Ages 67 to 74: confirm the work test (40 hours within 30 consecutive days in the year of the contribution).",
+          "source": { "doc": "hsw", "quote": "Individuals aged 67-74 are required to meet the work test (or exemption) to claim a deduction on personal contributions." },
+          "member": [{ "cond": "age_67_74", "text": "{name} is {age}: the work test applies." }] },
+        { "do": "Planning to split contributions with a spouse? Lodge the notice first, then the split.",
+          "source": { "doc": "hsw", "quote": "you must lodge the notice of your intention to claim a tax deduction with us before requesting that the contributions be split" } },
+        { "do": "Planning to start a Retirement Phase or TTR pension? The notice must be lodged and acknowledged before the pension opens.",
+          "source": { "doc": "flexi", "quote": "before opening your Retirement Phase or TTR Flexi Pension account." },
+          "member": [{ "cond": "pension_planned", "text": "{name} is about to start a pension: lodge the notice now, before the pension application." }] },
+        { "do": "Lodge it: online under Manage account, Notice of intent, or with the Notice of intent to claim or vary a tax deduction form.",
+          "form": "super-notice-of-intent-to-claim-a-tax-deduction" },
+        { "do": "Tell the member to wait for our written acknowledgement before claiming the deduction in their tax return." },
+        { "do": "Explain the effect: the amount claimed becomes a concessional contribution, taxed 15% in the fund, and counts towards the concessional cap.",
+          "source": { "doc": "hsw", "quote": "Any contributions on which you claim a tax deduction will be treated as concessional contributions" },
+          "rule": "cc-cap",
+          "member": [{ "cond": "cc_known", "text": "{name} has {ccUsed} of concessional contributions so far this year ({ccLeft} left under the cap before this claim)." }] }
+      ],
+      "mistakes": [
+        "Rolling over, withdrawing or starting a pension before the notice is acknowledged.",
+        "Requesting a contribution split before lodging the notice.",
+        "Claiming in the tax return before the acknowledgement arrives."
+      ]
+    },
+    {
+      "id": "start-rp",
+      "title": "Start a Retirement Phase Flexi Pension",
+      "topic": "Pension",
+      "aliases": ["start pension", "open pension", "retirement phase application", "start a pension steps"],
+      "when": "The member has retired (or met another condition of release) and wants a regular income from super.",
+      "steps": [
+        { "do": "Check a condition of release is met: 60+ and retired, left a job on or after 60, or aged 65+.",
+          "source": { "doc": "flexi", "quote": "are aged 65 or over (even if you're still working), or" }, "rule": "rp-eligibility",
+          "member": [{ "cond": "under_60", "text": "{name} is {age}: under 60, so they must have retired after preservation age ({presAge})." }] },
+        { "do": "Check the balance: at least $25,000 is needed to start.",
+          "source": { "doc": "flexi", "quote": "You need a minimum of $25,000 to start a Flexi Pension." } },
+        { "do": "If only part of the balance is moving, at least $6,000 must stay in super. If all of it moves, insurance stops.",
+          "source": { "doc": "flexi", "quote": "If you transfer your entire accumulation account or component to a Retirement Phase Flexi Pension, any existing insurance cover you have will cease." },
+          "member": [{ "cond": "has_insurance", "text": "{name} has insurance in super. Moving the whole balance ends it." }] },
+        { "do": "Check the transfer balance cap: $2.1 million for a first retirement pension from 1 July 2026. The member's personal cap comes from the ATO.",
+          "source": { "doc": "flexi", "quote": "on or after 1 July 2026 will have a transfer balance cap of $2.1 million" }, "rule": "tbc-what",
+          "member": [{ "cond": "tsb_over_cap", "text": "{name}'s total super balance ({tsb}) is over the cap: not all of it can go into a pension." }] },
+        { "do": "Bring other super in first: money can't be added to a pension once it starts.",
+          "source": { "doc": "flexi", "quote": "Once you start a Flexi Pension, you can't add further amounts to it." } },
+        { "do": "Lodge any notice of intent for personal contributions before applying.", "rule": "noi-deadline" },
+        { "do": "Under 60: the member needs an ATO Tax file number declaration for the pension.",
+          "source": { "doc": "flexi", "quote": "If you're under age 60, you'll need to complete an ATO Tax file number declaration for each Flexi Pension you start." },
+          "member": [{ "cond": "under_60", "text": "{name} is {age}: a TFN declaration is needed." }] },
+        { "do": "Retirement Bonus: needs 12 continuous months as a member. Mention that withdrawing half or more in the first 12 months may claw it back.",
+          "source": { "doc": "flexi", "quote": "If you withdraw 50% or more of your opening balance within 12 months of starting your Retirement Phase Flexi Pension, the Trustee may claw back the Retirement Bonus." } },
+        { "do": "Agree the set-up: investment options, drawdown order, yearly amount (at least the minimum) and frequency (monthly if none chosen).",
+          "calc": "drawdown" },
+        { "do": "Nominations: reversionary beneficiary, binding or non-binding.", "rule": "nom-types" },
+        { "do": "Apply: online if they're an Accumulation 1, Accumulation 2 or Personal Account member over 60; otherwise the paper application.",
+          "source": { "doc": "flexi", "quote": "Only available for UniSuper Accumulation 1, Accumulation 2 and Personal Account members over age 60." },
+          "form": "pension-apply-retirement-ttr" },
+        { "do": "Proof of identity is needed before the pension starts.",
+          "source": { "doc": "flexi", "quote": "you'll be required to provide proof of your identity before starting a Flexi Pension" } },
+        { "do": "Explain what happens next: a temporary account holds incoming transfers (up to 90 days), the welcome letter confirms the details, and there's a 14-day cooling-off period.",
+          "source": { "doc": "flexi", "quote": "You have 14 days from when your Flexi Pension is opened to decide if it's right for you." } }
+      ],
+      "mistakes": [
+        "Starting the pension before other super has arrived (it can't be added later).",
+        "Lodging a notice of intent after the pension has started.",
+        "Moving the whole balance without mentioning insurance stops."
+      ]
+    },
+    {
+      "id": "start-ttr",
+      "title": "Start a TTR Flexi Pension",
+      "topic": "Pension",
+      "aliases": ["start ttr", "transition to retirement application", "ttr steps"],
+      "when": "The member has reached preservation age, is still working, and wants some income from super.",
+      "steps": [
+        { "do": "Check preservation age has been reached (it depends on date of birth).", "rule": "preservation-age",
+          "member": [{ "cond": "preservation_reached", "text": "{name} is {age}, past preservation age ({presAge})." }, { "cond": "preservation_not_reached", "text": "{name} is {age}: preservation age is {presAge}, so TTR isn't available yet." }] },
+        { "do": "Check the balance: $25,000 minimum, and at least $6,000 must stay in the accumulation account.",
+          "source": { "doc": "flexi", "quote": "You need a minimum of $25,000 to start a TTR Flexi Pension." } },
+        { "do": "Lodge any notice of intent before applying.", "rule": "noi-deadline" },
+        { "do": "Explain the limits: a minimum by age, and a maximum of 10% of the balance a year (the maximum isn't pro-rated in the first year).",
+          "source": { "doc": "flexi", "quote": "The maximum amount for TTR Flexi Pension isn't subject to the pro-rata rules." }, "calc": "drawdown" },
+        { "do": "Explain lump sums are only available in limited cases while it's a TTR pension.", "rule": "ttr-lump-sum" },
+        { "do": "Explain tax: earnings are taxed up to 15% until it converts to Retirement Phase at 65 or on retirement.",
+          "source": { "doc": "flexi", "quote": "Investment earnings on a TTR Flexi Pension can be subject to tax of up to 15%" } },
+        { "do": "DBD members: using the defined benefit component ends DBD membership.", "rule": "dbd-pension-db",
+          "member": [{ "cond": "has_dbd", "text": "{name} is a DBD member: check which component they're using." }] },
+        { "do": "Under 60: an ATO TFN declaration is needed.",
+          "member": [{ "cond": "under_60", "text": "{name} is {age}: a TFN declaration is needed." }] },
+        { "do": "Apply with the paper application: TTR can't be applied for online.",
+          "source": { "doc": "flexi", "quote": "Excludes TTR and BIS Flexi Pension applications." }, "form": "pension-apply-retirement-ttr" }
+      ],
+      "mistakes": ["Assuming TTR can be applied for online.", "Quoting the full 10% maximum as pro-rated."]
+    },
+    {
+      "id": "split",
+      "title": "Split contributions with a spouse",
+      "topic": "Contributions",
+      "aliases": ["contribution splitting", "split with spouse", "split steps"],
+      "when": "The member wants to move some of last year's before-tax contributions to their spouse's super.",
+      "steps": [
+        { "do": "Confirm they're concessional contributions from last financial year (this year only if the whole balance is leaving).",
+          "source": { "doc": "hsw", "quote": "Generally, you can only request a contribution split from contributions made in the previous financial year." } },
+        { "do": "Check the spouse: under 60, or 60 to 64 and not retired. Not possible if the spouse is 65 or over.",
+          "source": { "doc": "hsw", "quote": "You can't split contributions with your spouse if they're age 65 or over." },
+          "member": [{ "cond": "spouse_known", "text": "{name}'s spouse is {spouseAge}." }] },
+        { "do": "Work out the most that can be split: the lesser of 85% of the concessional contributions and the concessional cap.",
+          "source": { "doc": "hsw", "quote": "The maximum amount of contributions that can be split each financial year is the lesser of: 85% of your concessional contributions, and the concessional contributions cap applicable to you." },
+          "member": [{ "cond": "last_fy_cc_known", "text": "{name} had {lastCc} of concessional contributions last year: up to {splitMax} can be split." }] },
+        { "do": "If they're claiming a deduction on any personal contributions, lodge the notice of intent first.", "rule": "noi-deadline" },
+        { "do": "Check the balance stays above $6,000 after the split, or it may be refused.",
+          "source": { "doc": "hsw", "quote": "we may refuse the application if it would result in your accumulation balance falling below $6,000" } },
+        { "do": "Lodge the Contribution splitting form by 30 June. Only one split per financial year.",
+          "source": { "doc": "hsw", "quote": "Your concessional contributions can only be split once per financial year." }, "form": "super-split-contributions-with-your-spouse" },
+        { "do": "Explain non-concessional contributions, rollovers and co-contributions can't be split." }
+      ],
+      "mistakes": ["Splitting before the notice of intent is lodged.", "Missing the 30 June deadline."]
+    },
+    {
+      "id": "bdbn",
+      "title": "Make or renew a binding nomination",
+      "topic": "Beneficiaries",
+      "aliases": ["binding nomination", "bdbn", "renew nomination", "lapsing nomination expiring", "witness"],
+      "when": "The member wants to make, change or renew a binding death benefit nomination.",
+      "steps": [
+        { "do": "Choose the type: non-lapsing (online or paper, no expiry) or lapsing (paper only, lasts three years).", "rule": "bdbn-types",
+          "member": [{ "cond": "lapsing_nomination", "text": "{name}'s lapsing nomination was signed {nomSigned} and expires {nomExpires}." }] },
+        { "do": "Check who's being nominated: only dependants (spouse, children, financial dependants, interdependents) or the legal personal representative.", "rule": "dependant-super" },
+        { "do": "Allocations must add up to exactly 100%, or the whole nomination is invalid.",
+          "source": { "doc": "hsw", "quote": "100% of your benefit must be allocated (the entire nomination will be invalid if the allocation doesn't equal exactly 100%)" } },
+        { "do": "Paper form: signed and dated by the member (not a power of attorney) with two witnesses aged 18+ who aren't beneficiaries, both signing the declaration.",
+          "source": { "doc": "hsw", "quote": "must be signed and dated by you (not a power of attorney) in the presence of two witnesses, both of whom are over the age of 18 and not nominated to receive the benefit" } },
+        { "do": "Make sure lapsing or non-lapsing is ticked: an unticked paper form is treated as lapsing.",
+          "source": { "doc": "hsw", "quote": "If you don't make a choice when you complete your binding death benefit nomination paper form, your nomination will default to lapsing." } },
+        { "do": "Renewing a lapsing nomination: a written notice signed and dated by the member, before it expires.",
+          "source": { "doc": "hsw", "quote": "You can do this by providing us with a written notice, signed and dated by you, to that effect." } },
+        { "do": "Pension members: a reversionary beneficiary on the pension overrides other nominations for that account.", "rule": "reversionary-what",
+          "member": [{ "cond": "has_pension", "text": "{name} has a pension: check whether it has a reversionary beneficiary." }] },
+        { "do": "Lodge online (non-lapsing) or with the Binding death nomination form. It takes effect once received and accepted.", "form": "super-nominate-a-binding-beneficiary" }
+      ],
+      "mistakes": ["A witness who is also a beneficiary.", "Allocations that don't total 100%.", "Leaving the lapsing/non-lapsing box blank."]
+    },
+    {
+      "id": "pension-withdrawal",
+      "title": "Lump sum from a Flexi Pension",
+      "topic": "Pension",
+      "aliases": ["pension withdrawal", "lump sum pension", "take money out of pension", "commute part"],
+      "when": "A pension member wants an extra amount on top of their regular payments.",
+      "steps": [
+        { "do": "Check the pension type: a TTR pension only allows lump sums in limited cases.", "rule": "ttr-lump-sum",
+          "member": [{ "cond": "has_ttr", "text": "{name} has a TTR pension: lump sums are only possible in limited cases." }] },
+        { "do": "Check the amount: at least $2,000, and enough in the account.",
+          "source": { "doc": "flexi", "quote": "You can make lump sum withdrawals of at least $2,000 from your Flexi Pension at any time if you have enough money in your account." } },
+        { "do": "Retirement Bonus: taking 50% or more of the opening balance within 12 months of starting may mean the bonus is clawed back.", "rule": "rb-clawback" },
+        { "do": "Explain the yearly minimum isn't reduced by a lump sum.",
+          "source": { "doc": "flexi", "quote": "The amount isn't recalculated if you make a withdrawal during the year." } },
+        { "do": "Explain tax: tax-free from 60; under 60, taken proportionally from the taxable and tax-free components.", "rule": "pension-lump-tax-under-60",
+          "member": [{ "cond": "under_60", "text": "{name} is {age}: tax may apply to the taxable component." }] },
+        { "do": "Lodge online (Pension, Flexi withdrawal) or with the Flexi Pension withdrawal form. Proof of identity may be asked for.", "form": "pension-withdraw-your-flexi-pension" },
+        { "do": "Tell the member when to expect it: usually within five business days, into their nominated bank account.",
+          "source": { "doc": "flexi", "quote": "Withdrawals are paid into your nominated bank account, usually within five business days of receiving your request." } }
+      ],
+      "mistakes": ["Promising a TTR lump sum without checking the limited circumstances."]
+    },
+    {
+      "id": "close-pension",
+      "title": "Close a pension or move it back to super",
+      "topic": "Pension",
+      "aliases": ["close pension", "pension back to super", "stop pension", "commute pension"],
+      "when": "The member wants to stop their pension and keep the money in super (or, for BIS, take it as cash).",
+      "steps": [
+        { "do": "Work out whether a pro-rata minimum must be paid before it closes this year.",
+          "source": { "doc": "flexi", "quote": "However, if you commute or close your Flexi Pension during the year, a minimum income payment (or a pro-rata minimum income payment) may still need to be paid." }, "calc": "drawdown" },
+        { "do": "Retirement Phase or TTR: use the Transfer your Flexi Pension to a super account form, or the member can call.", "form": "pension-transfer-your-flexi-pension-to-a-super-account" },
+        { "do": "BIS: the member logs in or calls; the balance is paid as cash.",
+          "source": { "doc": "flexi", "quote": "To close your BIS Flexi Pension, log in to your online account or call us." },
+          "member": [{ "cond": "has_bis", "text": "{name} has a BIS pension: it's paid out as cash, not to super." }] },
+        { "do": "Explain where it goes: the rollover strategy, or Balanced if none; a new Accumulation 1 account if they don't have one.",
+          "source": { "doc": "flexi", "quote": "If you don't have a rollover strategy, it will be invested in our default Balanced (MySuper) investment option." } }
+      ],
+      "mistakes": ["Forgetting the pro-rata minimum for the year."]
+    },
+    {
+      "id": "rollover-out",
+      "title": "Transfer super to another fund",
+      "topic": "Account",
+      "aliases": ["rollover out", "transfer out", "leave unisuper", "move my super"],
+      "when": "The member wants to move all or part of their super to another fund.",
+      "steps": [
+        { "do": "Lodge any notice of intent first: it can't be accepted after the money leaves.", "rule": "noi-deadline" },
+        { "do": "Lodge any contribution split first: contributions must be split before they're rolled over.",
+          "source": { "doc": "hsw", "quote": "Contributions must be split before they are rolled over, transferred, or withdrawn." } },
+        { "do": "Check insurance: cover stops when the member leaves UniSuper.",
+          "member": [{ "cond": "has_insurance", "text": "{name} has insurance with UniSuper: make sure they know it stops." }] },
+        { "do": "Partial transfer: at least $6,000 must stay, and it's taken pro-rata across investment options.",
+          "source": { "doc": "hsw", "quote": "If you're not transferring the entire amount out of your UniSuper account then you must leave at least $6,000 in your account." } },
+        { "do": "Up to eight transfer requests in any 12 months.",
+          "source": { "doc": "hsw", "quote": "You may request a transfer up to eight times in each 12-month period." } },
+        { "do": "Lodge with the Portability and rollover form, or through the new fund.", "form": "super-roll-over-to-another-fund" }
+      ],
+      "mistakes": ["Rolling out before a notice of intent or split is lodged."]
+    },
+    {
+      "id": "downsizer",
+      "title": "Downsizer contribution",
+      "topic": "Contributions",
+      "aliases": ["downsizer", "sold my house", "home sale contribution"],
+      "when": "The member has sold their home and wants to put some of the proceeds into super.",
+      "steps": [
+        { "do": "Check age: 55 or older at the time of the contribution.",
+          "member": [{ "cond": "under_55", "text": "{name} is {age}: too young for a downsizer contribution." }] },
+        { "do": "Check the home was owned for at least 10 years.",
+          "source": { "doc": "hsw", "quote": "If you're aged 55 or older and have owned your house for at least 10 years, you may be able to contribute up to $300,000 ($600,000 per couple) into super from the proceeds of selling your home." } },
+        { "do": "Amount: up to $300,000 each, from the sale proceeds. Only one home sale can be used.",
+          "source": { "doc": "hsw", "quote": "You can only make downsizing contributions for the sale of one home." } },
+        { "do": "Send the ATO downsizer form with the payment, generally within 90 days of settlement.", "form": "ato-downsizer" },
+        { "do": "Explain it doesn't count towards the contribution caps, but counts towards the transfer balance cap and the total super balance.", "rule": "downsizer" },
+        { "do": "If the ATO rejects it, it may be accepted as a non-concessional contribution, subject to the caps.",
+          "source": { "doc": "hsw", "quote": "The ATO may reject your downsizer contribution on eligibility grounds." } }
+      ],
+      "mistakes": ["Paying the contribution without the ATO form.", "Missing the 90-day window."]
+    },
+    {
+      "id": "insurance-stopped",
+      "title": "Insurance has stopped",
+      "topic": "Insurance",
+      "aliases": ["insurance stopped", "cover stopped", "restart cover", "reinstate insurance"],
+      "when": "The member's insurance cover has stopped and they want it back.",
+      "steps": [
+        { "do": "Find out why it stopped: no contributions for 16 months, not enough money for premiums, cessation age, or they cancelled it.", "rule": "cover-stops",
+          "member": [{ "cond": "inactive_12m", "text": "{name} has had no contributions for {monthsInactive} months." }] },
+        { "do": "If it stopped for low funds or no contributions: apply within 90 days, be under the cessation age and in active employment.",
+          "source": { "doc": "ins", "quote": "apply within 90 days of your cover being stopped" } },
+        { "do": "Lodge the Insurance cover reinstatement form (or online). It restarts from the date it stopped, at the same level.", "form": "insurance-reinstate-your-cover" },
+        { "do": "To stop it happening again, the member can elect to keep cover.", "form": "insurance-elect-to-keep-your-insurance-cover" },
+        { "do": "Past 90 days: they'd need to apply for cover with health evidence.", "form": "insurance-apply-for-cover" }
+      ],
+      "mistakes": ["Missing the 90-day restart window."]
+    },
+    {
+      "id": "change-payments",
+      "title": "Change pension payments or bank account",
+      "topic": "Pension",
+      "aliases": ["change payment amount", "change frequency", "change bank pension", "pension payment change"],
+      "when": "A pension member wants to change how much, how often, or where they're paid.",
+      "steps": [
+        { "do": "Check the new yearly amount is at least the minimum (and no more than 10% for TTR).", "calc": "drawdown", "rule": "min-pct",
+          "member": [{ "cond": "has_pension", "text": "{name}'s minimum this year: {pensionMin}." }] },
+        { "do": "Frequencies: fortnightly, monthly, quarterly, half-yearly or annual. Payments go out every second Friday (fortnightly) or by the 28th.", "rule": "pay-dates" },
+        { "do": "Online: Pension payments tab, Your payments. Or the Change of details (pension) or Change of bank account form.",
+          "source": { "doc": "flexi", "quote": "Log in to your account and select the `Your payments' option from the `pension payments' tab menu." },
+          "form": "pension-change-your-personal-details-or-pension-payments" },
+        { "do": "Credit union accounts can take longer to clear.",
+          "source": { "doc": "flexi", "quote": "If your account is held with a credit union, you may not be able to access your income payment on these days" } }
+      ],
+      "mistakes": ["Setting an amount below the minimum."]
+    },
+    {
+      "id": "hardship",
+      "title": "Early release: severe financial hardship",
+      "topic": "Access",
+      "aliases": ["hardship", "financial hardship release", "early access hardship"],
+      "when": "The member is under financial pressure and asking to access super early.",
+      "steps": [
+        { "do": "Check they're receiving eligible Commonwealth income support: it's a condition of this release.",
+          "source": { "doc": "hsw", "quote": "You must be receiving eligible government income support benefits to qualify." } },
+        { "do": "It's applied for through UniSuper (the Trustee), online or with the Financial hardship form.", "form": "super-withdraw-your-super-due-to-financial-hardship" },
+        { "do": "Medical treatment, palliative care or mortgage arrears instead? That's compassionate grounds, which the member applies for with the ATO.", "rule": "compassionate" },
+        { "do": "Explain early access can affect insurance.",
+          "member": [{ "cond": "has_insurance", "text": "{name} has insurance in super: early access may affect it." }] }
+      ],
+      "mistakes": ["Sending compassionate-grounds requests to UniSuper instead of the ATO."]
+    }
+  ]
+}
