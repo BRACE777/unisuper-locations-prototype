@@ -183,7 +183,7 @@
       "aliases": ["close pension", "pension back to super", "stop pension", "commute pension"],
       "when": "The member wants to stop their pension and keep the money in super (or, for BIS, take it as cash).",
       "steps": [
-        { "do": "Work out whether a pro-rata minimum must be paid before it closes this year.",
+        { "do": "Work out whether {{closing-day-count:a pro-rata minimum}} must be paid before it closes this year.",
           "source": { "doc": "flexi", "quote": "However, if you commute or close your Flexi Pension during the year, a minimum income payment (or a pro-rata minimum income payment) may still need to be paid." }, "calc": "drawdown" },
         { "do": "Retirement Phase or TTR: use the Transfer your Flexi Pension to a super account form, or the member can call.", "form": "pension-transfer-your-flexi-pension-to-a-super-account" },
         { "do": "BIS: the member logs in or calls; the balance is paid as cash.",

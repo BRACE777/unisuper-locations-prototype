@@ -139,6 +139,13 @@ if (members) {
   }
 }
 
+// Assumption markers {{id:words}} in any data file must name a registered assumption.
+const assumptionIds = new Set(read('assumptions.json').items.map((a) => a.id));
+for (const f of ['rates.json', 'timeframes.json', 'explainers.json', 'procedures.json', 'forms-extra.json']) {
+  for (const m of JSON.stringify(read(f)).matchAll(/\{\{([a-z0-9-]+):/g)) if (!assumptionIds.has(m[1])) problems.push(`${f}: unknown assumption "${m[1]}"`);
+}
+for (const c of cards) for (const m of JSON.stringify(c).matchAll(/\{\{([a-z0-9-]+):/g)) if (!assumptionIds.has(m[1])) problems.push(`rules/${c.file}: unknown assumption "${m[1]}"`);
+
 if (problems.length) {
   console.error(`${problems.length} problem(s):\n- ` + problems.join('\n- '));
   process.exit(1);

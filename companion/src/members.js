@@ -116,7 +116,7 @@ var CompanionMembers = (function () {
       }
       if (c.cond.inactive_12m) {
         var stop = addMonths(c.last, 16);
-        if (c.cond.has_insurance) add(stop <= today ? 'alarm' : 'caution', 'No contributions for ' + c.inactive + ' months: insurance stops on ' + fmt(stop) + ' unless they elect to keep it.', { checklist: 'insurance-stopped' });
+        if (c.cond.has_insurance) add(stop <= today ? 'alarm' : 'caution', '{{inactive-definition:No contributions for ' + c.inactive + ' months}}: insurance stops on ' + fmt(stop) + ' unless they elect to keep it.', { checklist: 'insurance-stopped' });
         if (supBal < 6000) add('caution', 'Under $6,000 and inactive: the account goes to the ATO after 16 months without activity.', { rule: 'ilba' });
       } else if (supBal < 6000) add('info', 'Balance under $6,000: low-balance rules and the 3% fee cap apply.', { rule: 'low-balance-cap' });
       if (c.cond.has_dbd) add('info', 'DBD member: no Income Protection, and using the defined benefit component for a pension ends DBD membership.', { rule: 'dbd-pension-db' });
@@ -127,20 +127,20 @@ var CompanionMembers = (function () {
     if (m.fy && m.fy.concessional > 0) add('info', 'Concessional contributions this year: ' + money(m.fy.concessional) + ' of ' + money(r.cc_cap) + (m.expected_concessional ? ' (on track for ' + money(m.expected_concessional) + ')' : '') + '.', { rule: 'cc-cap' });
     if (c.cond.div293) {
       var over = c.income + c.ccForYear - r.div293_threshold;
-      add('caution', 'Division 293 likely: income plus concessional contributions about ' + money(c.income + c.ccForYear) + '. Extra 15% on ' + money(Math.min(over, c.ccForYear)) + ' (about ' + money(Math.min(over, c.ccForYear) * 0.15) + ').', { rule: 'div293' });
+      add('caution', '{{div293-estimate:Division 293 likely: income plus concessional contributions about ' + money(c.income + c.ccForYear) + '}}. Extra 15% on ' + money(Math.min(over, c.ccForYear)) + ' (about ' + money(Math.min(over, c.ccForYear) * 0.15) + ').', { rule: 'div293' });
     }
     if (c.cond.div296) add('caution', 'Total super balance ' + money(c.tsb) + ' is over ' + money(r.div296_lower) + ': Division 296 tax on earnings.', { rule: 'div296' });
     if (c.cond.tsb_over_cap) add('caution', 'Total super balance at or over ' + money(r.tbc_general) + ': non-concessional cap is nil, and not all of it can go into a retirement pension.', { rule: 'ncc-cap' });
-    if (c.cond.tsb_under_500k && m.working && m.fy && m.fy.concessional < r.cc_cap && (c.income >= 100000 || m.fy.non_concessional >= 10000)) add('info', 'Total super balance under ' + money(r.carry_forward_tsb) + ': unused concessional cap from the last five years may be carried forward (amount shown in ATO online services).', { rule: 'carry-forward' });
+    if (c.cond.tsb_under_500k && m.working && m.fy && m.fy.concessional < r.cc_cap && (c.income >= 100000 || m.fy.non_concessional >= 10000)) add('info', 'Total super balance under ' + money(r.carry_forward_tsb) + ': {{carry-forward-relevance:unused concessional cap from the last five years may be carried forward}} (amount shown in ATO online services).', { rule: 'carry-forward' });
     if (m.fy && m.fy.non_concessional > 0 && c.age < 75) add('info', 'Personal contributions of ' + money(m.fy.non_concessional) + ' this year: a notice of intent is needed to claim a deduction.', { checklist: 'noi' });
-    if (c.income > 0 && c.income <= r.listo_income && m.fy && m.fy.concessional > 0) add('positive', 'Income ' + money(c.income) + ': LISTO of about ' + money(Math.min(r.listo_max, m.fy.concessional * 0.15)) + ' paid by the ATO.', { rule: 'listo' });
-    if (c.income > 0 && c.income <= r.cocontrib_lower && m.fy && m.fy.non_concessional > 0) add('positive', 'Income under ' + money(r.cocontrib_lower) + ': government co-contribution of about ' + money(Math.min(r.cocontrib_max, m.fy.non_concessional * r.cocontrib_rate)) + '.', { rule: 'co-contribution' });
+    if (c.income > 0 && c.income <= r.listo_income && m.fy && m.fy.concessional > 0) add('positive', 'Income ' + money(c.income) + ': {{listo-estimate:LISTO of about ' + money(Math.min(r.listo_max, m.fy.concessional * 0.15)) + '}} paid by the ATO.', { rule: 'listo' });
+    if (c.income > 0 && c.income <= r.cocontrib_lower && m.fy && m.fy.non_concessional > 0) add('positive', 'Income under ' + money(r.cocontrib_lower) + ': {{cocontrib-estimate:government co-contribution of about ' + money(Math.min(r.cocontrib_max, m.fy.non_concessional * r.cocontrib_rate)) + '}}.', { rule: 'co-contribution' });
     if (c.cond.age_67_74 && (m.working || (m.fy && m.fy.non_concessional > 0))) add('info', 'Aged ' + c.age + ': the work test applies to claiming a deduction for personal contributions.', { rule: 'work-test' });
 
     if (m.spouse) {
       var sa = ageOn(parse(m.spouse.dob), today), spa = presAge(rates, parse(m.spouse.dob));
       var ok = sa < 65 && (sa < spa || !m.spouse.retired);
-      add(ok ? 'positive' : 'caution', 'Spouse is ' + sa + (ok ? ': contributions can be split to them' + (m.last_fy_concessional ? ', up to ' + money(Math.min(m.last_fy_concessional * 0.85, r.cc_cap)) + ' of last year’s' : '') : ': a split isn’t possible') + '.', { checklist: 'split' });
+      add(ok ? 'positive' : 'caution', 'Spouse is ' + sa + (ok ? ': {{spouse-split:contributions can be split to them}}' + (m.last_fy_concessional ? ', up to ' + money(Math.min(m.last_fy_concessional * 0.85, r.cc_cap)) + ' of last year’s' : '') : ': a split isn’t possible') + '.', { checklist: 'split' });
       if (m.spouse.income != null && m.spouse.income <= r.spouse_offset_income) add('positive', 'Spouse earns ' + money(m.spouse.income) + ': a $3,000 spouse contribution could give a ' + money(r.spouse_offset_max) + ' tax offset.', { rule: 'spouse-offset' });
     }
 
@@ -152,7 +152,7 @@ var CompanionMembers = (function () {
 
     if (m.temp_resident) {
       var dep = parse(m.temp_resident.departed), due = addMonths(dep, 6);
-      add(due < today ? 'alarm' : 'caution', 'Left Australia ' + fmt(dep) + ': claim a DASP by ' + fmt(due) + ' or the super goes to the ATO.', { rule: 'dasp' });
+      add(due < today ? 'alarm' : 'caution', 'Left Australia ' + fmt(dep) + ': claim a DASP by {{dasp-date:' + fmt(due) + '}} or the super goes to the ATO.', { rule: 'dasp' });
     }
 
     var order = { alarm: 0, caution: 1, positive: 2, info: 3 };

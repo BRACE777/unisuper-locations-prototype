@@ -65,6 +65,10 @@ Local-only files, never committed: `glossary.local.json` (team shorthand) and `t
 2. `npm run companion:check`. Any quote that no longer appears word for word is listed: update the card and its figures.
 3. Update `rates.json` for changed figures, then rebuild and run the tests.
 
+## Assumptions
+
+Anything the companion assumes rather than takes straight from the PDS has a **red dotted underline**. Hover over it (or tab to it) to see what's assumed, what the PDS actually says, and how to be sure. The footer link lists all 21. They live in `data/assumptions.json`; in text, mark the words that rely on one as `{{assumption-id:the words}}`. A test fails if a marker names an unknown assumption or an assumption is never shown. In the Excel workbook, labels that rely on an assumption are red, with the details in a cell comment, and listed on the Assumptions sheet.
+
 ## Checklists
 
 The **Checklists** tab has step-by-step lists for 12 specific tasks, in the order you'd do them: notice of intent (NOI), starting a Retirement Phase or TTR pension, contribution splitting, binding nominations, pension lump sums, closing a pension, rolling out, downsizer contributions, stopped insurance, changing pension payments, and hardship release. Tick steps off during the call (nothing is saved), then **Copy as call note**. Steps that rely on a rule show the PDS wording underneath, and link to the form or rule card. Edit them in `data/procedures.json`.

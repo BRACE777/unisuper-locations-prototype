@@ -11,6 +11,7 @@ import sys
 
 from openpyxl import Workbook
 from openpyxl.formatting.rule import FormulaRule
+from openpyxl.comments import Comment
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Protection, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.workbook.defined_name import DefinedName
@@ -20,6 +21,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 rates_doc = json.loads((ROOT / "data" / "rates.json").read_text(encoding="utf-8"))
 sources = {d["id"]: d for d in json.loads((ROOT / "data" / "sources.json").read_text(encoding="utf-8"))["documents"]}
 rate = {r["id"]: r for r in rates_doc["rates"]}
+assumptions = {a["id"]: a for a in json.loads((ROOT / "data" / "assumptions.json").read_text(encoding="utf-8"))["items"]}
 bands = rates_doc["tables"]["minimum_drawdown"]["rows"]
 pres = rates_doc["tables"]["preservation_age"]["rows"]
 
@@ -477,6 +479,51 @@ ck.cell(last_check + 4, 1, "Calculator now: unrounded pro-rata minimum")
 ck.cell(last_check + 4, 3, '=IF(PctNow="","",Balance*PctNow*DaysLeft/DaysYear)').number_format = MONEY_C
 for col, w in zip("ABCDE", (34, 40, 18, 14, 10)):
     ck.column_dimensions[col].width = w
+
+# ---- Assumptions: red labels with a hover comment, and a sheet listing them all ----
+ASSUME_RED = Font(color="C02F49", bold=False)
+ASSUME_LABELS = {
+    "Calculator": {
+        "Days in this financial year": "day-count",
+        "Days left, counting the start date": "day-count",
+        "Pro-rata minimum for the rest of this year": "day-count",
+        "Payments left this year (estimate)": "payments-left",
+        "Date of any fortnightly payment (optional)": "fortnightly",
+        "Each payment at the minimum": "payment-rounding",
+        "Each payment at the TTR maximum": "payment-rounding",
+        "Each payment at the chosen amount": "payment-rounding",
+        "Or age at start (if no date of birth)": "age-only",
+    },
+    "Closing a pension": {"Days in the period, both ends included": "closing-day-count", "Pro-rata minimum to the closure date": "closing-day-count"},
+    "Full table": {"Days left": "day-count"},
+}
+for sheet_name, labels in ASSUME_LABELS.items():
+    ws = wb[sheet_name]
+    for row in ws.iter_rows():
+        for cell in row:
+            aid = labels.get(cell.value) if isinstance(cell.value, str) else None
+            if aid:
+                a = assumptions[aid]
+                cell.font = Font(color="C02F49", bold=cell.font.bold, size=cell.font.size)
+                cell.comment = Comment(f"ASSUMPTION: {a['title']}\n\n{a['assumed']}\n\nPDS: {a['pds']}\n\nTo be sure: {a['check']}", "Call companion", width=320, height=220)
+
+asm = wb.create_sheet("Assumptions")
+asm.sheet_view.showGridLines = False
+label(asm, "A1", "Assumptions", H1)
+label(asm, "A2", "Labels in red on the other sheets rely on one of these. Hover over a red label to see which.", MUTED)
+for i, h in enumerate(["Assumption", "What's assumed", "What the PDS says", "To be sure"]):
+    c = asm.cell(4, 1 + i, h)
+    c.font, c.fill = WHITE_BOLD, HEAD_FILL
+used = sorted({aid for labels in ASSUME_LABELS.values() for aid in labels.values()})
+for k, aid in enumerate(used):
+    a = assumptions[aid]
+    for j, v in enumerate([a["title"], a["assumed"], a["pds"], a["check"]]):
+        c = asm.cell(5 + k, 1 + j, v)
+        c.alignment = Alignment(wrap_text=True, vertical="top")
+        if j == 0:
+            c.font = Font(color="C02F49", bold=True)
+for col, w in zip("ABCD", (30, 60, 60, 40)):
+    asm.column_dimensions[col].width = w
 
 # Protect every sheet so only the yellow input cells can be changed. On a protected sheet,
 # Tab and Enter jump straight from one input to the next. No password: Review > Unprotect Sheet.

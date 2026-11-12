@@ -49,7 +49,7 @@ const bundle = {
   rates, glossary, rules,
   forms: forms.forms, formsPage: forms.page, formsGenerated: forms.generated,
   timeframes: timeframes.items, explainers: explainers.items, holidays: holidays.extra,
-  procedures: read('data/procedures.json').items, members: read('data/members.json').members,
+  procedures: read('data/procedures.json').items, assumptions: read('data/assumptions.json').items, members: read('data/members.json').members,
   pages: pages.map(({ doc, page, text }) => ({ doc, page, text: text.replace(/\r/g, '').replace(/[ \t]+/g, ' ') })),
   local: { glossary: !!localGlossary, timeframes: !!localTimeframes },
 };

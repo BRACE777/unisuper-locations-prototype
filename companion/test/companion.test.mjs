@@ -13,6 +13,7 @@ for (const f of ['search.js', 'dates.js', 'parse.js', 'drawdown.js', 'members.js
 const { CompanionSearch, CompanionDates: D, CompanionDrawdown, CompanionParse: P, CompanionMembers: M } = vm.runInContext('({ CompanionSearch, CompanionDates, CompanionDrawdown, CompanionParse, CompanionMembers })', ctx);
 const data = JSON.parse(readFileSync(new URL('dist/companion-data.json', root), 'utf8'));
 const engine = CompanionSearch.create(data);
+const strip = (t) => String(t).replace(/\{\{[a-z0-9-]+:/g, '').replace(/\}\}/g, '');
 const cases = JSON.parse(readFileSync(new URL('test/search-cases.json', root), 'utf8'));
 
 test('search: each query finds its card in the top three', () => {
@@ -135,12 +136,12 @@ test('drawdown: frequencies, leap year and warnings', () => {
   assert.equal(calc({ ...base, start: D.parse('2026-10-01'), freq: 'Fortnightly', anchor: D.parse('2026-11-13') }).payments, 20);
   const est = calc({ ...base, start: D.parse('2026-10-01'), freq: 'Fortnightly' });
   assert.equal(est.payments, 20); // 273 days / 14, rounded
-  assert.ok(est.warnings.some((w) => w.startsWith('Fortnightly payments left is an estimate')));
+  assert.ok(est.warnings.some((w) => strip(w).startsWith('Fortnightly payments left is an estimate')));
   assert.equal(calc({ ...base, start: D.parse('2028-06-10') }).daysYear, 366);
-  assert.ok(calc({ ...base, start: D.parse('2027-06-10') }).warnings.some((w) => w.startsWith('Starts in June')));
-  assert.ok(calc({ dob: D.parse('1952-03-10'), start: D.parse('2026-10-01'), balance: 500000 }).warnings.some((w) => w.includes('steps up from 5% to 6%')));
-  assert.ok(calc({ ...base, start: D.parse('2026-10-01'), balance: 20000 }).warnings.some((w) => w.startsWith('Below the $25,000')));
-  assert.ok(calc({ dob: D.parse('1970-01-01'), start: D.parse('2026-10-01'), balance: 300000, type: 'TTR' }).warnings.some((w) => w.includes('Under preservation age')));
+  assert.ok(calc({ ...base, start: D.parse('2027-06-10') }).warnings.some((w) => strip(w).startsWith('Starts in June')));
+  assert.ok(calc({ dob: D.parse('1952-03-10'), start: D.parse('2026-10-01'), balance: 500000 }).warnings.some((w) => strip(w).includes('steps up from 5% to 6%')));
+  assert.ok(calc({ ...base, start: D.parse('2026-10-01'), balance: 20000 }).warnings.some((w) => strip(w).startsWith('Below the $25,000')));
+  assert.ok(calc({ dob: D.parse('1970-01-01'), start: D.parse('2026-10-01'), balance: 300000, type: 'TTR' }).warnings.some((w) => strip(w).includes('Under preservation age')));
 });
 
 test('data: every PDS quote resolved to a PDF page', () => {
@@ -194,7 +195,7 @@ test('drawdown: works from an age when there is no date of birth', () => {
   const r = CompanionDrawdown.calculate({ age: 67, start: D.parse('2026-10-01'), balance: 500000, freq: 'Monthly', type: 'Retirement Phase' }, rates);
   assert.equal(r.proMin, 18700);
   assert.equal(r.pctNext, null);
-  assert.ok(r.warnings.some((w) => w.startsWith('Age entered without a date of birth')));
+  assert.ok(r.warnings.some((w) => strip(w).startsWith('Age entered without a date of birth')));
 });
 
 test('data: ATO sources are supplementary only', () => {
@@ -207,7 +208,7 @@ test('data: ATO sources are supplementary only', () => {
 
 const TODAY = new Date(2026, 10, 13);
 const member = (n) => data.members.find((m) => m.number === n);
-const has = (n, re) => M.insights(member(n), data.rates, TODAY).some((i) => re.test(i.text));
+const has = (n, re) => M.insights(member(n), data.rates, TODAY).some((i) => re.test(strip(i.text)));
 
 test('members: each fictional member shows the alerts its scenario is about', () => {
   assert.ok(has('101', /No default insurance until 25/));
@@ -254,4 +255,18 @@ test('members: import validation catches bad files', () => {
   assert.deepEqual([...M.validate(data.members)], []);
   assert.ok(M.validate([{ number: '12', name: 'X', dob: '1990-01-01', accounts: [{ type: 'Accumulation 1' }] }]).length > 0);
   assert.ok(M.validate([{ number: '120', name: 'X', dob: '1990-01-01', accounts: [{ type: 'Super' }] }]).length > 0);
+});
+
+test('assumptions: every marker in the code and data names a registered assumption', () => {
+  const ids = new Set(data.assumptions.map((a) => a.id));
+  const used = new Set();
+  for (const f of ['app.js', 'members.js', 'drawdown.js', 'figures.js']) {
+    const src = readFileSync(new URL(`src/${f}`, root), 'utf8');
+    for (const m of src.matchAll(/\{\{([a-z0-9-]+):/g)) used.add(m[1]);
+    for (const m of src.matchAll(/assume(?:Span)?\('([a-z0-9-]+)'/g)) used.add(m[1]);
+  }
+  for (const m of JSON.stringify([data.rules, data.procedures, data.timeframes, data.explainers]).matchAll(/\{\{([a-z0-9-]+):/g)) used.add(m[1]);
+  for (const id of used) assert.ok(ids.has(id), `unknown assumption ${id}`);
+  const unused = [...ids].filter((id) => !used.has(id));
+  assert.deepEqual(unused, [], 'registered but never shown');
 });

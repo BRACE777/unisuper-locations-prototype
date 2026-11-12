@@ -71,7 +71,7 @@ var CompanionDrawdown = (function () {
     var nextJuly = new Date(fyEnd.getFullYear(), 6, 1);
     out.ageNext = dob ? ageOn(dob, nextJuly) : null;
     out.pctNext = dob ? band(bands, out.ageNext).pct : null;
-    if (!dob) out.warnings.push("Age entered without a date of birth: next 1 July’s percentage and the preservation age can’t be checked.");
+    if (!dob) out.warnings.push("{{age-only:Age entered without a date of birth}}: next 1 July’s percentage and the preservation age can’t be checked.");
 
     if (bal < r.pension_min_start) out.warnings.push('Below the $' + r.pension_min_start.toLocaleString('en-AU') + ' minimum to start a Flexi Pension.');
     if (dob && start <= dob) out.warnings.push('Start date is before the date of birth.');
@@ -80,9 +80,9 @@ var CompanionDrawdown = (function () {
     if (input.type === 'TTR' && out.age >= 65) out.warnings.push('65 or over: TTR converts to Retirement Phase, so the 10% maximum no longer applies.');
     if (input.chosen && input.chosen < out.proMin) out.warnings.push('Chosen amount is below the pro-rata minimum.');
     if (input.chosen && out.max != null && input.chosen > out.max) out.warnings.push('Chosen amount is above the TTR maximum.');
-    if (input.freq === 'Fortnightly' && !input.anchor && (input.paymentsOverride == null || input.paymentsOverride === '')) out.warnings.push('Fortnightly payments left is an estimate (one every 14 days). For an exact count, enter the date of any fortnightly payment from the member’s account.');
+    if (input.freq === 'Fortnightly' && !input.anchor && (input.paymentsOverride == null || input.paymentsOverride === '')) out.warnings.push('{{fortnightly:Fortnightly payments left is an estimate (one every 14 days)}}. For an exact count, enter the date of any fortnightly payment from the member’s account.');
     if (input.freq === 'Fortnightly' && input.anchor && input.anchor.getDay() !== 5) out.warnings.push('The pay date entered is not a Friday.');
-    if (out.daysYear === 366) out.warnings.push('This financial year has 366 days. Confirm the admin system also divides by 366.');
+    if (out.daysYear === 366) out.warnings.push('{{day-count:This financial year has 366 days}}. Confirm the admin system also divides by 366.');
     if (out.pctNext != null && out.pctNext > out.pct) out.warnings.push('From 1 July the minimum steps up from ' + Math.round(out.pct * 100) + '% to ' + Math.round(out.pctNext * 100) + '%.');
     return out;
   }

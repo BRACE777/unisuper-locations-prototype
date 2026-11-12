@@ -82,6 +82,8 @@ var CompanionFigures = (function () {
     if (parent) parent.appendChild(n);
     return n;
   }
+  function assume(id, html) { return '<span class="assume" data-assumption="' + id + '" tabindex="0">' + html + '</span>'; }
+  function assume(id, html) { return '<span class="assume" data-assumption="' + id + '" tabindex="0">' + html + '</span>'; }
   function r2(v) { return Math.round(v * 100) / 100; }
   function path(pts) { return 'M' + pts.map(function (p) { return r2(p[0]) + ' ' + r2(p[1]); }).join('L') + 'Z'; }
   // Box from ground rectangle (x, y, w, d) between heights z0 and z1. With the camera at
@@ -220,8 +222,8 @@ var CompanionFigures = (function () {
       tiles.forEach(function (t, j) { t.h.t = j >= i ? 1.6 : 0.2; t.g.classList.toggle('is-hi', j === i); t.g.classList.toggle('is-on', j >= i); });
       var d = daysFrom(i), share = d.left / d.total;
       var amount = o.balance && o.pct ? Math.round(o.balance * o.pct * share / 10) * 10 : null;
-      st.cap.innerHTML = '<b>Starts 1 ' + names[i] + ' ' + d.y + '</b><span>' + d.left + ' of ' + d.total + ' days count: ' + Math.round(share * 100) + '% of a full year’s minimum' +
-        (amount ? ' · $' + amount.toLocaleString('en-AU') + ' on $' + o.balance.toLocaleString('en-AU') + ' at ' + Math.round(o.pct * 100) + '%' : '') + '</span>';
+      st.cap.innerHTML = '<b>' + assume('first-of-month', 'Starts 1 ' + names[i] + ' ' + d.y) + '</b><span>' + d.left + ' of ' + d.total + ' days count: ' + Math.round(share * 100) + '% of a full year’s minimum' +
+        (amount ? ' · ' + (o.example ? assume('example-figures', '$' + amount.toLocaleString('en-AU') + ' on $' + o.balance.toLocaleString('en-AU') + ' at ' + Math.round(o.pct * 100) + '%') : '$' + amount.toLocaleString('en-AU') + ' on $' + o.balance.toLocaleString('en-AU') + ' at ' + Math.round(o.pct * 100) + '%') : '') + '</span>';
     }
     function tick(dt) {
       var moving = false;

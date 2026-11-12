@@ -50,7 +50,7 @@ var CompanionSearch = (function () {
 
   function tokens(s, keepStop) {
     var out = [];
-    var parts = normaliseNumbers(s).split(/[^a-z0-9%.']+/);
+    var parts = normaliseNumbers(String(s || '').replace(/\{\{[a-z0-9-]+:/g, '').replace(/\}\}/g, '')).split(/[^a-z0-9%.']+/);
     for (var i = 0; i < parts.length; i++) {
       var t = parts[i].replace(/^[.']+|[.']+$/g, '').replace(/'s$/, '');
       if (!t) continue;

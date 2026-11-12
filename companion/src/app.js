@@ -127,7 +127,25 @@
 
   // Wraps explainer phrases and acronyms in already-escaped text. Each one is marked once per
   // card (`seen`), so a card isn't covered in underlines.
+  // ----- assumptions: a double-brace marker (assumption id, colon, words) becomes a red dotted underline with a hover-over -----
+  var ASSUMPTIONS = {};
+  DATA.assumptions.forEach(function (a) { ASSUMPTIONS[a.id] = a; });
+  var MARK_RE = /\{\{([a-z0-9-]+):([^}]*)\}\}/g;
+  function assumeSpan(id, html) { return '<span class="assume" data-assumption="' + id + '" tabindex="0">' + html + '</span>'; }
+  function marks(escaped) { return escaped.replace(MARK_RE, function (all, id, words) { return ASSUMPTIONS[id] ? assumeSpan(id, words) : words; }); }
+  function rich(text) { return marks(esc(text)); }
+  function plain(text) { return String(text == null ? '' : text).replace(MARK_RE, '$2'); }
+
   function annotate(escaped, seen) {
+    // Assumption markers are kept whole; terms and acronyms are found in the text around them.
+    if (MARK_RE.test(escaped)) {
+      MARK_RE.lastIndex = 0;
+      var parts = [], last = 0, mm;
+      while ((mm = MARK_RE.exec(escaped))) { parts.push(annotate(escaped.slice(last, mm.index), seen)); parts.push(ASSUMPTIONS[mm[1]] ? assumeSpan(mm[1], mm[2]) : mm[2]); last = mm.index + mm[0].length; }
+      MARK_RE.lastIndex = 0;
+      return parts.join('') + annotate(escaped.slice(last), seen);
+    }
+    MARK_RE.lastIndex = 0;
     var found = [], m;
     if (TERM_RE) { TERM_RE.lastIndex = 0; while ((m = TERM_RE.exec(escaped))) found.push({ s: m.index, e: m.index + m[0].length, t: m[0], id: TERM_TO_ID[m[0].toLowerCase()], kind: 'x' }); }
     ACR_RE.lastIndex = 0;
@@ -171,7 +189,7 @@
     if (name === 'bands') return { rows: rows.map(function (r, i) { return { label: r.label, short: SHORT_BANDS[i], pct: r.pct }; }), selected: band >= 0 ? band : 1, note: band >= 0 ? 'member is ' + age : '' };
     if (name === 'months') {
       var bal = state.dd && CompanionParse.parseMoney(state.dd.bal);
-      return { fyStartYear: fy, selected: 3, balance: bal || 500000, pct: band >= 0 ? rows[band].pct : 0.05 };
+      return { fyStartYear: fy, selected: 3, balance: bal || 500000, pct: band >= 0 ? rows[band].pct : 0.05, example: !bal || band < 0 };
     }
     if (name === 'layers') return { names: ['Cash', 'Australian Bond', 'Conservative', 'Conservative Balanced', 'Australian Income', 'Balanced', 'Sustainable Balanced', 'Growth'] };
     if (name === 'cap') return { cap: DATA.rates.rates.filter(function (r) { return r.id === 'tbc_general'; })[0].value, amount: 1500000 };
@@ -241,7 +259,7 @@
       return '<button class="link" data-open-rule="' + esc(id) + '">' + esc(RULES[id].q) + '</button>';
     }).join('') + '</div>' : '';
     var atoUrls = (c.ato || []).map(function (s) { return (DOCS[s.doc] || {}).url; }).filter(function (u, i, a) { return u && a.indexOf(u) === i; });
-    var copy = c.a + '\n' + c.sources.map(sourceText).join('\n') + (atoUrls.length ? '\nSee also (ATO): ' + atoUrls.join(' ') : '');
+    var copy = plain(c.a) + '\n' + c.sources.map(sourceText).join('\n') + (atoUrls.length ? '\nSee also (ATO): ' + atoUrls.join(' ') : '');
     return '<article class="card" data-id="' + esc(c.id) + '">' + head(c.topic, products) +
       '<h3 class="card-title">' + esc(c.q) + '</h3>' +
       '<p class="answer">' + annotate(esc(c.a), seen) + '</p>' +
@@ -267,8 +285,8 @@
     var seen = {};
     var badges = (f.online ? badge('Online', 'positive') : '') + (f.pdf ? badge('PDF' + (f.pdf_size ? ' ' + f.pdf_size : '')) : '') + (f.phone ? badge('Phone', 'info') : '');
     var steps = formSteps(f);
-    var account = f.account_path ? '<div class="row-line"><span class="label">Online account</span><span>Log in, then <b>' + esc(f.account_path.path) + '</b>' +
-      (f.account_path.verified ? '' : ' <span class="unverified">menu labels not yet confirmed</span>') + '</span></div>' : '';
+    var account = f.account_path ? '<div class="row-line"><span class="label">Online account</span><span>Log in, then <b>' + (f.account_path.verified ? esc(f.account_path.path) : assumeSpan('account-path-labels', esc(f.account_path.path))) + '</b>' +
+      '' + '</span></div>' : '';
     var say = f.say ? '<div class="row-line"><span class="label">Say</span><span class="address">' + esc(f.say) + '</span></div>' : '';
     var reqs = f.requirements && f.requirements.length ? '<ul class="reqs">' + f.requirements.map(function (r) { return '<li>' + annotate(esc(r), seen) + '</li>'; }).join('') + '</ul>' : '';
     var directionsText = [f.title + (f.summary ? ': ' + f.summary : '')]
@@ -297,7 +315,7 @@
       '<h3 class="card-title">' + esc(t.task) + '</h3>' +
       '<div class="figure-line">' + esc(t.timeframe) + '</div>' + (t.starts ? '<div class="meta">Clock starts: ' + esc(t.starts) + '</div>' : '') +
       '<div class="say"><span class="label">Say</span><p>' + annotate(esc(t.say), seen) + '</p></div>' + (t.source ? sourcesHtml([t.source], t.ato) : '') +
-      '<div class="actions"><button class="btn" data-copy="' + esc(t.say) + '">Copy wording</button>' +
+      '<div class="actions"><button class="btn" data-copy="' + esc(plain(t.say)) + '">Copy wording</button>' +
       (t.calc ? '<button class="btn ghost" data-calc-preset="' + esc(t.id) + '">Work out the date →</button>' : '') + '</div></article>';
   }
 
@@ -316,12 +334,26 @@
   }
 
 
+  // ----- list of every assumption -----
+  function showAssumptions() {
+    hidePop(true);
+    state.q = ''; qEl.value = '';
+    setMain('<h2 class="section-title"><span class="label">Assumptions</span><span class="count">' + DATA.assumptions.length + '</span></h2>' +
+      '<p class="hint">Everything the companion assumes rather than takes straight from the PDS. Wherever one is used, the words have a ' + assumeSpan('day-count', 'red dotted underline') + '; hover over them for the details.</p>' +
+      '<div class="stack">' + DATA.assumptions.map(function (a) {
+        return '<article class="card assumption-card" id="assume-' + esc(a.id) + '">' + head('Assumption', '') + '<h3 class="card-title">' + esc(a.title) + '</h3>' +
+          '<p class="answer">' + esc(a.assumed) + '</p><div class="row-line"><span class="label">What the PDS says</span><span>' + esc(a.pds) + '</span></div>' +
+          '<div class="row-line"><span class="label">To be sure</span><span>' + esc(a.check) + '</span></div></article>';
+      }).join('') + '</div>');
+    window.scrollTo(0, 0);
+  }
+
   // ----- checklists -----
   function memberCtx() { return state.member ? CompanionMembers.context(state.member, DATA.rates, new Date()) : null; }
   function stepNotes(st, ctx) {
     if (!ctx || !st.member) return '';
     return st.member.filter(function (n) { return ctx.cond[n.cond]; }).map(function (n) {
-      return '<div class="step-member"><span class="label">#' + esc(state.member.number) + '</span>' + esc(CompanionMembers.fill(n.text, ctx.vars)) + '</div>';
+      return '<div class="step-member"><span class="label">#' + esc(state.member.number) + '</span>' + rich(CompanionMembers.fill(n.text, ctx.vars)) + '</div>';
     }).join('');
   }
   function stepLinks(st) {
@@ -352,7 +384,7 @@
     var done = p.steps.filter(function (s, i) { return ticks[i]; }).length;
     return '<button class="btn ghost back" data-tab="proc">← All checklists</button>' +
       '<article class="card proc" data-proc="' + esc(p.id) + '">' + head(p.topic + ' · checklist', '<span class="badge" id="proc-progress">' + done + ' of ' + p.steps.length + ' done</span>') +
-      '<h3 class="card-title proc-title">' + esc(p.title) + '</h3><p class="detail">' + esc(p.when) + '</p>' +
+      '<h3 class="card-title proc-title">' + esc(p.title) + '</h3><p class="detail">' + esc(p.when) + ' <span class="meta">Steps are in ' + assumeSpan('checklist-order', 'a suggested order') + '.</span></p>' +
       (state.member ? '<div class="proc-member">Notes for <b>#' + esc(state.member.number) + ' ' + esc(state.member.name) + '</b> (test member) are shown under the steps they affect.</div>' : '') +
       '<ol class="steps-list">' + p.steps.map(function (st, i) {
         return '<li class="step' + (ticks[i] ? ' done' : '') + '"><button class="tick" data-tick="' + i + '" aria-pressed="' + !!ticks[i] + '" aria-label="Mark step ' + (i + 1) + ' done"><span class="tick-n">' + (i + 1) + '</span></button>' +
@@ -370,7 +402,7 @@
   function procNote(p) {
     var ticks = state.ticks[p.id] || {};
     var who = state.member ? ' for test member #' + state.member.number + ' ' + state.member.name : '';
-    return 'Checklist: ' + p.title + who + '\n' + p.steps.map(function (st, i) { return (ticks[i] ? '[x] ' : '[ ] ') + (i + 1) + '. ' + st.do; }).join('\n');
+    return 'Checklist: ' + p.title + who + '\n' + p.steps.map(function (st, i) { return (ticks[i] ? '[x] ' : '[ ] ') + (i + 1) + '. ' + plain(st.do); }).join('\n');
   }
 
   var RENDER = { procedure: procedureCard, rule: ruleCard, form: formCard, timeframe: timeframeCard, explainer: explainerCard };
@@ -465,7 +497,7 @@
       html = homeHtml();
     } else if (state.tab === 'proc') {
       if (state.openProc && PROCS[state.openProc]) { setMain(procedureView(PROCS[state.openProc])); return; }
-      html += '<p class="hint">Step-by-step lists for specific tasks, in the order you\'d do them. Tick steps off during the call, then copy them as a call note. Load a test member to see notes for them.</p>';
+      html += '<p class="hint">Step-by-step lists for specific tasks, in ' + assumeSpan('checklist-order', 'the order you\'d do them') + '. Tick steps off during the call, then copy them as a call note. Load a test member to see notes for them.</p>';
       groupBy(DATA.procedures, 'topic').forEach(function (g) {
         html += sectionTitle(g[0], g[1].length) + '<div class="grid-cards">' + g[1].map(procedureCard).join('') + '</div>';
       });
@@ -506,7 +538,21 @@
     if (popTarget === target && !popEl().hidden) return;
     unmountFigures(popHandles);
     popTarget = target;
-    var p = popEl(), id = target.getAttribute('data-explainer'), acr = target.getAttribute('data-acronym');
+    var p = popEl(), id = target.getAttribute('data-explainer'), acr = target.getAttribute('data-acronym'), asm = target.getAttribute('data-assumption');
+    if (asm && ASSUMPTIONS[asm]) {
+      var a = ASSUMPTIONS[asm];
+      p.innerHTML = '<span class="label assume-label">Assumption</span><h4>' + esc(a.title) + '</h4>' +
+        '<p class="script">' + esc(a.assumed) + '</p>' +
+        '<div class="pop-row"><span class="label">What the PDS says</span><p>' + esc(a.pds) + '</p></div>' +
+        '<div class="pop-row"><span class="label">To be sure</span><p>' + esc(a.check) + '</p></div>' +
+        '<div class="actions"><button class="btn ghost" data-show-assumptions>All assumptions →</button></div>';
+      p.setAttribute('aria-label', 'Assumption: ' + a.title);
+      p.classList.remove('wide'); p.hidden = false;
+      var ar = target.getBoundingClientRect(), aw = p.offsetWidth, ah = p.offsetHeight;
+      p.style.left = Math.max(8, Math.min(ar.left, window.innerWidth - aw - 8)) + 'px';
+      p.style.top = (ar.bottom + 8 + ah > window.innerHeight - 8 ? Math.max(8, ar.top - ah - 8) : ar.bottom + 8) + 'px';
+      return;
+    }
     if (id && EXPLAINERS[id]) {
       var e = EXPLAINERS[id];
       p.innerHTML = '<span class="label">' + esc(e.topic) + ' · explainer</span><h4>' + esc(e.title) + '</h4>' + figureSlot(id) + versionsHtml('data-pop-version') +
@@ -533,7 +579,7 @@
     var go = function () { if (pop) pop.hidden = true; unmountFigures(popHandles); popTarget = null; };
     if (now === true) go(); else hideTimer = setTimeout(go, 220);
   }
-  var TERM_SEL = '[data-explainer], [data-acronym]';
+  var TERM_SEL = '[data-explainer], [data-acronym], [data-assumption]';
   document.addEventListener('mouseover', function (e) {
     if (pop && pop.contains(e.target)) { clearTimeout(hideTimer); return; }
     var t = e.target.closest && e.target.closest(TERM_SEL);
@@ -644,7 +690,7 @@
       (m.income != null ? '<span class="ms-acc"><span class="label">Income</span><span class="num">' + CompanionMembers.money(m.income) + '</span></span>' : '') + '</div>' +
       (state.stripOpen ? '<ul class="ms-insights">' + ins.map(function (i) {
         var link = i.checklist ? ' data-open-proc="' + esc(i.checklist) + '"' : i.rule ? ' data-open-rule="' + esc(i.rule) + '"' : i.calc ? ' data-goto-calc="drawdown"' : '';
-        return '<li class="ms-' + i.tone + '"><button class="ms-item"' + link + '>' + esc(i.text) + (link ? ' <span class="ms-go">' + (i.checklist ? 'Checklist →' : 'Rule →') + '</span>' : '') + '</button></li>';
+        return '<li class="ms-' + i.tone + '"><button class="ms-item"' + link + '>' + rich(i.text) + (link ? ' <span class="ms-go">' + (i.checklist ? 'Checklist →' : 'Rule →') + '</span>' : '') + '</button></li>';
       }).join('') + '</ul>' : '<div class="meta">' + ins.length + ' things to know. ' + ins.filter(function (i) { return i.tone === 'alarm' || i.tone === 'caution'; }).length + ' need attention.</div>');
   }
   function renderMemberPanel() {
@@ -687,7 +733,7 @@
       '<span class="label">Frequency</span><div class="cell">' + seg('freq', DD_FREQS, dd.freq) + '</div>' +
       '<label for="dd-anchor" class="anchor-row"' + (fortnightly ? '' : ' hidden') + '>Any fortnightly payment date</label><div class="cell anchor-row"' + (fortnightly ? '' : ' hidden') + '>' +
         textInput('dd-anchor', dd.anchor, 'optional, e.g. 13/11/2026') +
-        '<span class="field-help">Fortnightly payments go out every second Friday. One past payment date from the account history tells the calculator which Fridays, so it can count exactly. Leave it blank to estimate one payment every 14 days.</span></div>' +
+        '<span class="field-help">Fortnightly payments go out every second Friday. One past payment date from the account history tells the calculator which Fridays, so it can count exactly. ' + assumeSpan('fortnightly', 'Leave it blank to estimate one payment every 14 days') + '.</span></div>' +
       field('dd-chosen', 'Chosen annual amount', textInput('dd-chosen', dd.chosen, 'optional', 'decimal')) +
       field('dd-n', 'Payments left', textInput('dd-n', dd.n, 'optional: overrides the count', 'numeric')) +
       '</div><div class="actions"><button type="button" class="btn ghost" data-clear-calc>Clear calculator</button></div></section>' +
@@ -708,7 +754,7 @@
     var dt = state.dt, presets = DATA.timeframes.filter(function (t) { return t.calc; });
     if (!dt.from) dt.from = dmy(P.today());
     return '<section class="card dates-tool" id="calc-dates"><span class="label">Date calculator</span><h3>When is it due?</h3>' +
-      '<p class="detail">Pick a timeframe or enter your own. Business days skip weekends and Victorian public holidays (the AFL Grand Final eve holiday only once it\'s added to data/holidays.json).</p>' +
+      '<p class="detail">Pick a timeframe or enter your own. ' + assumeSpan('business-days', 'Business days') + ' skip weekends and ' + assumeSpan('vic-holidays', 'Victorian public holidays') + '; counts in days are ' + assumeSpan('calendar-days', 'calendar days') + '.</p>' +
       '<div class="dates-grid"><div class="form-grid">' +
       field('dt-from', 'From', textInput('dt-from', dt.from, 'today, 23/12/2026 or 23 Dec') +
         '<div class="presets"><button type="button" class="btn sm" data-from="today">Today</button></div>') +
@@ -773,7 +819,7 @@
     $('dt-preset').value = keep;
   }
 
-  function row(label, value) { return '<div class="row"><span>' + esc(label) + '</span><b>' + value + '</b></div>'; }
+  function row(label, value) { return '<div class="row"><span>' + rich(label) + '</span><b>' + value + '</b></div>'; }
 
   function runDrawdown() {
     var out = $('dd-out'), dd = state.dd;
@@ -793,16 +839,16 @@
       (r.max != null ? '; TTR maximum ' + money(r.max) : '') + ' (' + r.daysLeft + ' of ' + r.daysYear + ' days, rounded to the nearest $10).' +
       (r.perMin != null ? ' ' + r.payments + ' ' + dd.freq.toLowerCase() + ' payments of at least ' + money(r.perMin) + '.' : '');
     out.innerHTML = '<div class="headline">' + esc(range) + '<span>allowed this financial year</span></div>' +
-      row('Age at start', r.age) + row('Minimum percentage', pct(r.pct) + ' (' + esc(r.band) + ')') +
+      row(state.dob ? 'Age at start' : '{{age-only:Age at start}}', r.age) + row('Minimum percentage', pct(r.pct) + ' (' + esc(r.band) + ')') +
       (r.preservationAge != null ? row('Preservation age', r.preservationAge) : '') +
-      row('Days left / days in year', r.daysLeft + ' / ' + r.daysYear) + row('Full-year minimum', money(r.fullMin)) +
+      row('{{day-count:Days left / days in year}}', r.daysLeft + ' / ' + r.daysYear) + row('Full-year minimum', money(r.fullMin)) +
       row('Pro-rata minimum to 30 June', money(r.proMin)) + row('Maximum', r.max != null ? money(r.max) : 'No maximum') +
-      row('Payments left', r.payments == null ? '–' : r.payments) +
-      (r.perMin != null ? row('Each payment at the minimum', money(r.perMin)) : '') +
-      (r.perMax != null ? row('Each payment at the maximum', money(r.perMax)) : '') +
-      (r.perChosen != null ? row('Each payment at the chosen amount', money(r.perChosen)) : '') +
+      row(dd.freq === 'Fortnightly' && !dd.anchor.trim() ? '{{fortnightly:Payments left}}' : '{{payments-left:Payments left}}', r.payments == null ? '–' : r.payments) +
+      (r.perMin != null ? row('{{payment-rounding:Each payment at the minimum}}', money(r.perMin)) : '') +
+      (r.perMax != null ? row('{{payment-rounding:Each payment at the maximum}}', money(r.perMax)) : '') +
+      (r.perChosen != null ? row('{{payment-rounding:Each payment at the chosen amount}}', money(r.perChosen)) : '') +
       (r.pctNext != null ? row('Minimum from next 1 July (age ' + r.ageNext + ')', pct(r.pctNext)) : '') +
-      (r.warnings.length ? '<ul class="warns">' + r.warnings.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul>' : '') +
+      (r.warnings.length ? '<ul class="warns">' + r.warnings.map(function (w) { return '<li>' + rich(w) + '</li>'; }).join('') + '</ul>' : '') +
       '<div class="actions"><button class="btn" data-copy="' + esc(summary) + '">Copy summary</button></div>';
   }
 
@@ -814,8 +860,9 @@
     var fyEnd = CompanionDates.financialYearEnd(d0);
     var t = TIMEFRAMES[state.calcPreset];
     var unitLabel = { business_days: 'business days', days: 'days', months: 'months', years: 'years' }[unit];
+    var unitMark = { business_days: '{{business-days:business days}}', days: '{{calendar-days:days}}', months: 'months', years: 'years' }[unit];
     var text = n + ' ' + unitLabel + ' from ' + fmtDate(d0) + ' is ' + fmtDate(res.date) + '.';
-    out.innerHTML = '<div class="headline">' + esc(fmtDate(res.date)) + '<span>' + esc(n + ' ' + unitLabel + ' from ' + fmtDate(d0)) + '</span></div>' +
+    out.innerHTML = '<div class="headline">' + esc(fmtDate(res.date)) + '<span>' + rich(n + ' ' + unitMark + ' from ' + fmtDate(d0)) + '</span></div>' +
       (t ? '<div class="say">' + esc(t.say) + '</div>' : '') +
       (res.skipped.length ? row('Public holidays skipped', esc(res.skipped.map(function (s) {
         return CompanionDates.parse(s.slice(0, 10)).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }) + ' (' + s.slice(11) + ')';
@@ -887,7 +934,7 @@
   });
 
   document.addEventListener('click', function (e) {
-    var t = e.target.closest('button, a, .term, .acr');
+    var t = e.target.closest('button, a, .term, .acr, .assume');
     if (!t) { if (pop && !pop.hidden && !pop.contains(e.target)) hidePop(true); return; }
     if (t.hasAttribute('data-open-explainer')) {
       var xid = t.getAttribute('data-open-explainer');
@@ -897,7 +944,8 @@
       window.scrollTo(0, 0);
       return;
     }
-    if (t.matches('.term, .acr')) { showPop(t); return; } // tap on touch screens
+    if (t.matches('.term, .acr, .assume')) { showPop(t); return; }
+    if (t.hasAttribute('data-show-assumptions')) { showAssumptions(); return; } // tap on touch screens
     if (t.hasAttribute('data-q')) { qEl.value = t.getAttribute('data-q'); state.q = qEl.value; render(); qEl.focus(); return; }
     if (t.hasAttribute('data-pop-version')) {
       var pv = t.getAttribute('data-pop-version');
@@ -1012,8 +1060,8 @@
   }
 
   $('foot').innerHTML = 'General information from the public UniSuper PDS documents issued ' + esc(issued('flexi')) + ': ' +
-    DATA.sources.map(function (s) { return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + '</a>'; }).join(', ') +
-    '. ATO pages are linked as supplementary sources only. Built ' + esc(DATA.built) + '. Not personal advice. Nothing typed here is saved or sent anywhere.';
+    DATA.sources.filter(function (s) { return s.kind !== 'ato'; }).map(function (s) { return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + '</a>'; }).join(', ') +
+    '. ATO pages are linked as supplementary sources only. Words with a red dotted underline are <button class="link" data-show-assumptions>assumptions (' + DATA.assumptions.length + ')</button>. Built ' + esc(DATA.built) + '. Not personal advice. Nothing typed here is saved or sent anywhere.';
 
   if (!TABS.some(function (t) { return t.id === state.tab; })) state.tab = 'all';
   renderProducts();
