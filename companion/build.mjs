@@ -49,10 +49,11 @@ const bundle = {
   rates, glossary, rules,
   forms: forms.forms, formsPage: forms.page, formsGenerated: forms.generated,
   timeframes: timeframes.items, explainers: explainers.items, holidays: holidays.extra,
+  procedures: read('data/procedures.json').items, members: read('data/members.json').members,
   pages: pages.map(({ doc, page, text }) => ({ doc, page, text: text.replace(/\r/g, '').replace(/[ \t]+/g, ' ') })),
   local: { glossary: !!localGlossary, timeframes: !!localTimeframes },
 };
-addPages([bundle.rates, bundle.rules, bundle.forms, bundle.timeframes, bundle.explainers]);
+addPages([bundle.rates, bundle.rules, bundle.forms, bundle.timeframes, bundle.explainers, bundle.procedures]);
 
 const dist = new URL('dist/', root);
 mkdirSync(dist, { recursive: true });
@@ -68,7 +69,7 @@ const fonts = font('schibsted-grotesk-latin.woff2', 'Schibsted Grotesk', '400 70
 const html = src('companion.html')
   .replace('/*STYLES*/', () => src('styles.css').replace('/*FONTS*/', () => fonts))
   .replace('/*DATA*/', () => safe(JSON.stringify(bundle)))
-  .replace('/*SCRIPTS*/', () => safe(['search.js', 'dates.js', 'parse.js', 'drawdown.js', 'figures.js', 'app.js'].map(src).join('\n;\n')));
+  .replace('/*SCRIPTS*/', () => safe(['search.js', 'dates.js', 'parse.js', 'drawdown.js', 'figures.js', 'members.js', 'app.js'].map(src).join('\n;\n')));
 writeFileSync(new URL('companion.html', dist), html);
 // site/ is committed and published to GitHub Pages at /companion/ (see the repo's build.js).
 const site = new URL('site/', root);

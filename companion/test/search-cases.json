@@ -426,6 +426,46 @@
     {
       "q": "can i take a lump sum from my ttr",
       "expect": "ttr-lump-sum"
+    },
+    {
+      "q": "noi",
+      "type": "procedure",
+      "expect": "noi"
+    },
+    {
+      "q": "notice of intent steps",
+      "type": "procedure",
+      "expect": "noi"
+    },
+    {
+      "q": "start a pension",
+      "type": "procedure",
+      "expect": "start-rp"
+    },
+    {
+      "q": "how do i split with my spouse",
+      "type": "procedure",
+      "expect": "split"
+    },
+    {
+      "q": "renew lapsing nomination",
+      "type": "procedure",
+      "expect": "bdbn"
+    },
+    {
+      "q": "insurance stopped",
+      "type": "procedure",
+      "expect": "insurance-stopped"
+    },
+    {
+      "q": "downsizer",
+      "type": "procedure",
+      "expect": "downsizer"
+    },
+    {
+      "q": "close my pension",
+      "type": "procedure",
+      "expect": "close-pension"
     }
   ]
 }

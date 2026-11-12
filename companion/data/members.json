@@ -1,0 +1,103 @@
+{
+  "note": "FICTIONAL TEST MEMBERS for the prototype. Not real people, not real accounts. Load one by typing its 3-digit number in the Member box. Balances are as at 13 Nov 2026. You can import your own fictional set as a JSON file in this shape; never import real member data.",
+  "as_at": "2026-11-13",
+  "members": [
+    {
+      "number": "101", "name": "Young Yasmin", "scenario": "Under 25 with under $6,000: no default insurance yet",
+      "dob": "2004-03-09", "working": true, "income": 52000, "joined": "2025-02-03",
+      "accounts": [{ "type": "Accumulation 1", "balance": 4800, "opened": "2025-02-03", "investment": "Balanced", "insurance": { "status": "none" }, "last_contribution": "2026-10-28" }],
+      "fy": { "concessional": 2080, "non_concessional": 0 }, "tsb": 4800,
+      "nomination": { "type": "none" }
+    },
+    {
+      "number": "102", "name": "John TTR", "scenario": "62, still working, TTR pension at the 10% maximum",
+      "dob": "1964-08-20", "working": true, "income": 95000, "joined": "2003-05-12",
+      "accounts": [
+        { "type": "TTR", "balance": 292500, "balance_1_july": 300000, "opened": "2026-07-01", "investment": "Balanced", "payment": { "freq": "Monthly", "annual": 30000 } },
+        { "type": "Accumulation 1", "balance": 45000, "opened": "2003-05-12", "investment": "Growth", "insurance": { "status": "active", "death_tpd_units": 10 }, "last_contribution": "2026-10-30" }
+      ],
+      "fy": { "concessional": 13800, "non_concessional": 0 }, "tsb": 337500,
+      "nomination": { "type": "binding-non-lapsing", "signed": "2026-07-01", "who": "Spouse 100%" }
+    },
+    {
+      "number": "103", "name": "Patricia Pensioner", "scenario": "73, Retirement Phase pension paid fortnightly, reversionary spouse",
+      "dob": "1953-02-11", "working": false, "income": 0, "joined": "1989-03-01",
+      "accounts": [{ "type": "Retirement Phase", "balance": 420000, "balance_1_july": 450000, "opened": "2018-09-03", "investment": "Conservative Balanced", "payment": { "freq": "Fortnightly", "annual": 25000, "anchor": "2026-11-06" } }],
+      "fy": { "concessional": 0, "non_concessional": 0 }, "tsb": 420000,
+      "nomination": { "type": "reversionary", "who": "Spouse" }
+    },
+    {
+      "number": "104", "name": "Dave Div293", "scenario": "High income: Division 293 applies, salary sacrificing to the cap",
+      "dob": "1978-05-30", "working": true, "income": 238000, "joined": "2006-01-16",
+      "accounts": [{ "type": "Accumulation 1", "balance": 620000, "opened": "2006-01-16", "investment": "High Growth", "insurance": { "status": "active", "death_tpd_units": 20, "ip_units": 23 }, "last_contribution": "2026-10-31" }],
+      "fy": { "concessional": 21000, "non_concessional": 0 }, "expected_concessional": 32500, "tsb": 620000,
+      "nomination": { "type": "binding-non-lapsing", "signed": "2021-04-02", "who": "Spouse 60%, children 40%" }
+    },
+    {
+      "number": "105", "name": "Helen Div296", "scenario": "Total super balance over $3 million: Division 296, nil non-concessional cap",
+      "dob": "1960-04-02", "working": false, "income": 60000, "joined": "1994-07-01",
+      "accounts": [{ "type": "Personal Account", "balance": 3400000, "opened": "2011-08-22", "investment": "Balanced", "insurance": { "status": "none" }, "last_contribution": "2025-06-30" }],
+      "fy": { "concessional": 0, "non_concessional": 0 }, "tsb": 3400000,
+      "nomination": { "type": "non-binding", "who": "Children" }
+    },
+    {
+      "number": "106", "name": "Nina New Pension", "scenario": "67, about to start a Retirement Phase pension (the PDS 'Gavin' example)",
+      "dob": "1959-05-14", "working": false, "income": 0, "joined": "2015-03-02",
+      "accounts": [{ "type": "Accumulation 1", "balance": 520000, "opened": "2015-03-02", "investment": "Balanced", "insurance": { "status": "active", "death_tpd_units": 10 }, "last_contribution": "2026-06-30" }],
+      "pension_plan": { "type": "Retirement Phase", "start": "2026-10-01", "amount": 500000, "freq": "Monthly" },
+      "fy": { "concessional": 4200, "non_concessional": 20000 }, "tsb": 520000,
+      "nomination": { "type": "none" }
+    },
+    {
+      "number": "107", "name": "Ben BIS", "scenario": "71, Beneficiary Income Stream after his wife died",
+      "dob": "1955-07-19", "working": false, "income": 0, "joined": "2025-11-20",
+      "accounts": [{ "type": "BIS", "balance": 371000, "balance_1_july": 395000, "opened": "2025-11-20", "investment": "Balanced", "payment": { "freq": "Monthly", "annual": 22000 } }],
+      "fy": { "concessional": 0, "non_concessional": 0 }, "tsb": 371000,
+      "nomination": { "type": "non-binding", "who": "Children" }
+    },
+    {
+      "number": "108", "name": "Dana DBD", "scenario": "Defined Benefit Division member; lapsing binding nomination about to expire",
+      "dob": "1971-10-01", "working": true, "income": 128000, "joined": "1998-02-09",
+      "accounts": [{ "type": "DBD", "balance": 140000, "opened": "1998-02-09", "investment": "Balanced", "insurance": { "status": "inbuilt" }, "last_contribution": "2026-10-29" }],
+      "fy": { "concessional": 9500, "non_concessional": 0 }, "tsb": 690000,
+      "nomination": { "type": "binding-lapsing", "signed": "2023-12-10", "who": "Spouse 100%" }
+    },
+    {
+      "number": "109", "name": "Carl Carry-forward", "scenario": "Balance under $500,000 with unused cap: carry-forward and a notice of intent",
+      "dob": "1981-01-15", "working": true, "income": 140000, "joined": "2014-09-01",
+      "accounts": [{ "type": "Personal Account", "balance": 310000, "opened": "2014-09-01", "investment": "Balanced", "insurance": { "status": "active", "death_tpd_units": 10 }, "last_contribution": "2026-10-15" }],
+      "fy": { "concessional": 12000, "non_concessional": 20000 }, "tsb": 310000,
+      "nomination": { "type": "binding-non-lapsing", "signed": "2024-02-20", "who": "Partner 100%" }
+    },
+    {
+      "number": "110", "name": "Sam Spouse-split", "scenario": "Wants to split last year's contributions to a spouse who isn't working",
+      "dob": "1985-09-03", "working": true, "income": 110000, "joined": "2012-04-23",
+      "spouse": { "dob": "1988-02-14", "income": 0, "retired": false },
+      "accounts": [{ "type": "Accumulation 1", "balance": 210000, "opened": "2012-04-23", "investment": "Balanced", "insurance": { "status": "active", "death_tpd_units": 10 }, "last_contribution": "2026-10-31" }],
+      "fy": { "concessional": 8400, "non_concessional": 0 }, "last_fy_concessional": 25000, "tsb": 210000,
+      "nomination": { "type": "non-binding", "who": "Spouse" }
+    },
+    {
+      "number": "111", "name": "Ivy Inactive", "scenario": "No contributions for over a year, under $6,000: insurance and account at risk",
+      "dob": "1994-06-22", "working": false, "income": 0, "joined": "2019-08-05",
+      "accounts": [{ "type": "Accumulation 1", "balance": 5300, "opened": "2019-08-05", "investment": "Balanced", "insurance": { "status": "active", "death_tpd_units": 10 }, "last_contribution": "2025-09-15" }],
+      "fy": { "concessional": 0, "non_concessional": 0 }, "tsb": 5300,
+      "nomination": { "type": "none" }
+    },
+    {
+      "number": "112", "name": "Tom Temp-resident", "scenario": "Visa expired and left Australia: DASP, six months before the ATO takes it",
+      "dob": "1998-12-05", "working": false, "income": 0, "joined": "2023-02-13",
+      "temp_resident": { "visa_ended": "2026-08-30", "departed": "2026-09-10" },
+      "accounts": [{ "type": "Accumulation 1", "balance": 9800, "opened": "2023-02-13", "investment": "Balanced", "insurance": { "status": "active", "death_tpd_units": 10 }, "last_contribution": "2026-08-28" }],
+      "fy": { "concessional": 1100, "non_concessional": 0 }, "tsb": 9800,
+      "nomination": { "type": "none" }
+    },
+    {
+      "number": "113", "name": "Lena Low-income", "scenario": "Earns $34,000: LISTO and the full government co-contribution",
+      "dob": "1990-03-03", "working": true, "income": 34000, "joined": "2020-11-09",
+      "accounts": [{ "type": "Personal Account", "balance": 28000, "opened": "2020-11-09", "investment": "Balanced", "insurance": { "status": "active", "death_tpd_units": 10 }, "last_contribution": "2026-10-20" }],
+      "fy": { "concessional": 1360, "non_concessional": 1000 }, "tsb": 28000,
+      "nomination": { "type": "non-binding", "who": "Mother" }
+    }
+  ]
+}

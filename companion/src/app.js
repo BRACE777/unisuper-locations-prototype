@@ -20,14 +20,21 @@
     { id: 'form', label: 'Forms', types: ['form'] }, { id: 'timeframe', label: 'Timeframes', types: ['timeframe'] },
     { id: 'explainer', label: 'Explainers', types: ['explainer'] }, { id: 'calc', label: 'Drawdown calculator', types: [] }
   ];
-  var TYPE_LABEL = { rule: 'Rules', form: 'Forms', timeframe: 'Timeframes', explainer: 'Explainers' };
+  var TYPE_LABEL = { procedure: 'Checklists', rule: 'Rules', form: 'Forms', timeframe: 'Timeframes', explainer: 'Explainers' };
+  TABS.splice(1, 0, { id: 'proc', label: 'Checklists', types: ['procedure'] });
+  var PROCS = {};
+  DATA.procedures.forEach(function (p) { PROCS[p.id] = p; });
+  var FORMS = {};
+  DATA.forms.forEach(function (f) { FORMS[f.id] = f; });
+  var MEMBERS = {};
+  DATA.members.forEach(function (m) { MEMBERS[m.number] = m; });
 
   var store = {
     get: function (k) { try { return window.localStorage.getItem('companion.' + k); } catch (e) { return null; } },
     set: function (k, v) { try { window.localStorage.setItem('companion.' + k, v); } catch (e) { /* storage unavailable */ } }
   };
 
-  var state = { q: '', product: store.get('product') || '', tab: store.get('tab') || 'all', memberText: '', age: null, dob: null, showHidden: false, calcPreset: null };
+  var state = { member: null, stripOpen: false, ticks: {}, q: '', product: store.get('product') || '', tab: store.get('tab') || 'all', memberText: '', age: null, dob: null, showHidden: false, calcPreset: null };
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -308,7 +315,65 @@
       '<div class="actions"><button class="btn" data-copy-script>Copy this version</button></div></article>';
   }
 
-  var RENDER = { rule: ruleCard, form: formCard, timeframe: timeframeCard, explainer: explainerCard };
+
+  // ----- checklists -----
+  function memberCtx() { return state.member ? CompanionMembers.context(state.member, DATA.rates, new Date()) : null; }
+  function stepNotes(st, ctx) {
+    if (!ctx || !st.member) return '';
+    return st.member.filter(function (n) { return ctx.cond[n.cond]; }).map(function (n) {
+      return '<div class="step-member"><span class="label">#' + esc(state.member.number) + '</span>' + esc(CompanionMembers.fill(n.text, ctx.vars)) + '</div>';
+    }).join('');
+  }
+  function stepLinks(st) {
+    var out = [];
+    if (st.form && FORMS[st.form]) {
+      var f = FORMS[st.form];
+      out.push(f.online ? '<a class="btn sm" href="' + esc(f.online) + '" target="_blank" rel="noopener">Online ↗</a>' : '');
+      out.push(f.pdf ? '<a class="btn sm" href="' + esc(f.pdf) + '" target="_blank" rel="noopener">' + esc(f.title) + ' (PDF) ↗</a>' : '');
+      if (!f.online && !f.pdf) out.push('<span class="btn sm">' + esc(f.title) + '</span>');
+    }
+    if (st.rule && RULES[st.rule]) out.push('<button class="btn sm ghost" data-open-rule="' + esc(st.rule) + '">Rule: ' + esc(RULES[st.rule].q) + '</button>');
+    if (st.calc) out.push('<button class="btn sm ghost" data-goto-calc="drawdown">Drawdown calculator →</button>');
+    return out.filter(Boolean).length ? '<div class="step-links">' + out.join('') + '</div>' : '';
+  }
+  function stepSource(s) {
+    var d = DOCS[s.doc] || { title: s.doc, url: '#' };
+    return '<details class="step-src"><summary>' + esc(d.title) + (s.page ? ' · p.' + s.page : '') + '</summary><q>' + esc(s.quote) + '</q>' +
+      '<a href="' + esc(d.url + (s.page ? '#page=' + s.page : '')) + '" target="_blank" rel="noopener">Open the PDS ↗</a></details>';
+  }
+  function procedureCard(p) {
+    var done = Object.keys(state.ticks[p.id] || {}).length;
+    return '<article class="card proc-card" data-id="' + esc(p.id) + '">' + head(p.topic + ' · checklist', badge(p.steps.length + ' steps')) +
+      '<h3 class="card-title">' + esc(p.title) + '</h3><p class="detail">' + esc(p.when) + '</p>' +
+      '<div class="actions"><button class="btn solid" data-open-proc="' + esc(p.id) + '">' + (done ? 'Continue (' + done + ' of ' + p.steps.length + ' done)' : 'Open checklist') + ' →</button></div></article>';
+  }
+  function procedureView(p) {
+    var ticks = state.ticks[p.id] || {}, ctx = memberCtx(), seen = {};
+    var done = p.steps.filter(function (s, i) { return ticks[i]; }).length;
+    return '<button class="btn ghost back" data-tab="proc">← All checklists</button>' +
+      '<article class="card proc" data-proc="' + esc(p.id) + '">' + head(p.topic + ' · checklist', '<span class="badge" id="proc-progress">' + done + ' of ' + p.steps.length + ' done</span>') +
+      '<h3 class="card-title proc-title">' + esc(p.title) + '</h3><p class="detail">' + esc(p.when) + '</p>' +
+      (state.member ? '<div class="proc-member">Notes for <b>#' + esc(state.member.number) + ' ' + esc(state.member.name) + '</b> (test member) are shown under the steps they affect.</div>' : '') +
+      '<ol class="steps-list">' + p.steps.map(function (st, i) {
+        return '<li class="step' + (ticks[i] ? ' done' : '') + '"><button class="tick" data-tick="' + i + '" aria-pressed="' + !!ticks[i] + '" aria-label="Mark step ' + (i + 1) + ' done"><span class="tick-n">' + (i + 1) + '</span></button>' +
+          '<div class="step-body"><p>' + annotate(esc(st.do), seen) + '</p>' + stepNotes(st, ctx) + stepLinks(st) + (st.source ? stepSource(st.source) : '') + '</div></li>';
+      }).join('') + '</ol>' +
+      (p.mistakes && p.mistakes.length ? '<div class="general"><span class="label">Common mistakes</span><ul class="reqs">' + p.mistakes.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' : '') +
+      '<div class="actions"><button class="btn solid" data-copy-proc>Copy as call note</button><button class="btn ghost" data-reset-proc>Reset ticks</button></div></article>';
+  }
+  function openProcedure(id) {
+    state.tab = 'proc'; state.q = ''; qEl.value = ''; state.openProc = id;
+    renderTabs();
+    setMain(procedureView(PROCS[id]));
+    window.scrollTo(0, 0);
+  }
+  function procNote(p) {
+    var ticks = state.ticks[p.id] || {};
+    var who = state.member ? ' for test member #' + state.member.number + ' ' + state.member.name : '';
+    return 'Checklist: ' + p.title + who + '\n' + p.steps.map(function (st, i) { return (ticks[i] ? '[x] ' : '[ ] ') + (i + 1) + '. ' + st.do; }).join('\n');
+  }
+
+  var RENDER = { procedure: procedureCard, rule: ruleCard, form: formCard, timeframe: timeframeCard, explainer: explainerCard };
 
   function highlight(snippet, terms) {
     var out = esc(snippet);
@@ -398,6 +463,12 @@
     var html = '';
     if (state.tab === 'all') {
       html = homeHtml();
+    } else if (state.tab === 'proc') {
+      if (state.openProc && PROCS[state.openProc]) { setMain(procedureView(PROCS[state.openProc])); return; }
+      html += '<p class="hint">Step-by-step lists for specific tasks, in the order you\'d do them. Tick steps off during the call, then copy them as a call note. Load a test member to see notes for them.</p>';
+      groupBy(DATA.procedures, 'topic').forEach(function (g) {
+        html += sectionTitle(g[0], g[1].length) + '<div class="grid-cards">' + g[1].map(procedureCard).join('') + '</div>';
+      });
     } else if (state.tab === 'rule') {
       groupBy(DATA.rules.filter(function (r) { return !state.product || !r.products.length || r.products.indexOf(state.product) >= 0; }), 'topic').forEach(function (g) {
         html += sectionTitle(g[0], g[1].length) + '<div class="ledger">' + g[1].map(function (r) {
@@ -512,20 +583,78 @@
   function memberEcho() {
     var t = state.memberText;
     if (!t.trim()) return '';
+    if (state.member) return '#' + state.member.number + ' ' + state.member.name + ', age ' + currentAge() + ' (test member)';
     if (state.dob) return 'Born ' + P.fmt(CompanionDates.parse(state.dob)) + ', age ' + currentAge();
     if (state.age != null) return 'Age ' + state.age;
-    return 'Type an age (67) or a date of birth (14/5/1959)';
+    if (/^\d{3}$/.test(t.trim())) return 'No test member ' + t.trim() + '. Try 101 to 113.';
+    return 'Type a member number, an age (67) or a date of birth (14/5/1959)';
   }
   function setMember(text, from) {
     state.memberText = text;
-    var r = P.parseAgeOrDate(text);
-    state.dob = r && r.dob ? P.iso(r.dob) : null;
-    state.age = r && r.age != null ? r.age : null;
-    var bad = text.trim() && !r;
+    var num = String(text).trim(), m = /^\d{3}$/.test(num) ? MEMBERS[num] : null;
+    var was = state.member;
+    state.member = m || null;
+    if (m) { state.dob = m.dob; state.age = null; }
+    else {
+      var r = P.parseAgeOrDate(text);
+      state.dob = r && r.dob ? P.iso(r.dob) : null;
+      state.age = r && r.age != null ? r.age : null;
+    }
+    var bad = text.trim() && !m && state.dob == null && state.age == null;
     if (from !== 'member') $('member').value = text;
     if (from !== 'dd-member' && $('dd-member')) $('dd-member').value = text;
     setEcho('member', memberEcho(), bad);
     setEcho('dd-member', memberEcho(), bad);
+    if (m !== was) {
+      if (m) {
+        state.product = CompanionMembers.primaryProduct(m);
+        applyPrefill(m);
+      } else if (was) state.product = '';
+      renderProducts();
+      renderMemberStrip();
+    }
+  }
+
+  // Fills the drawdown calculator from a test member's pension (or planned pension).
+  function applyPrefill(m) {
+    var pf = CompanionMembers.prefill(m, new Date());
+    if (!pf) return;
+    state.dd.start = dmy(pf.start);
+    state.dd.bal = Math.round(pf.balance).toLocaleString('en-AU');
+    state.dd.type = pf.type;
+    state.dd.freq = pf.freq;
+    state.dd.anchor = pf.anchor ? dmy(pf.anchor) : '';
+    state.dd.chosen = pf.chosen ? Math.round(pf.chosen).toLocaleString('en-AU') : '';
+    state.dd.n = '';
+    if (state.tab === 'calc' && $('dd-start')) renderCalculators();
+  }
+
+  // ----- test member strip and picker -----
+  function renderMemberStrip() {
+    var el = $('member-strip'), m = state.member;
+    if (!m) { el.hidden = true; el.innerHTML = ''; return; }
+    var ins = CompanionMembers.insights(m, DATA.rates, new Date());
+    el.hidden = false;
+    el.innerHTML = '<div class="ms-head"><span class="badge caution">Fictional test member</span>' +
+      '<b>#' + esc(m.number) + ' ' + esc(m.name) + '</b><span class="meta">' + esc(m.scenario) + '</span>' +
+      '<button class="link ms-toggle" data-ms-toggle>' + (state.stripOpen ? 'Hide' : 'Show') + ' details</button></div>' +
+      '<div class="ms-accounts">' + m.accounts.map(function (a) {
+        return '<span class="ms-acc"><span class="label">' + esc(a.type) + '</span><span class="num">' + CompanionMembers.money(a.balance) + '</span></span>';
+      }).join('') + '<span class="ms-acc"><span class="label">Age</span><span class="num">' + currentAge() + '</span></span>' +
+      (m.income != null ? '<span class="ms-acc"><span class="label">Income</span><span class="num">' + CompanionMembers.money(m.income) + '</span></span>' : '') + '</div>' +
+      (state.stripOpen ? '<ul class="ms-insights">' + ins.map(function (i) {
+        var link = i.checklist ? ' data-open-proc="' + esc(i.checklist) + '"' : i.rule ? ' data-open-rule="' + esc(i.rule) + '"' : i.calc ? ' data-goto-calc="drawdown"' : '';
+        return '<li class="ms-' + i.tone + '"><button class="ms-item"' + link + '>' + esc(i.text) + (link ? ' <span class="ms-go">' + (i.checklist ? 'Checklist →' : 'Rule →') + '</span>' : '') + '</button></li>';
+      }).join('') + '</ul>' : '<div class="meta">' + ins.length + ' things to know. ' + ins.filter(function (i) { return i.tone === 'alarm' || i.tone === 'caution'; }).length + ' need attention.</div>');
+  }
+  function renderMemberPanel() {
+    var el = $('member-panel');
+    el.innerHTML = '<div class="mp-head"><span class="label">Fictional test members</span><span class="meta">Load one to pre-fill the age, product, calculator and checklist notes. Not real people.</span></div>' +
+      '<div class="mp-list">' + DATA.members.map(function (m) {
+        return '<button class="mp-item" data-load-member="' + esc(m.number) + '"><span class="num">#' + esc(m.number) + '</span><b>' + esc(m.name) + '</b><span class="meta">' + esc(m.scenario) + '</span></button>';
+      }).join('') + '</div>' +
+      '<div class="actions"><button class="btn" data-member-import>Import members (JSON)</button><button class="btn ghost" data-member-template>Download template</button></div>' +
+      '<p class="meta">Imported members stay in this browser tab only. Use made-up details: never import real member data.</p>';
   }
 
   function seg(name, values, current) {
@@ -726,6 +855,27 @@
     }, 60);
   });
   $('member').addEventListener('input', function () { setMember(this.value, 'member'); if (state.tab === 'calc') runDrawdown(); else render(); });
+  $('member-file').addEventListener('change', function () {
+    var file = this.files && this.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var parsed = JSON.parse(reader.result), list = Array.isArray(parsed) ? parsed : parsed.members;
+        var errs = CompanionMembers.validate(list);
+        if (errs.length) { toast('Not imported: ' + errs[0]); return; }
+        list.forEach(function (m) {
+          if (!MEMBERS[m.number]) DATA.members.push(m);
+          else DATA.members[DATA.members.indexOf(MEMBERS[m.number])] = m;
+          MEMBERS[m.number] = m;
+        });
+        renderMemberPanel();
+        toast('Imported ' + list.length + ' test member' + (list.length > 1 ? 's' : ''));
+      } catch (err) { toast('Not imported: that file isn\'t valid JSON'); }
+    };
+    reader.readAsText(file);
+    this.value = '';
+  });
   $('clear-context').addEventListener('click', function () { setMember('', 'clear'); state.product = ''; store.set('product', ''); renderProducts(); render(); });
 
   // Enter moves to the next field in a calculator, like Tab.
@@ -756,7 +906,7 @@
       return;
     }
     if (t.hasAttribute('data-product')) { state.product = t.getAttribute('data-product'); store.set('product', state.product); renderProducts(); render(); return; }
-    if (t.hasAttribute('data-tab')) { state.tab = t.getAttribute('data-tab'); store.set('tab', state.tab); render(); window.scrollTo(0, 0); return; }
+    if (t.hasAttribute('data-tab')) { state.openProc = null; state.tab = t.getAttribute('data-tab'); store.set('tab', state.tab); render(); window.scrollTo(0, 0); return; }
     if (t.hasAttribute('data-copy')) { copy(t.getAttribute('data-copy')); return; }
     if (t.hasAttribute('data-copy-script')) {
       var card = t.closest('.card, .pop'), shown = card.querySelector('.script:not([hidden])');
@@ -766,6 +916,38 @@
       var c = t.closest('.card'), v = t.getAttribute('data-version');
       c.querySelectorAll('[data-version]').forEach(function (b) { b.setAttribute('aria-pressed', String(b === t)); });
       c.querySelectorAll('.script').forEach(function (s) { s.hidden = s.getAttribute('data-script') !== v; });
+      return;
+    }
+    if (t.hasAttribute('data-open-proc')) { openProcedure(t.getAttribute('data-open-proc')); return; }
+    if (t.hasAttribute('data-tick')) {
+      var pid = t.closest('[data-proc]').getAttribute('data-proc'), i = +t.getAttribute('data-tick');
+      var tk = state.ticks[pid] = state.ticks[pid] || {};
+      if (tk[i]) delete tk[i]; else tk[i] = true;
+      t.setAttribute('aria-pressed', String(!!tk[i]));
+      t.closest('.step').classList.toggle('done', !!tk[i]);
+      $('proc-progress').textContent = Object.keys(tk).length + ' of ' + PROCS[pid].steps.length + ' done';
+      return;
+    }
+    if (t.hasAttribute('data-copy-proc')) { copy(procNote(PROCS[t.closest('[data-proc]').getAttribute('data-proc')])); return; }
+    if (t.hasAttribute('data-reset-proc')) { var rp = t.closest('[data-proc]').getAttribute('data-proc'); state.ticks[rp] = {}; openProcedure(rp); return; }
+    if (t.hasAttribute('data-load-member')) {
+      setMember(t.getAttribute('data-load-member'), 'panel');
+      $('member-panel').hidden = true; $('member-pick').setAttribute('aria-expanded', 'false');
+      render(); return;
+    }
+    if (t.hasAttribute('data-ms-toggle')) { state.stripOpen = !state.stripOpen; renderMemberStrip(); return; }
+    if (t.id === 'member-pick') {
+      var panel = $('member-panel'); panel.hidden = !panel.hidden; t.setAttribute('aria-expanded', String(!panel.hidden));
+      if (!panel.hidden) renderMemberPanel();
+      return;
+    }
+    if (t.hasAttribute('data-member-import')) { $('member-file').click(); return; }
+    if (t.hasAttribute('data-member-template')) {
+      var sample = { note: 'Fictional test members only. number: 3 digits. Account types: Accumulation 1, Accumulation 2, Personal Account, DBD, Retirement Phase, TTR, BIS.', members: [DATA.members[1]] };
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(sample, null, 2)], { type: 'application/json' }));
+      a.download = 'test-members-template.json'; a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
       return;
     }
     if (t.hasAttribute('data-open-rule')) {
@@ -804,7 +986,7 @@
       var back = popTarget; hidePop(true); if (back) back.focus();
     } else if (e.key === 'Escape' && document.activeElement === qEl) {
       qEl.value = ''; state.q = ''; render();
-    } else if (e.altKey && /^[1-6]$/.test(e.key)) {
+    } else if (e.altKey && /^[1-7]$/.test(e.key)) {
       state.tab = TABS[+e.key - 1].id; store.set('tab', state.tab); render();
     }
   });

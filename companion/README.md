@@ -65,6 +65,36 @@ Local-only files, never committed: `glossary.local.json` (team shorthand) and `t
 2. `npm run companion:check`. Any quote that no longer appears word for word is listed: update the card and its figures.
 3. Update `rates.json` for changed figures, then rebuild and run the tests.
 
+## Checklists
+
+The **Checklists** tab has step-by-step lists for 12 specific tasks, in the order you'd do them: notice of intent (NOI), starting a Retirement Phase or TTR pension, contribution splitting, binding nominations, pension lump sums, closing a pension, rolling out, downsizer contributions, stopped insurance, changing pension payments, and hardship release. Tick steps off during the call (nothing is saved), then **Copy as call note**. Steps that rely on a rule show the PDS wording underneath, and link to the form or rule card. Edit them in `data/procedures.json`.
+
+## Fictional test members
+
+Type a test member number (101 to 113) in the **Member** box, or pick one from **Test members**. It fills in the age and product, pre-fills the drawdown calculator, shows alerts for the rules that apply to that member (each linking to the rule or checklist), and adds notes for that member under checklist steps.
+
+| No. | Name | Shows |
+|---|---|---|
+| 101 | Young Yasmin | Under 25 and under $6,000: no default insurance yet |
+| 102 | John TTR | TTR pension at the 10% maximum, turns 65 in 2029 |
+| 103 | Patricia Pensioner | Retirement Phase, fortnightly payments, reversionary spouse |
+| 104 | Dave Div293 | Income plus concessional contributions over $250,000 |
+| 105 | Helen Div296 | Total super balance over $3 million |
+| 106 | Nina New Pension | About to start a pension (the PDS "Gavin" example: $18,700) |
+| 107 | Ben BIS | Beneficiary Income Stream |
+| 108 | Dana DBD | DBD member with a lapsing nomination about to expire |
+| 109 | Carl Carry-forward | Under $500,000 with unused cap; notice of intent |
+| 110 | Sam Spouse-split | Splitting to a spouse who isn't working |
+| 111 | Ivy Inactive | No contributions for over a year, under $6,000 |
+| 112 | Tom Temp-resident | Left Australia: DASP deadline |
+| 113 | Lena Low-income | LISTO and the full co-contribution |
+
+They live in `data/members.json`. **Import members (JSON)** loads your own fictional set for the current tab only (**Download template** gives the shape). Never import real member data: this is a public prototype.
+
+## Hosting
+
+The built page is committed in `site/` and published by the repository's GitHub Pages workflow at https://brace777.github.io/unisuper-locations-prototype/companion/ (with a no-index tag). After changing anything, run `npm run companion:build`, commit and push to `main`.
+
 ## ATO sources (supplementary)
 
 The UniSuper PDS is the primary source for every card. 24 rule cards and 3 timeframes also show an **ATO · supplementary** block with the relevant ATO page, its "last updated" date and the sentence that backs the rule up (for example the co-contribution age limit of 71, which the PDS doesn't mention). The build refuses a card that cites the ATO as its main source.

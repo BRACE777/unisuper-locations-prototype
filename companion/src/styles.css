@@ -367,3 +367,55 @@ details.pages > summary::-webkit-details-marker { display: none; }
   .row-line { flex-direction: column; gap: 2px; }
   .grid2 { grid-template-columns: 1fr; }
 }
+
+/* ----- test members ----- */
+.member-panel, .member-strip { max-width: 1120px; margin: 10px auto 0; background: var(--surface); border-radius: 16px; padding: 12px 14px; }
+.mp-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin-bottom: 8px; }
+.mp-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 6px; max-height: 300px; overflow: auto; }
+.mp-item {
+  display: grid; grid-template-columns: auto 1fr; gap: 0 8px; text-align: left; border: 0; border-radius: 12px; padding: 8px 10px;
+  background: var(--paper); cursor: pointer; color: var(--ink-1);
+}
+.mp-item:hover { box-shadow: inset 0 0 0 1px var(--ink-3); }
+.mp-item .num { grid-row: span 2; font-size: 12px; color: var(--ink-3); padding-top: 2px; }
+.mp-item .meta { font-size: 12px; }
+.member-panel .actions { margin-top: 10px; }
+.ms-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+.ms-head b { font-size: 15px; }
+.ms-toggle { margin-left: auto; }
+.ms-accounts { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.ms-acc { display: inline-flex; gap: 8px; align-items: baseline; background: var(--paper); border-radius: 99px; padding: 4px 12px; }
+.ms-acc .num { color: var(--ink-1); font-size: 13px; }
+.ms-insights { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 6px; max-height: 240px; overflow: auto; }
+.ms-item { width: 100%; text-align: left; border: 0; border-radius: 12px; padding: 8px 12px; cursor: pointer; font-size: 13px; background: var(--paper); color: var(--ink-1); line-height: 1.45; }
+.ms-item:hover { box-shadow: inset 0 0 0 1px var(--ink-3); }
+.ms-alarm .ms-item { background: var(--alarm-wash); }
+.ms-caution .ms-item { background: var(--caution-wash); }
+.ms-positive .ms-item { background: var(--positive-wash); }
+.ms-go { white-space: nowrap; font: 500 9.5px var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--ink-3); margin-left: 6px; }
+
+/* ----- checklists ----- */
+.proc-title { font-size: 19px; letter-spacing: -.015em; }
+.proc-member { background: var(--caution-wash); border-radius: 12px; padding: 8px 12px; font-size: 13px; margin: 8px 0 4px; }
+.steps-list { list-style: none; margin: 14px 0 0; padding: 0; }
+.step { display: grid; grid-template-columns: 40px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line-2); }
+.step:first-child { border-top: 0; }
+.tick {
+  width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--paper); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; color: var(--ink-2);
+}
+.tick-n { font: 500 12px var(--mono); }
+.tick[aria-pressed="true"] { background: var(--ink-1); border-color: var(--ink-1); color: var(--paper); }
+.tick[aria-pressed="true"] .tick-n { font-size: 0; }
+.tick[aria-pressed="true"] .tick-n::after { content: "\2713"; font-size: 14px; }
+.step-body p { margin: 4px 0 0; color: var(--ink-1); font-size: 15px; line-height: 1.55; }
+.step.done .step-body > p { color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--ink-4); }
+.step-member { display: flex; gap: 8px; align-items: baseline; margin-top: 6px; background: var(--caution-wash); border-radius: 10px; padding: 6px 10px; font-size: 13px; color: var(--ink-1); }
+.step-links { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.step-src { margin-top: 6px; font-size: 12px; color: var(--ink-3); }
+.step-src summary { cursor: pointer; font: 500 9.5px var(--mono); text-transform: uppercase; letter-spacing: .1em; list-style: none; }
+.step-src summary::-webkit-details-marker { display: none; }
+.step-src summary::before { content: "PDS \00B7 "; }
+.step-src q { display: block; margin: 4px 0; font-size: 12.5px; }
+.step-src a { color: var(--ink-2); }
+@media (max-width: 640px) { .ms-insights { grid-template-columns: 1fr; } .step { grid-template-columns: 34px 1fr; } }

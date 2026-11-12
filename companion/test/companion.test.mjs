@@ -7,10 +7,10 @@ import vm from 'node:vm';
 
 const root = new URL('../', import.meta.url);
 const ctx = vm.createContext({ console });
-for (const f of ['search.js', 'dates.js', 'parse.js', 'drawdown.js']) {
+for (const f of ['search.js', 'dates.js', 'parse.js', 'drawdown.js', 'members.js']) {
   vm.runInContext(readFileSync(new URL(`src/${f}`, root), 'utf8'), ctx, { filename: f });
 }
-const { CompanionSearch, CompanionDates: D, CompanionDrawdown, CompanionParse: P } = vm.runInContext('({ CompanionSearch, CompanionDates, CompanionDrawdown, CompanionParse })', ctx);
+const { CompanionSearch, CompanionDates: D, CompanionDrawdown, CompanionParse: P, CompanionMembers: M } = vm.runInContext('({ CompanionSearch, CompanionDates, CompanionDrawdown, CompanionParse, CompanionMembers })', ctx);
 const data = JSON.parse(readFileSync(new URL('dist/companion-data.json', root), 'utf8'));
 const engine = CompanionSearch.create(data);
 const cases = JSON.parse(readFileSync(new URL('test/search-cases.json', root), 'utf8'));
@@ -203,4 +203,55 @@ test('data: ATO sources are supplementary only', () => {
     for (const s of r.sources) assert.ok(!s.doc.startsWith('ato-'), `${r.id} cites the ATO as its main source`);
   }
   assert.ok(data.rules.filter((r) => r.ato && r.ato.length).length >= 20, 'expected ATO links on at least 20 cards');
+});
+
+const TODAY = new Date(2026, 10, 13);
+const member = (n) => data.members.find((m) => m.number === n);
+const has = (n, re) => M.insights(member(n), data.rates, TODAY).some((i) => re.test(i.text));
+
+test('members: each fictional member shows the alerts its scenario is about', () => {
+  assert.ok(has('101', /No default insurance until 25/));
+  assert.ok(has('102', /TTR maximum this year: \$30,000/));
+  assert.ok(has('103', /Retirement Phase minimum this year: \$22,500/));
+  assert.ok(has('104', /Division 293 likely/));
+  assert.ok(has('105', /Division 296/));
+  assert.ok(has('106', /first-year minimum \$18,700/));
+  assert.ok(has('107', /BIS pension/));
+  assert.ok(has('108', /Lapsing binding nomination expires on 10 Dec 2026/));
+  assert.ok(has('109', /carried forward/));
+  assert.ok(has('110', /up to \$21,250/));
+  assert.ok(has('111', /insurance stops on 15 Jan 2027/));
+  assert.ok(has('112', /claim a DASP by 10 Mar 2027/));
+  assert.ok(has('113', /co-contribution of about \$500/));
+});
+
+test('members: drawdown prefill matches the member pension', () => {
+  const nina = M.prefill(member('106'), TODAY);
+  assert.equal(nina.balance, 500000);
+  assert.equal(D.ymd(nina.start), '2026-10-01');
+  const r = CompanionDrawdown.calculate({ dob: D.parse(member('106').dob), start: nina.start, balance: nina.balance, type: nina.type, freq: nina.freq }, data.rates);
+  assert.equal(r.proMin, 18700);
+  const pat = M.prefill(member('103'), TODAY);
+  assert.equal(pat.freq, 'Fortnightly');
+  assert.equal(D.ymd(pat.start), '2026-07-01');
+  assert.equal(pat.balance, 450000);
+});
+
+test('checklists: every member note uses a known condition and fills its blanks', () => {
+  const known = new Set(M.CONDITIONS);
+  for (const p of data.procedures) for (const st of p.steps) for (const n of st.member ?? []) {
+    assert.ok(known.has(n.cond), `${p.id}: unknown condition ${n.cond}`);
+  }
+  for (const m of data.members) {
+    const c = M.context(m, data.rates, TODAY);
+    for (const p of data.procedures) for (const st of p.steps) for (const n of st.member ?? []) {
+      if (c.cond[n.cond]) assert.ok(!/\{\w+\}/.test(M.fill(n.text, c.vars)), `${p.id} / #${m.number}: unfilled blank in "${n.text}"`);
+    }
+  }
+});
+
+test('members: import validation catches bad files', () => {
+  assert.deepEqual([...M.validate(data.members)], []);
+  assert.ok(M.validate([{ number: '12', name: 'X', dob: '1990-01-01', accounts: [{ type: 'Accumulation 1' }] }]).length > 0);
+  assert.ok(M.validate([{ number: '120', name: 'X', dob: '1990-01-01', accounts: [{ type: 'Super' }] }]).length > 0);
 });

@@ -135,6 +135,11 @@ var CompanionSearch = (function () {
     var gloss = buildGlossary(data.glossary || {});
     var docs = [];
 
+    (data.procedures || []).forEach(function (p) {
+      docs.push(indexItem({ type: 'procedure', id: p.id, aliases: (p.aliases || []).concat([p.title]), item: p, fields: [
+        { text: p.title + ' steps checklist how to', weight: 3 }, { text: (p.aliases || []).join(' '), weight: 3 }, { text: p.topic, weight: 1 },
+        { text: p.when, weight: 1.5 }, { text: p.steps.map(function (s) { return s.do; }).join(' '), weight: 0.5 }] }));
+    });
     (data.rules || []).forEach(function (c) {
       docs.push(indexItem({ type: 'rule', id: c.id, products: c.products, aliases: c.aliases, item: c, fields: [
         { text: c.q, weight: 3 }, { text: (c.aliases || []).join(' '), weight: 3 },

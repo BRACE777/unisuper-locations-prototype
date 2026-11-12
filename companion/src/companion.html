@@ -23,10 +23,14 @@
   </div>
   <div class="context">
     <div class="chips" id="products" role="radiogroup" aria-label="Product"></div>
-    <label class="field"><span class="label">Member</span><input id="member" type="text" autocomplete="off" placeholder="age or date of birth" title="Type an age (67) or a date of birth in any format: 14/5/1959, 14.05.59, 14 May 1959, 14051959"></label>
+    <label class="field"><span class="label">Member</span><input id="member" type="text" autocomplete="off" placeholder="member no., age or DOB" title="Type a test member number (101 to 113), an age (67) or a date of birth in any format: 14/5/1959, 14.05.59, 14 May 1959"></label>
     <span class="echo" id="member-echo"></span>
+    <button class="chip" id="member-pick" type="button" aria-expanded="false">Test members</button>
     <button class="link" id="clear-context" type="button">Clear</button>
   </div>
+  <div class="member-panel" id="member-panel" hidden></div>
+  <div class="member-strip" id="member-strip" hidden></div>
+  <input type="file" id="member-file" accept=".json,application/json" hidden>
   <div class="tabs-wrap"><nav class="tabs" id="tabs" aria-label="Sections"></nav></div>
 </header>
 <main id="main" tabindex="-1"></main>
