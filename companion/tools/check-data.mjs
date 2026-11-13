@@ -93,7 +93,10 @@ const explainers = optional('explainers.json');
 if (explainers) {
   walkQuotes('explainers.json', explainers);
   uniqueIds('explainers.json', explainers.items);
-  requireFields('explainers.json', explainers.items, ['title', 'short', 'walk', 'example', 'general', 'source']);
+  requireFields('explainers.json', explainers.items, ['title', 'kid', 'plain', 'member', 'general', 'source']);
+  for (const e of explainers.items) for (const v of ['kid', 'plain', 'member']) {
+    if (!Array.isArray(e[v]) || e[v].length < 3 || e[v].some((s) => typeof s !== 'string' || !s.trim())) problems.push(`explainers.json: "${e.id}" ${v} must be a list of at least three steps`);
+  }
 
   // Every dollar figure in an explainer must exist somewhere we have verified.
   const known = new Set();
@@ -104,8 +107,8 @@ if (explainers) {
     const own = new Set(known);
     for (const m of JSON.stringify(e.source).matchAll(/\d[\d,]*(?:\.\d+)?/g)) own.add(m[0].replace(/,/g, ''));
     for (const m of (e.allow_numbers ?? [])) own.add(String(m).replace(/[$,]/g, ''));
-    for (const field of ['short', 'walk', 'example']) {
-      for (const m of e[field].matchAll(/\$\d[\d,]*(?:\.\d+)?/g)) {
+    for (const field of ['kid', 'plain', 'member']) {
+      for (const m of [].concat(e[field] ?? []).join(' ').matchAll(/\$\d[\d,]*(?:\.\d+)?/g)) {
         const n = m[0].replace(/[$,]/g, '');
         if (!own.has(n)) problems.push(`explainers.json: "${e.id}" ${field} uses ${m[0]}, which isn't in rates.json, its source, or allow_numbers`);
       }

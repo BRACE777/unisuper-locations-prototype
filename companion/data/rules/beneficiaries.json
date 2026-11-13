@@ -319,7 +319,7 @@
         "tax dependant",
         "death benefit tax dependant"
       ],
-      "a": "A spouse or former spouse, children under 18, an interdependent, or a financial dependant at the date of death. {{adult-children-tax:{{adult-children-tax:Adult children are usually not tax dependants.}}}}",
+      "a": "A spouse or former spouse, children under 18, an interdependent, or a financial dependant at the date of death. {{adult-children-tax:Adult children are usually not tax dependants.}}",
       "sources": [
         {
           "doc": "flexi",

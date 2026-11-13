@@ -11,7 +11,7 @@ Both are generated. `dist/` is git-ignored, so build them first (below).
 
 ## Using the page
 
-- **Explainers** are listed on the home page under the search hero, and have their own tab. Any phrase they cover (pro-rata, transfer balance cap, preservation age, binding nomination and so on) is underlined wherever it appears in a card: hover over it, or tab to it, for the 10-second version, with 30-second and example versions one click away. Acronyms (TBC, NOI, BDBN...) are dotted-underlined and show what they stand for.
+- **Explainers** are listed on the home page under the search hero, and have their own tab. Any phrase they cover (pro-rata, transfer balance cap, preservation age, binding nomination and so on) is underlined wherever it appears in a card: hover over it, or tab to it, for the everyday version, with the age-10 and informed versions one click away. Each version is a numbered chain: every step follows from the one before, or is the next thing to do. Acronyms (TBC, NOI, BDBN...) are dotted-underlined and show what they stand for.
 - **Interactive figures** explain four rules by pointing at them: the minimum percentage by age (pillars), the first-year pro-rata (months), the drawdown order (stacked options) and the transfer balance cap (a box that fills). Arrow keys work too. They appear on the matching rule cards, explainers and hover-overs.
 
 - Press `/` and type what the member said, a figure or an acronym: `ttr max`, `6000`, `noi deadline`, `change my bank`, `how long withdrawal`. `Esc` clears.
@@ -51,7 +51,7 @@ Needs Node 20+, `pdftotext` (Poppler), Python with `openpyxl`, and Excel for the
 | `rules/*.json` | 154 rule cards, one file per topic | Hand |
 | `glossary.json` | Acronyms and member phrasing used to expand searches | Hand |
 | `timeframes.json` | 39 timeframes from the PDS, with wording to say | Hand |
-| `explainers.json` | 22 concepts, each in three versions | Hand |
+| `explainers.json` | 22 concepts, each told three ways (age 10, everyday, informed) as numbered steps | Hand |
 | `forms-extra.json` | Directions, requirements and keywords added to each form | Hand |
 | `forms.json` | Generated from the public forms page plus `forms-extra.json` | `tools/fetch-forms.mjs` |
 | `holidays.json` | Grand Final eve holiday (set yearly by the Victorian Government) | Hand |

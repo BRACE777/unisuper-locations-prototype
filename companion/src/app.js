@@ -319,16 +319,27 @@
       (t.calc ? '<button class="btn ghost" data-calc-preset="' + esc(t.id) + '">Work out the date →</button>' : '') + '</div></article>';
   }
 
-  var VERSIONS = [['short', '10 sec'], ['walk', '30 sec'], ['example', 'Example']];
+  // Three listeners, each an ordered chain: every step follows from the one before, or is the next thing to do.
+  var VERSIONS = [['kid', 'Age 10', 'Explained to a 10-year-old'], ['plain', 'Everyday', 'Explained to an everyday member, no super knowledge'], ['member', 'Informed', 'Explained to an informed member, with the detail and figures']];
+  var DEFAULT_VERSION = 'plain';
   function versionsHtml(attr) {
-    return '<div class="seg" role="group" aria-label="Version">' + VERSIONS.map(function (x, i) {
-      return '<button type="button" ' + attr + '="' + x[0] + '" aria-pressed="' + (i === 0) + '">' + x[1] + '</button>';
+    return '<div class="seg" role="group" aria-label="Who are you explaining to?">' + VERSIONS.map(function (x) {
+      return '<button type="button" ' + attr + '="' + x[0] + '" aria-pressed="' + (x[0] === DEFAULT_VERSION) + '" title="' + x[2] + '">' + x[1] + '</button>';
     }).join('') + '</div>';
+  }
+  function chainsHtml(e) {
+    return VERSIONS.map(function (x) {
+      return '<ol class="script chain" data-script="' + x[0] + '" aria-label="' + x[2] + '"' + (x[0] === DEFAULT_VERSION ? '' : ' hidden') + '>' +
+        e[x[0]].map(function (s) { return '<li>' + rich(s) + '</li>'; }).join('') + '</ol>';
+    }).join('');
+  }
+  function chainText(ol) {
+    return Array.prototype.map.call(ol.querySelectorAll('li'), function (li, i) { return (i + 1) + '. ' + li.textContent; }).join('\n');
   }
   function explainerCard(e) {
     return '<article class="card explainer" data-id="' + esc(e.id) + '">' + head(e.topic + ' · explainer', '') +
       '<h3 class="card-title">' + esc(e.title) + '</h3>' + figureSlot(e.id) + versionsHtml('data-version') +
-      VERSIONS.map(function (x, i) { return '<p class="script" data-script="' + x[0] + '"' + (i ? ' hidden' : '') + '>' + esc(e[x[0]]) + '</p>'; }).join('') +
+      chainsHtml(e) +
       '<div class="general"><span class="label">Stay general</span><p>' + esc(e.general) + '</p></div>' + sourcesHtml([e.source]) +
       '<div class="actions"><button class="btn" data-copy-script>Copy this version</button></div></article>';
   }
@@ -472,14 +483,14 @@
   var TRY = ['ttr max', '6000', 'noi deadline', 'change my bank', 'how long withdrawal', 'perservation age'];
   function homeHtml() {
     var tiles = [['rule', DATA.rules.length, 'Rule cards', 'Each with its PDS page'], ['form', DATA.forms.length, 'Forms', 'With directions to read out'],
-      ['timeframe', DATA.timeframes.length, 'Timeframes', 'With a date calculator'], ['explainer', DATA.explainers.length, 'Explainers', 'Three versions each'],
+      ['timeframe', DATA.timeframes.length, 'Timeframes', 'With a date calculator'], ['explainer', DATA.explainers.length, 'Explainers', 'Age 10, everyday, informed'],
       ['calc', '$', 'Drawdown calculator', 'Minimum and maximum payments']];
     var html = '<section class="hero"><div class="hero-text"><span class="label">Call companion · PDS issued ' + esc(issued('flexi')) + '</span>' +
       '<h1>Find the rule, the form, the date, or the words to say.</h1>' +
       '<p>Type what the member said. Underlined terms explain themselves when you hover over them.</p>' +
       '<div class="try"><span class="label">Try</span>' + TRY.map(function (t) { return '<button class="chip" data-q="' + esc(t) + '">' + esc(t) + '</button>'; }).join('') + '</div></div>' +
       '<div class="hero-fig fig" data-figure="terrain" aria-hidden="true"></div></section>';
-    html += sectionTitle('Explainers', DATA.explainers.length) + '<p class="hint">Hover over one for the 10-second version and a picture where there is one. Click to open all three versions.</p>' +
+    html += sectionTitle('Explainers', DATA.explainers.length) + '<p class="hint">Each is told three ways, step by step: to a 10-year-old, to an everyday member, and to an informed member. Hover over one for the everyday version; click to open all three.</p>' +
       '<div class="explainer-index">' + groupBy(DATA.explainers, 'topic').map(function (g) {
         return '<div class="ex-group"><span class="label">' + esc(g[0]) + '</span><div class="chips">' + g[1].map(function (e) {
           return '<button type="button" class="term-chip" data-explainer="' + e.id + '" data-open-explainer="' + e.id + '">' + esc(e.title) + (FIGURE_FOR[e.id] ? '<span class="dot" title="Has an interactive picture"></span>' : '') + '</button>';
@@ -556,7 +567,7 @@
     if (id && EXPLAINERS[id]) {
       var e = EXPLAINERS[id];
       p.innerHTML = '<span class="label">' + esc(e.topic) + ' · explainer</span><h4>' + esc(e.title) + '</h4>' + figureSlot(id) + versionsHtml('data-pop-version') +
-        VERSIONS.map(function (x, i) { return '<p class="script" data-script="' + x[0] + '"' + (i ? ' hidden' : '') + '>' + esc(e[x[0]]) + '</p>'; }).join('') +
+        chainsHtml(e) +
         '<div class="actions"><button class="btn" data-copy-script>Copy</button><button class="btn ghost" data-open-explainer="' + id + '">Open explainer →</button></div>';
       p.setAttribute('aria-label', e.title);
     } else if (acr) {
@@ -958,7 +969,7 @@
     if (t.hasAttribute('data-copy')) { copy(t.getAttribute('data-copy')); return; }
     if (t.hasAttribute('data-copy-script')) {
       var card = t.closest('.card, .pop'), shown = card.querySelector('.script:not([hidden])');
-      copy(shown.textContent); return;
+      copy(shown.tagName === 'OL' ? chainText(shown) : shown.textContent); return;
     }
     if (t.hasAttribute('data-version')) {
       var c = t.closest('.card'), v = t.getAttribute('data-version');

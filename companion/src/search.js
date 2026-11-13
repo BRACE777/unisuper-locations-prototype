@@ -157,7 +157,7 @@ var CompanionSearch = (function () {
     });
     (data.explainers || []).forEach(function (e) {
       docs.push(indexItem({ type: 'explainer', id: e.id, aliases: [e.title], item: e, fields: [
-        { text: e.title + ' explain', weight: 3 }, { text: e.topic, weight: 1 }, { text: e.short, weight: 1.2 }, { text: e.walk, weight: 0.6 }] }));
+        { text: e.title + ' explain', weight: 3 }, { text: e.topic, weight: 1 }, { text: (e.plain || []).join(' '), weight: 1.2 }, { text: (e.member || []).join(' '), weight: 0.6 }] }));
     });
 
     var pages = (data.pages || []).map(function (p) {

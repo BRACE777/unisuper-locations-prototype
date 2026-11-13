@@ -220,6 +220,16 @@ table.mini tr.hit td:last-child { padding-right: 8px; border-radius: 0 6px 6px 0
 .seg button:hover { color: var(--ink-1); }
 .seg button[aria-pressed="true"] { background: var(--paper); color: var(--ink-1); box-shadow: var(--shadow-raised); }
 .script { font-size: 16px; line-height: 1.6; color: var(--ink-1); margin: 10px 0 0; }
+.chain { list-style: none; padding: 0; counter-reset: step; }
+.chain li { counter-increment: step; position: relative; padding: 0 0 12px 38px; }
+.chain li:last-child { padding-bottom: 0; }
+.chain li::before {
+  content: counter(step); position: absolute; left: 0; top: 2px; width: 24px; height: 24px; border-radius: 50%;
+  display: grid; place-items: center; font: 600 11px var(--mono); background: var(--surface-2); color: var(--ink-2);
+}
+.chain li:not(:last-child)::after { content: ''; position: absolute; left: 11.5px; top: 30px; bottom: 4px; width: 1px; background: var(--line-2); }
+.chain li:last-child::before { background: var(--ink-1); color: var(--paper); }
+.pop .chain li { padding-bottom: 8px; padding-left: 34px; }
 
 /* hover-over terms */
 .term, .acr {
