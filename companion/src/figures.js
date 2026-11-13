@@ -312,8 +312,8 @@ var CompanionFigures = (function () {
     function m(v) { return v >= 1e6 ? '$' + (v / 1e6).toFixed(2).replace(/0$/, '') + 'm' : '$' + Math.round(v / 1000) + 'k'; }
     function describe() {
       var v = amt.t;
-      st.cap.innerHTML = v <= cap ? '<b>' + m(v) + ' moved into retirement phase</b><span>' + m(cap - v) + ' of cap left for future pensions</span>'
-        : '<b>' + m(v) + ' moved: over the cap by ' + m(v - cap) + '</b><span>The excess and notional earnings must be removed; 15% tax on those earnings</span>';
+      st.cap.innerHTML = v <= cap ? '<b>' + m(v) + ' moved into retirement phase</b><span>' + m(cap - v) + ' of the general cap left for future pensions (a personal cap can be lower)</span>'
+        : '<b>' + m(v) + ' moved: over the cap by ' + m(v - cap) + '</b><span>The excess and notional earnings must be removed; 15% tax on those earnings (30% for a further breach)</span>';
     }
     function tick(dt) {
       var moving = stepS(amt, dt);

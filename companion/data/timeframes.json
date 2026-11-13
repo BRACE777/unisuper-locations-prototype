@@ -364,7 +364,7 @@
       "topic": "Insurance",
       "task": "Employer contribution needed for cover to start",
       "timeframe": "Within 180 days",
-      "starts": "Turning 25 with a $6,000 balance, or the application date",
+      "starts": "{{clock-start:Turning 25 with a $6,000 balance, or the application date}}",
       "kind": "pds",
       "calc": {
         "type": "days",
@@ -462,7 +462,7 @@
       "topic": "Complaints",
       "task": "Objecting to a proposed death benefit distribution",
       "timeframe": "28 days to object, then an outcome within 90 days",
-      "starts": "Notice of the proposed distribution",
+      "starts": "{{clock-start:Notice of the proposed distribution}}",
       "kind": "pds",
       "calc": {
         "type": "days",
@@ -479,7 +479,7 @@
       "topic": "Complaints",
       "task": "Outcome for a super complaint",
       "timeframe": "45 days",
-      "starts": "When we receive the complaint",
+      "starts": "{{clock-start:When we receive the complaint}}",
       "kind": "pds",
       "calc": {
         "type": "days",
@@ -496,7 +496,7 @@
       "topic": "Complaints",
       "task": "Outcome for a financial advice complaint",
       "timeframe": "30 days",
-      "starts": "When we receive the complaint",
+      "starts": "{{clock-start:When we receive the complaint}}",
       "kind": "pds",
       "calc": {
         "type": "days",

@@ -35,7 +35,7 @@
   };
 
   // Every launch starts on the quiet start screen; 'recent' is what was opened during this call.
-  var state = { member: null, stripOpen: false, ticks: {}, q: '', product: store.get('product') || '', tab: 'all', memberText: '', age: null, dob: null, showHidden: false, calcPreset: null,
+  var state = { member: null, stripOpen: false, ticks: {}, q: '', product: '', tab: 'all', memberText: '', age: null, dob: null, showHidden: false, calcPreset: null,
     sel: null, pinned: false, recent: [], railList: [] };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -186,7 +186,9 @@
   // ----- interactive figures -----
   var FIGURE_FOR = { 'min-pct': 'bands', 'min-payment': 'bands', 'min-first-year': 'months', 'first-year-pro-rata': 'months',
     'drawdown-methods': 'layers', 'drawdown-order': 'layers', 'tbc-what': 'cap', 'tbc': 'cap' };
-  var SHORT_BANDS = ['<65', '65–74', '75–79', '80–84', '85–89', '90–94', '95+'];
+  var SHORT_BANDS = DATA.rates.tables.minimum_drawdown.rows.map(function (r, i, rows) {
+    return i === 0 ? '<' + rows[1].from_age : i === rows.length - 1 ? r.from_age + '+' : r.from_age + '–' + (rows[i + 1].from_age - 1);
+  });
   function figureOptions(name) {
     var age = currentAge(), rows = DATA.rates.tables.minimum_drawdown.rows, band = -1;
     if (age != null) rows.forEach(function (r, i) { if (age >= r.from_age) band = i; });
@@ -196,7 +198,7 @@
       var bal = state.dd && CompanionParse.parseMoney(state.dd.bal);
       return { fyStartYear: fy, selected: 3, balance: bal || 500000, pct: band >= 0 ? rows[band].pct : 0.05, example: !bal || band < 0 };
     }
-    if (name === 'layers') return { names: ['Cash', 'Australian Bond', 'Conservative', 'Conservative Balanced', 'Australian Income', 'Balanced', 'Sustainable Balanced', 'Growth'] };
+    if (name === 'layers') return { names: DATA.rates.tables.drawdown_order.rows.slice(0, 8) };
     if (name === 'cap') return { cap: DATA.rates.rates.filter(function (r) { return r.id === 'tbc_general'; })[0].value, amount: 1500000 };
     return {};
   }
@@ -231,7 +233,11 @@
     if (card.age_table === 'preservation_age') {
       var prow = DATA.rates.tables.preservation_age.rows, phit = -1;
       if (state.dob) { for (var i = 0; i < prow.length; i++) if (state.dob < prow[i].born_before) { phit = i; break; } }
-      var labels = ['Before 1 July 1960', '1 Jul 1960 – 30 Jun 1961', '1 Jul 1961 – 30 Jun 1962', '1 Jul 1962 – 30 Jun 1963', '1 Jul 1963 – 30 Jun 1964', '1 July 1964 or later'];
+      var labels = prow.map(function (r, i) {
+        var from = i ? CompanionDates.parse(prow[i - 1].born_before) : null, to = CompanionDates.addDays(CompanionDates.parse(r.born_before), -1);
+        if (!from) return 'Before ' + P.fmt(CompanionDates.parse(r.born_before));
+        return i === prow.length - 1 ? P.fmt(from) + ' or later' : P.fmt(from) + ' – ' + P.fmt(to);
+      });
       var pnote = phit >= 0 ? '<div class="age-note">Born ' + esc(CompanionParse.fmt(CompanionDates.parse(state.dob))) + ': preservation age <b>' + prow[phit].age + '</b></div>' : (age != null ? '<div class="meta">Enter a date of birth to pick the row.</div>' : '');
       return pnote + '<table class="mini"><thead><tr><th>Date of birth</th><th class="num">Preservation age</th></tr></thead><tbody>' + prow.map(function (r, i) {
         return '<tr class="' + (i === phit ? 'hit' : '') + '"><td>' + labels[i] + '</td><td class="num">' + r.age + '</td></tr>';
@@ -239,7 +245,8 @@
     }
     if (card.age_table === 'bring_forward') {
       var b = DATA.rates.tables.bring_forward.rows, prev = 0;
-      return '<table class="mini"><thead><tr><th>Total super balance at 30 June 2026</th><th class="num">First-year cap</th><th>Period</th></tr></thead><tbody>' + b.map(function (r) {
+      var fy = /(\d{4})-\d{2}/.exec(DATA.rates.tables.bring_forward.label);
+      return '<table class="mini"><thead><tr><th>Total super balance' + (fy ? ' at 30 June ' + fy[1] : ' on the previous 30 June') + '</th><th class="num">First-year cap</th><th>Period</th></tr></thead><tbody>' + b.map(function (r) {
         var lab = r.tsb_below == null ? money(prev) + ' or more' : (prev ? money(prev) + ' to under ' : 'Under ') + money(r.tsb_below);
         prev = r.tsb_below || prev;
         return '<tr><td>' + lab + '</td><td class="num">' + money(r.cap) + '</td><td>' + esc(r.period) + '</td></tr>';
@@ -336,9 +343,10 @@
     var kind = { pds: 'PDS', law: 'Law', internal: 'Internal' }[t.kind] || t.kind;
     return '<article class="card" data-id="' + esc(t.id) + '">' + head((t.topic || 'Timeframe') + ' · timeframe', badge(kind, t.kind === 'internal' ? 'caution' : '')) +
       '<h3 class="card-title">' + esc(t.task) + '</h3>' +
-      '<div class="figure-line">' + esc(t.timeframe) + '</div>' +
+      // A count in plain days is taken as calendar days (an assumption the PDS doesn't settle).
+      '<div class="figure-line">' + (t.calc && t.calc.type === 'days' ? assumeSpan('calendar-days', esc(t.timeframe)) : esc(t.timeframe)) + '</div>' +
       (due ? '<div class="due-line"><span class="label">If the clock starts today</span><b>' + esc(shortDate(due)) + '</b></div>' : '') +
-      (t.starts ? '<div class="meta">Clock starts: ' + esc(t.starts) + '</div>' : '') +
+      (t.starts ? '<div class="meta">Clock starts: ' + rich(t.starts) + '</div>' : '') +
       '<div class="say"><span class="label">Say</span><p>' + annotate(esc(t.say), seen) + '</p></div>' + (t.source ? sourcesHtml([t.source], t.ato) : '') +
       '<div class="actions"><button class="btn" data-main-copy data-copy="' + esc(plain(t.say)) + '">Copy wording</button>' +
       (t.calc ? '<button class="btn ghost" data-calc-preset="' + esc(t.id) + '">Work out the date →</button>' : '') + '</div></article>';
@@ -366,7 +374,7 @@
         }).join('') + '</div></div>';
     }
     if (b.table) {
-      return '<div class="table-wrap"><table class="ex-table"><thead><tr>' + b.table.head.map(function (h) { return '<th>' + esc(h) + '</th>'; }).join('') +
+      return '<div class="table-wrap"><table class="ex-table"><thead><tr>' + b.table.head.map(function (h) { return '<th>' + rich(h) + '</th>'; }).join('') +
         '</tr></thead><tbody>' + b.table.rows.map(function (r) {
           return '<tr>' + r.map(function (c, i) { return i ? '<td>' + rich(c) + '</td>' : '<th scope="row">' + rich(c) + '</th>'; }).join('') + '</tr>';
         }).join('') + '</tbody></table></div>';
@@ -381,7 +389,7 @@
       if (typeof b === 'string') return (numbered ? (++n) + '. ' : '') + plain(b);
       if (b.lead) return plain(b.lead);
       if (b.options) return b.options.map(function (o, i) { return LETTERS[i] + ') ' + o.name + ': ' + plain(o.text); }).join('\n');
-      if (b.table) return [b.table.head.filter(Boolean).join(' | ')].concat(b.table.rows.map(function (r) { return r.map(plain).join(' | '); })).join('\n');
+      if (b.table) return [b.table.head.filter(Boolean).map(plain).join(' | ')].concat(b.table.rows.map(function (r) { return r.map(plain).join(' | '); })).join('\n');
       if (b.example) return 'Example: ' + plain(b.example);
       if (b.note) return 'Watch for: ' + plain(b.note);
       return '';
@@ -844,8 +852,13 @@
   var DD_TYPES = ['Retirement Phase', 'TTR', 'Beneficiary (BIS)'];
   var DD_FREQS = ['Fortnightly', 'Monthly', 'Quarterly', 'Half-yearly', 'Annual'];
   var UNITS = [['business_days', 'Business days'], ['days', 'Days'], ['months', 'Months'], ['years', 'Years']];
-  state.dd = { start: '', bal: '', anchor: '', chosen: '', n: '', type: store.get('dd.type') || 'Retirement Phase', freq: store.get('dd.freq') || 'Monthly' };
+  // Type and frequency start fresh on every launch and every new call; `touched` is what the consultant typed or picked.
+  var DD_DEFAULTS = { type: 'Retirement Phase', freq: 'Monthly' };
+  state.dd = { start: '', bal: '', anchor: '', chosen: '', n: '', type: DD_DEFAULTS.type, freq: DD_DEFAULTS.freq, touched: {} };
   state.dt = { from: '', n: '5', unit: 'business_days' };
+  function resetCalc() {
+    state.dd = { start: '', bal: '', anchor: '', chosen: '', n: '', type: DD_DEFAULTS.type, freq: DD_DEFAULTS.freq, touched: {} };
+  }
   function dmy(d) { return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear(); }
 
   function echoHtml(id) { return '<span class="echo" id="' + id + '-echo"></span>'; }
@@ -871,7 +884,8 @@
     if (state.member) return '#' + state.member.number + ' ' + state.member.name + ', age ' + currentAge() + ' (test member)';
     if (state.dob) return 'Born ' + P.fmt(CompanionDates.parse(state.dob)) + ', age ' + currentAge();
     if (state.age != null) return 'Age ' + state.age;
-    if (/^\d{3}$/.test(t.trim())) return 'No test member ' + t.trim() + '. Try 101 to 113.';
+    if (/^\d{3}$/.test(t.trim()) && +t.trim() > 110) return 'No test member ' + t.trim() + '. Try 101 to 113.';
+    if (state.memberError) return state.memberError;
     return 'Type a member number, an age (67) or a date of birth (14/5/1959)';
   }
   function setMember(text, from) {
@@ -879,11 +893,13 @@
     var num = String(text).trim(), m = /^\d{3}$/.test(num) ? MEMBERS[num] : null;
     var was = state.member;
     state.member = m || null;
+    state.memberError = null;
     if (m) { state.dob = m.dob; state.age = null; }
     else {
       var r = P.parseAgeOrDate(text);
       state.dob = r && r.dob ? P.iso(r.dob) : null;
       state.age = r && r.age != null ? r.age : null;
+      state.memberError = r && r.error ? r.error : null;
     }
     var bad = text.trim() && !m && state.dob == null && state.age == null;
     if (from !== 'member') $('member').value = text;
@@ -893,7 +909,7 @@
     if (m !== was) {
       if (m) {
         state.product = CompanionMembers.primaryProduct(m);
-        applyPrefill(m);
+        applyPrefill(m, from === 'panel');
       } else if (was) state.product = '';
       renderProducts();
       renderMemberStrip();
@@ -901,17 +917,28 @@
   }
 
   // Fills the drawdown calculator from a test member's pension (or planned pension).
-  function applyPrefill(m) {
+  // Picking a member from the list fills everything. Typing a member number only fills what the
+  // consultant hasn't typed themselves, and updates the boxes in place so the cursor stays put.
+  function applyPrefill(m, all) {
     var pf = CompanionMembers.prefill(m, new Date());
     if (!pf) return;
-    state.dd.start = dmy(pf.start);
-    state.dd.bal = Math.round(pf.balance).toLocaleString('en-AU');
-    state.dd.type = pf.type;
-    state.dd.freq = pf.freq;
-    state.dd.anchor = pf.anchor ? dmy(pf.anchor) : '';
-    state.dd.chosen = pf.chosen ? Math.round(pf.chosen).toLocaleString('en-AU') : '';
-    state.dd.n = '';
-    if (state.tab === 'calc' && $('dd-start')) renderCalculators();
+    var t = state.dd.touched, put = function (k, v) { if (all || !t[k]) state.dd[k] = v; };
+    put('start', dmy(pf.start));
+    put('bal', Math.round(pf.balance).toLocaleString('en-AU'));
+    put('anchor', pf.anchor ? dmy(pf.anchor) : '');
+    put('chosen', pf.chosen ? Math.round(pf.chosen).toLocaleString('en-AU') : '');
+    put('n', '');
+    if (all || !t.type) state.dd.type = pf.type;
+    if (all || !t.freq) state.dd.freq = pf.freq;
+    if (all) state.dd.touched = {};
+    if (state.tab === 'calc' && $('dd-start')) syncCalcFields();
+  }
+  function syncCalcFields() {
+    ['start', 'bal', 'anchor', 'chosen', 'n'].forEach(function (k) { var el = $('dd-' + k); if (el && el !== document.activeElement) el.value = state.dd[k]; });
+    setSeg('type', state.dd.type);
+    setSeg('freq', state.dd.freq);
+    echoDrawdown();
+    runDrawdown();
   }
 
   // ----- test member strip and picker -----
@@ -981,14 +1008,14 @@
     $('dd-quick').addEventListener('input', quickEntry);
     $('dd-member').addEventListener('input', function () { setMember(this.value, 'dd-member'); runDrawdown(); });
     ['start', 'bal', 'anchor', 'chosen', 'n'].forEach(function (k) {
-      $('dd-' + k).addEventListener('input', function () { state.dd[k] = this.value; echoDrawdown(); runDrawdown(); });
+      $('dd-' + k).addEventListener('input', function () { state.dd[k] = this.value; state.dd.touched[k] = true; echoDrawdown(); runDrawdown(); });
     });
     setMember(state.memberText, 'render');
     echoDrawdown();
     runDrawdown();
   }
 
-  // Date calculator: lives at the top of the Timeframes tab.
+  // Date calculator: opens from the start screen, and under any timeframe that has a fixed length.
   function datesToolHtml() {
     var dt = state.dt, presets = DATA.timeframes.filter(function (t) { return t.calc; });
     if (!dt.from) dt.from = dmy(P.today());
@@ -1028,19 +1055,19 @@
     var q = P.parseQuick(this.value), got = [];
     if (q.dob) { setMember(dmy(q.dob), 'quick'); got.push('born ' + P.fmt(q.dob)); }
     else if (q.age != null) { setMember(String(q.age), 'quick'); got.push('age ' + q.age); }
-    if (q.start) { state.dd.start = dmy(q.start); $('dd-start').value = state.dd.start; got.push('starts ' + P.fmt(q.start)); }
-    if (q.balance != null) { state.dd.bal = q.balance.toLocaleString('en-AU'); $('dd-bal').value = state.dd.bal; got.push(money(q.balance)); }
-    if (q.type) { setSeg('type', q.type); got.push(q.type); }
-    if (q.freq) { setSeg('freq', q.freq); got.push(q.freq.toLowerCase()); }
+    if (q.start) { state.dd.touched.start = true; state.dd.start = dmy(q.start); $('dd-start').value = state.dd.start; got.push('starts ' + P.fmt(q.start)); }
+    if (q.balance != null) { state.dd.touched.bal = true; state.dd.bal = q.balance.toLocaleString('en-AU'); $('dd-bal').value = state.dd.bal; got.push(money(q.balance)); }
+    if (q.type) { state.dd.touched.type = true; setSeg('type', q.type); got.push(q.type); }
+    if (q.freq) { state.dd.touched.freq = true; setSeg('freq', q.freq); got.push(q.freq.toLowerCase()); }
     setEcho('dd-quick', this.value.trim() ? (got.length ? 'Understood: ' + got.join(', ') : 'Nothing recognised yet') : '', this.value.trim() && !got.length);
     echoDrawdown();
     runDrawdown();
   }
 
   function setSeg(name, value) {
-    if (name === 'type') { state.dd.type = value; store.set('dd.type', value); }
+    if (name === 'type') state.dd.type = value;
     if (name === 'freq') {
-      state.dd.freq = value; store.set('dd.freq', value);
+      state.dd.freq = value;
       document.querySelectorAll('.anchor-row').forEach(function (el) { el.hidden = value !== 'Fortnightly'; });
     }
     if (name === 'unit') { state.dt.unit = value; state.calcPreset = null; if ($('dt-preset')) $('dt-preset').value = ''; }
@@ -1082,6 +1109,8 @@
     var summary = inputs + 'Age ' + r.age + ', ' + pct(r.pct) + ' minimum. Pro-rata minimum to 30 June: ' + money(r.proMin) +
       (r.max != null ? '; TTR maximum ' + money(r.max) : '') + ' (' + r.daysLeft + ' of ' + r.daysYear + ' days, rounded to the nearest $10).' +
       (r.perMin != null ? ' ' + r.payments + ' ' + dd.freq.toLowerCase() + ' payments of at least ' + money(r.perMin) + '.' : '');
+    // The calculator's caveats travel with the copied note, so an estimate isn't pasted as fact.
+    if (r.warnings.length) summary += '\nNotes: ' + r.warnings.map(plain).join(' ');
     out.innerHTML = '<div class="headline">' + esc(range) + '<span>allowed this financial year</span></div>' +
       row(state.dob ? 'Age at start' : '{{age-only:Age at start}}', r.age) + row('Minimum percentage', pct(r.pct) + ' (' + esc(r.band) + ')') +
       row('Preservation age', r.preservationAge != null ? r.preservationAge + (r.preservationReached ? ' (reached)' : ' (not reached yet)') : 'Reached (60 or over)') +
@@ -1115,6 +1144,9 @@
     var out = $('dt-out');
     var d0 = P.parseDate(state.dt.from, 'any'), n = parseInt(state.dt.n, 10), unit = state.dt.unit;
     if (!d0 || !(n >= 0)) { out.innerHTML = '<p class="meta">Enter a start date and an amount.</p>'; return; }
+    // Counted one day at a time, so a huge number would freeze the page. Ten years is plenty.
+    var LIMIT = { business_days: 2600, days: 3660, months: 120, years: 10 }[unit];
+    if (n > LIMIT) { out.innerHTML = '<p class="meta bad">Up to ' + LIMIT.toLocaleString('en-AU') + ' ' + unit.replace('_', ' ') + ' (about ten years).</p>'; return; }
     var res = CompanionDates.apply({ type: unit, n: n }, d0, cal);
     var fyEnd = CompanionDates.financialYearEnd(d0);
     var t = TIMEFRAMES[state.calcPreset];
@@ -1152,7 +1184,7 @@
     $('product').classList.toggle('set', !!state.product);
   }
   $('product').addEventListener('change', function () {
-    state.product = this.value; store.set('product', state.product); renderProducts(); render();
+    state.product = this.value; renderProducts(); render();
   });
 
   // ----- events -----
@@ -1178,8 +1210,8 @@
   // New call: clears the search, member, product filter, ticks and the "earlier in this call" list.
   $('new-call').addEventListener('click', function () {
     state.q = ''; qEl.value = ''; state.tab = 'all'; state.sel = null; state.pinned = false; state.recent = []; state.ticks = {}; state.showHidden = false;
-    state.product = ''; store.set('product', '');
-    state.dd.start = ''; state.dd.bal = ''; state.dd.anchor = ''; state.dd.chosen = ''; state.dd.n = '';
+    state.product = '';
+    resetCalc(); state.dt = { from: '', n: '5', unit: 'business_days' }; state.calcPreset = null; state.stripOpen = false; state.memberError = null;
     setMember('', 'clear');
     $('member-panel').hidden = true; $('member-pick').setAttribute('aria-expanded', 'false');
     renderProducts(); render(); window.scrollTo(0, 0); qEl.focus();
@@ -1212,7 +1244,7 @@
     reader.readAsText(file);
     this.value = '';
   });
-  $('clear-context').addEventListener('click', function () { setMember('', 'clear'); state.product = ''; store.set('product', ''); renderProducts(); render(); });
+  $('clear-context').addEventListener('click', function () { setMember('', 'clear'); state.product = ''; renderProducts(); render(); });
 
   // Enter moves to the next field in a calculator, like Tab.
   main.addEventListener('keydown', function (e) {
@@ -1300,6 +1332,7 @@
     if (t.hasAttribute('data-open-rule')) { openItem('rule', t.getAttribute('data-open-rule')); return; }
     if (t.hasAttribute('data-seg')) {
       setSeg(t.getAttribute('data-seg'), t.getAttribute('data-val'));
+      if (t.getAttribute('data-seg') !== 'unit') state.dd.touched[t.getAttribute('data-seg')] = true;
       if (t.getAttribute('data-seg') === 'unit') runDates(); else runDrawdown();
       return;
     }
@@ -1307,11 +1340,11 @@
       var now = CompanionParse.today(), which = t.getAttribute('data-start'), d = now;
       if (which === 'next-month') d = new Date(now.getFullYear(), now.getMonth() + 1, 1);
       if (which === 'july') d = new Date(now.getMonth() >= 6 ? now.getFullYear() + 1 : now.getFullYear(), 6, 1);
-      state.dd.start = dmy(d); $('dd-start').value = state.dd.start; echoDrawdown(); runDrawdown(); return;
+      state.dd.start = dmy(d); state.dd.touched.start = true; $('dd-start').value = state.dd.start; echoDrawdown(); runDrawdown(); return;
     }
     if (t.hasAttribute('data-from')) { state.dt.from = dmy(CompanionParse.today()); $('dt-from').value = state.dt.from; echoDate('dt-from', state.dt.from); runDates(); return; }
     if (t.hasAttribute('data-clear-calc')) {
-      state.dd.start = ''; state.dd.bal = ''; state.dd.anchor = ''; state.dd.chosen = ''; state.dd.n = '';
+      resetCalc();
       setMember('', 'clear'); renderCalculators(); $('dd-quick').focus(); return;
     }
     if (t.hasAttribute('data-show-hidden')) { state.showHidden = true; render(); return; }

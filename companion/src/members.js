@@ -110,14 +110,15 @@ var CompanionMembers = (function () {
 
     if (supers(m).length) {
       var supBal = supers(m).reduce(function (t, a) { return t + a.balance; }, 0);
-      if (c.age < 25 && !c.cond.has_insurance) {
+      // Default cover comes with Accumulation 1 and 2; Personal Account cover is applied for.
+      if (c.age < 25 && !c.cond.has_insurance && m.accounts.some(function (a) { return /^Accumulation/.test(a.type); })) {
         var t25 = new Date(dob.getFullYear() + 25, dob.getMonth(), dob.getDate());
         add('info', 'No default insurance until 25 (' + fmt(t25) + ') and a $6,000 balance' + (supBal < 6000 ? ' (now ' + money(supBal) + ')' : '') + '.', { rule: 'default-cover' });
       }
       if (c.cond.inactive_12m) {
         var stop = addMonths(c.last, 16);
         if (c.cond.has_insurance) add(stop <= today ? 'alarm' : 'caution', '{{inactive-definition:No contributions for ' + c.inactive + ' months}}: insurance stops on ' + fmt(stop) + ' unless they elect to keep it.', { checklist: 'insurance-stopped' });
-        if (supBal < 6000) add('caution', 'Under $6,000 and inactive: the account goes to the ATO after 16 months without activity.', { rule: 'ilba' });
+        if (supBal < 6000 && !c.cond.has_dbd) add('caution', 'Under $6,000 with {{inactive-definition:no contributions for ' + c.inactive + ' months}}: if that reaches 16 months, the account may be transferred to the ATO.', { rule: 'ilba' });
       } else if (supBal < 6000) add('info', 'Balance under $6,000: low-balance rules and the 3% fee cap apply.', { rule: 'low-balance-cap' });
       if (c.cond.has_dbd) add('info', 'DBD member: no Income Protection, and using the defined benefit component for a pension ends DBD membership.', { rule: 'dbd-pension-db' });
       if (m.working && c.age >= c.presAge && !c.cond.has_pension) add('info', 'Past preservation age (' + c.presAge + ') and working: a TTR pension is possible.', { checklist: 'start-ttr' });
@@ -141,7 +142,7 @@ var CompanionMembers = (function () {
       var sa = ageOn(parse(m.spouse.dob), today), spa = presAge(rates, parse(m.spouse.dob));
       var ok = sa < 65 && (sa < spa || !m.spouse.retired);
       add(ok ? 'positive' : 'caution', 'Spouse is ' + sa + (ok ? ': {{spouse-split:contributions can be split to them}}' + (m.last_fy_concessional ? ', up to ' + money(Math.min(m.last_fy_concessional * 0.85, r.cc_cap)) + ' of last year’s' : '') : ': a split isn’t possible') + '.', { checklist: 'split' });
-      if (m.spouse.income != null && m.spouse.income <= r.spouse_offset_income) add('positive', 'Spouse earns ' + money(m.spouse.income) + ': a $3,000 spouse contribution could give a ' + money(r.spouse_offset_max) + ' tax offset.', { rule: 'spouse-offset' });
+      if (m.spouse.income != null && m.spouse.income <= r.spouse_offset_income) add('positive', 'Spouse earns ' + money(m.spouse.income) + ': a $3,000 spouse contribution could give a ' + money(r.spouse_offset_max) + ' tax offset, if the spouse’s total super balance and non-concessional cap allow it.', { rule: 'spouse-offset' });
     }
 
     var nom = m.nomination || { type: 'none' };

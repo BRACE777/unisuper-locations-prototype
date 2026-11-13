@@ -65,13 +65,22 @@ var CompanionParse = (function () {
   }
 
   // The member box takes an age ("67") or a date of birth in any format above.
+  // Ages 14 to 110 are accepted (default insurance can start at 14). Anything else, or a date of birth
+  // that would make the member younger than 14, comes back as { error } so the box can say why.
+  var MIN_AGE = 14, MAX_AGE = 110;
   function parseAgeOrDate(text) {
     var s = String(text || '').trim();
     if (!s) return null;
-    if (/^\d{1,3}$/.test(s) && +s >= 10 && +s <= 120) return { age: +s };
-    var d = parseDate(s, 'past');
-    if (d && d < today()) return { dob: d };
-    return null;
+    if (/^\d{1,3}$/.test(s)) {
+      if (+s >= MIN_AGE && +s <= MAX_AGE) return { age: +s };
+      return +s >= 10 ? { error: 'Age ' + s + ' is outside 14 to 110. A member number has 3 digits (101 to 113).' } : null;
+    }
+    var d = parseDate(s, 'past'), now = today();
+    if (!d) return null;
+    if (d >= now) return { error: fmt(d) + ' is not in the past.' };
+    var youngest = new Date(now.getFullYear() - MIN_AGE, now.getMonth(), now.getDate());
+    if (d > youngest) return { error: 'Born ' + fmt(d) + ' would make the member under 14. Check the year.' };
+    return { dob: d };
   }
 
   var TYPES = [[/\bttr\b|transition/, 'TTR'], [/\bbis\b|beneficiary/, 'Beneficiary (BIS)'], [/\brp\b|retirement/, 'Retirement Phase']];

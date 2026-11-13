@@ -1,6 +1,13 @@
 {
   "note": "Every figure the companion uses, with the PDS sentence it comes from. check-data.mjs finds each quote in the PDS text and fails the build if one is missing. When a new PDS is issued, update this file first.",
   "tables": {
+    "drawdown_order": {
+      "label": "Default drawdown order (Flexi Pension)", "doc": "flexi",
+      "quote": "1. Cash 2. Australian Bond 3. Conservative 4. Conservative Balanced 5. Australian Income 6. Balanced 7. Sustainable Balanced 8. Growth",
+      "rows": ["Cash", "Australian Bond", "Conservative", "Conservative Balanced", "Australian Income", "Balanced", "Sustainable Balanced", "Growth",
+        "High Growth", "Sustainable High Growth", "Listed Property", "Australian Shares", "International Shares", "Global Environmental Opportunities",
+        "Australian Dividend Income", "Global Companies in Asia"]
+    },
     "minimum_drawdown": {
       "label": "Minimum annual payment, by age at start and then each 1 July",
       "doc": "flexi",

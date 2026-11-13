@@ -354,7 +354,7 @@ details.pages > summary::-webkit-details-marker { display: none; }
 .cell { min-width: 0; }
 .cell .seg { margin: 0; }
 .echo { display: block; font-size: 12px; color: var(--positive); min-height: 1em; margin-top: 3px; }
-.echo.bad { color: var(--caution); }
+.echo.bad, .meta.bad { color: var(--caution); }
 .context .echo { display: inline; margin: 0; font-size: 12px; }
 .presets { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 .quick { margin: 12px 0 6px; }

@@ -459,7 +459,7 @@
         "273 days",
         "gavin"
       ],
-      "a": "Full-year minimum × days from the start date to 30 June ÷ days in the year, rounded to the nearest $10. Example: 67, $500,000, starts 1 Oct 2026: $25,000 × 273 ÷ 365 = $18,700.",
+      "a": "Full-year minimum × days from the start date to 30 June ÷ {{day-count:days in the year}}, rounded to the nearest $10. Example: 67, $500,000, starts 1 Oct 2026: $25,000 × 273 ÷ 365 = $18,700.",
       "sources": [
         {
           "doc": "flexi",

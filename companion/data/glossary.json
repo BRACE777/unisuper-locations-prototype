@@ -98,7 +98,7 @@
     },
     {
       "term": "Div 293",
-      "means": "Division 293 tax: extra 15% on concessional contributions for incomes over $250,000",
+      "means": "Division 293 tax: extra 15% on concessional contributions when income plus concessional contributions is over $250,000",
       "expands_to": "division 293 high income"
     },
     {

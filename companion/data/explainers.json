@@ -64,7 +64,7 @@
         "Extra withdrawals during the year don't reduce that year's minimum.",
         "In the year a pension starts, the minimum is pro-rated to the days left. From the next 1 July the full-year rule applies.",
         {
-          "note": "Closing a pension, or moving it back to super, part-way through a year: the pro-rata minimum up to that date has to be paid first."
+          "note": "Closing a pension, or moving it back to super, part-way through a year: a pro-rata minimum up to that date may need to be paid first."
         }
       ],
       "links": [
@@ -107,7 +107,7 @@
       "standard": [
         "Start with the full-year minimum: starting balance × the factor for your age.",
         "Count the days from your start date to 30 June, including the start date.",
-        "Multiply the full-year minimum by the days left, divide by the days in the year, and round to the nearest ten dollars.",
+        "Multiply the full-year minimum by the days left, divide by {{day-count:the days in the year}}, and round to the nearest ten dollars.",
         "That's your minimum for this first year. From the next 1 July it's a full-year amount on that day's balance.",
         {
           "note": "If you start between 1 June and 30 June, you can choose not to be paid until the next financial year."
@@ -174,7 +174,7 @@
               [
                 "Who it's for",
                 "Reached preservation age (60), still working",
-                "Retired, or 65 or over"
+                "60+ and retired, left a job on or after 60, 65 or over, or permanent incapacity"
               ],
               [
                 "Yearly payments",
@@ -209,7 +209,7 @@
               [
                 "Who it's for",
                 "Reached preservation age (60), still working",
-                "Retired, or 65 or over"
+                "60+ and retired, left a job on or after 60, 65 or over, or permanent incapacity"
               ],
               [
                 "Yearly payments",
@@ -339,7 +339,7 @@
             },
             {
               "name": "Restart as one pension",
-              "text": "Move the existing pension back to super, combine it with the new money and start one new pension. The pro-rata minimum on the old pension has to be paid first."
+              "text": "Move the existing pension back to super, combine it with the new money and start one new pension. A pro-rata minimum on the old pension may need to be paid first."
             }
           ]
         },
@@ -358,7 +358,7 @@
             },
             {
               "name": "Restart",
-              "text": "Commute the existing pension back to super, combine, and start one new pension. The pro-rata minimum to the closure date is paid first, and the new pension gets a new start date and a new first-year minimum."
+              "text": "Commute the existing pension back to super, combine, and start one new pension. A pro-rata minimum to the closure date may need to be paid first, and the new pension gets a new start date and a new first-year minimum."
             }
           ]
         },
@@ -410,8 +410,8 @@
             "rows": [
               [
                 "Money moved into a Retirement Phase pension, a TTR pension when it converts, and the Retirement Bonus",
-                "Lump sum withdrawals from a retirement pension",
-                "Investment growth or losses, and regular pension payments"
+                "{{tbc-debits:Lump sum withdrawals from a retirement pension}}",
+                "{{tbc-debits:Investment growth or losses, and regular pension payments}}"
               ]
             ]
           }
@@ -431,14 +431,14 @@
             "rows": [
               [
                 "Money moved into a Retirement Phase pension, a TTR pension when it converts, and the Retirement Bonus",
-                "Lump sum withdrawals from a retirement pension",
-                "Investment growth or losses, and regular pension payments"
+                "{{tbc-debits:Lump sum withdrawals from a retirement pension}}",
+                "{{tbc-debits:Investment growth or losses, and regular pension payments}}"
               ]
             ]
           }
         },
         {
-          "example": "Moving $1.5 million in leaves about $600,000 of cap for future pensions, even if the pension grows."
+          "example": "With the general $2.1 million cap, moving $1.5 million in leaves about $600,000 for future pensions, even if the pension grows. A member with an earlier pension may have a lower personal cap."
         },
         {
           "note": "Over the cap, the ATO can require the excess to be removed, with tax on it. The member's cap and balance are in ATO online services."
@@ -523,7 +523,7 @@
           "lead": "Eligibility needs all three:"
         },
         "Money moves from super, TTR or DBD into a Retirement Phase Flexi Pension, from 1 October 2026.",
-        "Money has been in a UniSuper super account or TTR pension for a continuous 12 months before the transfer. The 12 months starts when money first reaches the account (not when it's opened), can be counted across several accounts, and excludes time in a Retirement Phase account.",
+        "Money has been in a UniSuper super account or TTR pension for a continuous 12 months before the transfer. The 12 months starts when money first reaches the account (not when it's opened), can be in a super account, a TTR pension or both, and excludes time in a Retirement Phase account.",
         "The money is in eligible investment options. Cash, Australian Bond and Australian Income are excluded; a pre-mixed option counts in full, even though it holds some of those assets.",
         {
           "lead": "Amount: the amount moved from eligible options × the bonus rate on the start date (0.7% on the website, 13 Nov 2026)."
@@ -664,7 +664,7 @@
           "options": [
             {
               "name": "Default order",
-              "text": "Cash, then the remaining options from most to least conservative. Defensive assets are used first, so the mix drifts towards growth."
+              "text": "A set order: Cash, Australian Bond, Conservative, Conservative Balanced, Australian Income, Balanced, and on through all 16 options. The more defensive options are mostly drawn first."
             },
             {
               "name": "Your choice",
@@ -679,7 +679,7 @@
         {
           "example": "With 20% in Cash and 80% in Balanced, pro-rata takes each payment 20/80; the default uses up the Cash first."
         },
-        "Members can change the method online or with the Manage your investment choices form.",
+        "Members can change the method online.",
         {
           "note": "Recommending a method is investment advice: refer to UniSuper Advice."
         }
@@ -708,18 +708,18 @@
       "topic": "Pension",
       "title": "Temporary account before a pension starts",
       "simple": [
-        "When a pension application is waiting for super from other funds, the money is held in a temporary Accumulation 1 account.",
+        "When a pension application is waiting for super from other funds and there's no active UniSuper super account to use (or the member chooses not to use it), the money is held in a temporary Accumulation 1 account.",
         "It stays there, invested in Cash, until everything arrives or 90 days pass.",
         "Then the account closes and the pension starts with the full amount."
       ],
       "standard": [
-        "When you're rolling in super from other funds, we hold it in a temporary Accumulation 1 account.",
+        "When you're rolling in super from other funds and don't have an active UniSuper super account to use, we hold it in a temporary Accumulation 1 account.",
         "It has no admin fees and no insurance, and it's invested in Cash so the amount stays steady.",
         "It closes, and your pension starts, once all transfers have arrived, or 90 days after the first one, whichever comes first.",
         "Anything arriving after that stays in super, because a pension can't be added to once it starts."
       ],
       "detailed": [
-        "A temporary Accumulation 1 account holds rollovers and contributions while a Flexi Pension application waits for them.",
+        "A temporary Accumulation 1 account holds rollovers and contributions while a Flexi Pension application waits for them, when the member has no active UniSuper super account or chooses not to use it.",
         "It has no administration fees and no insurance, and it's invested in Cash.",
         "It closes, and the pension begins, once all transfers are received and processed, or 90 days after the first one arrives, whichever happens first.",
         "Amounts that arrive later stay in super, because nothing can be added to a pension once it starts.",
@@ -739,10 +739,16 @@
         }
       ],
       "general": "Factual.",
-      "source": {
-        "doc": "flexi",
-        "quote": "The temporary Accumulation 1 account will automatically close and your Flexi Pension will begin once we've received and processed all transfers and/or contributions, or 90 days after we receive the first transfer or contribution, whichever happens first."
-      },
+      "source": [
+        {
+          "doc": "flexi",
+          "quote": "The temporary Accumulation 1 account will automatically close and your Flexi Pension will begin once we've received and processed all transfers and/or contributions, or 90 days after we receive the first transfer or contribution, whichever happens first."
+        },
+        {
+          "doc": "hsw",
+          "quote": "If you are starting a Retirement Phase or TTR Flexi Pension using money from an existing Flexi Pension account or an external super fund"
+        }
+      ],
       "terms": [
         "temporary Accumulation 1 account",
         "temporary account"
@@ -999,7 +1005,7 @@
         {
           "lead": "To split, in this order:"
         },
-        "Wait for the financial year to end: you split last year's concessional contributions, once a year.",
+        "Usually wait for the financial year to end: you split last year's concessional contributions, once a year. (If the whole balance is leaving, this year's can be split.)",
         "Check your spouse can receive it: under 60, or 60 to 64 and not retired. Not at 65 or over.",
         "Work out the amount: up to 85% of last year's concessional contributions (and no more than your cap).",
         "If you're claiming a deduction on any of it, lodge the notice of intent first.",
@@ -1019,8 +1025,8 @@
               ],
               [
                 "Concessional cap",
-                "Still counts towards yours",
-                "Doesn't count towards theirs"
+                "{{split-cap:Still counts towards yours}}",
+                "{{split-cap:Doesn't count towards theirs}}"
               ],
               [
                 "When it can be accessed",
@@ -1037,7 +1043,7 @@
         "Spouse: under 60 whether working or not; 60 to 64 only if not permanently retired and hasn't ceased an employment arrangement; never 65 or over.",
         "Order: the notice of intent must be acknowledged before the split request, or the deduction is lost.",
         "Ownership: once transferred, the split amount belongs to the spouse. It's part of their balance, it's preserved, and they can only access it when they meet a condition of release.",
-        "Caps: the split amount still counts towards the member's own concessional cap, not the spouse's.",
+        "Caps: {{split-cap:the split amount still counts towards the member's own concessional cap, not the spouse's}}.",
         {
           "example": "$20,000 of concessional contributions last year: up to $17,000 can move to the spouse this year."
         },
@@ -1126,7 +1132,7 @@
         "Then unused amounts, oldest year first, applied automatically once the general cap is exceeded.",
         "Anything beyond that is an excess concessional contribution: added to assessable income and taxed at marginal rates, less a 15% offset.",
         {
-          "example": "Unused amounts of $14,000 (2021-22) and $13,500 (2022-23), and $45,000 contributed this year: $32,500 fills this year's cap, then $12,500 comes from the 2021-22 amount. That leaves $1,500 from 2021-22 and all of 2022-23's for later."
+          "example": "Unused amounts of $14,000 (2021-22) and $13,500 (2022-23), and $45,000 contributed this year: $32,500 fills this year's cap, then $12,500 comes from the 2021-22 amount. That leaves $1,500 from 2021-22, which expires if it isn't used by the end of 2026-27, and all of 2022-23's for later years."
         },
         {
           "note": "The ATO, not UniSuper, works out what's available (ATO online services: Super, Information, Carry forward concessional contributions). Using it with personal contributions still needs a notice of intent."
@@ -1182,7 +1188,7 @@
         "How much you can bring forward depends on your total super balance: from $1.97 million there's no bring-forward, and from $2.1 million the after-tax cap is nil."
       ],
       "standard": [
-        "Going over $130,000 of after-tax contributions in a year, while under 75, starts a bring-forward period.",
+        "{{bring-forward-trigger:Going over $130,000 of after-tax contributions in a year, while under 75, starts a bring-forward period}}.",
         "Your total super balance on the previous 30 June decides how much you can put in:",
         {
           "table": {
@@ -1253,7 +1259,7 @@
             ]
           }
         },
-        "Once triggered, the period and its total are fixed for that period.",
+        "The later years' caps are brought forward into the first year, so they're used up.",
         {
           "example": "Someone with $800,000 who sells an investment could put in $390,000 this year, then nothing more after tax for the next two years."
         },
@@ -1346,7 +1352,7 @@
               ],
               [
                 "Ending a job from 60",
-                "Ceasing an employment arrangement on or after 60 releases the balance at that point, even if the member keeps or starts another job."
+                "Ceasing an employment arrangement on or after 60 releases the balance at that point, {{multiple-jobs:even if the member keeps or starts another job}}."
               ],
               [
                 "Turning 65",
@@ -1404,7 +1410,7 @@
       "topic": "Access and tax",
       "title": "Taxable and tax-free components",
       "simple": [
-        "Your super has two components: tax-free (mostly your after-tax contributions) and taxable (pre-tax contributions and earnings).",
+        "Your super has two components: {{component-sources:tax-free (mostly your after-tax contributions) and taxable (pre-tax contributions and earnings)}}.",
         "Every withdrawal takes from both in the same proportion. You can't choose.",
         "From 60, withdrawals are tax-free, so the components mainly matter under 60 and for death benefits."
       ],
@@ -1413,7 +1419,7 @@
           "table": {
             "head": [
               "Component",
-              "Mostly made up of"
+              "{{component-sources:Mostly made up of}}"
             ],
             "rows": [
               [
@@ -1439,7 +1445,7 @@
         {
           "example": "If 10% of the balance is tax-free, a $10,000 withdrawal under 60 is $1,000 tax-free and $9,000 taxable."
         },
-        "Only the taxable component can be taxed, and only under 60. From 60, withdrawals are tax-free.",
+        "For the member's own withdrawals, only the taxable component can be taxed, and only under 60. From 60, their withdrawals are tax-free. Death benefits to non-dependants are different (below).",
         {
           "note": "Components still matter for death benefits to non-dependants: up to 17% on the taxed element. The member's actual components are on their statement."
         }
@@ -1868,12 +1874,12 @@
       "topic": "Account",
       "title": "Inactive accounts and insurance",
       "simple": [
-        "An account is inactive if it hasn't received a contribution or rollover for 16 months in a row.",
+        "For insurance, an account is inactive if it hasn't received a contribution or rollover for 16 months in a row.",
         "Insurance on an inactive account stops, unless you've told us you want to keep it.",
-        "If an inactive account is also under $6,000, it may be transferred to the ATO."
+        "A separate rule: an account under $6,000 that's been {{inactive-definition:inactive for 16 months}} may be transferred to the ATO."
       ],
       "standard": [
-        "An account is inactive after 16 consecutive months with no contribution or rollover. Two things can then happen:",
+        "After 16 consecutive months with no contribution or rollover, two things can happen:",
         {
           "options": [
             {
@@ -1882,7 +1888,7 @@
             },
             {
               "name": "Account may go to the ATO",
-              "text": "If the balance is also under $6,000. The ATO then tries to combine it with another active account in your name."
+              "text": "If the balance is also under $6,000 and it's {{inactive-definition:inactive under the low-balance rule}}. The ATO then tries to combine it with another active account in your name."
             }
           ],
           "label": "2 outcomes"
@@ -1890,7 +1896,7 @@
         "These are legal rules to stop small, forgotten accounts being eroded by fees and premiums."
       ],
       "detailed": [
-        "Inactive means no contribution or rollover for 16 consecutive months.",
+        "For insurance, inactive means no contribution or rollover for 16 consecutive months. The low-balance rule also uses 16 months, but {{inactive-definition:what counts as activity there}} isn't spelt out in the PDS.",
         {
           "options": [
             {

@@ -378,3 +378,14 @@ test('drawdown: an age alone still settles preservation age', () => {
   assert.equal(at(58, 'TTR').preservationAge, 60);
   assert.ok(at(58, 'TTR').warnings.some((w) => /Under preservation age \(60\)/.test(w)));
 });
+
+test('parse: the member box rejects ages and birth dates that cannot be right', () => {
+  assert.equal(P.parseAgeOrDate('14').age, 14);
+  assert.equal(P.parseAgeOrDate('110').age, 110);
+  assert.ok(P.parseAgeOrDate('114').error, '114 is a mistyped member number, not an age');
+  assert.ok(P.parseAgeOrDate('12').error);
+  const thisYear = new Date().getFullYear();
+  assert.ok(P.parseAgeOrDate('1/1/' + thisYear).error, 'born this year');
+  assert.ok(P.parseAgeOrDate('1/1/' + (thisYear - 5)).error, 'five years old');
+  assert.ok(P.parseAgeOrDate('14/5/1959').dob);
+});

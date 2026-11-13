@@ -71,7 +71,7 @@
           "form": "pension-apply-retirement-ttr" },
         { "do": "Proof of identity is needed before the pension starts.",
           "source": { "doc": "flexi", "quote": "you'll be required to provide proof of your identity before starting a Flexi Pension" } },
-        { "do": "Explain what happens next: a temporary account holds incoming transfers (up to 90 days), the welcome letter confirms the details, and there's a 14-day cooling-off period.",
+        { "do": "Explain what happens next: if there's no active super account to use, a temporary account holds incoming transfers (up to 90 days), the welcome letter confirms the details, and there's a 14-day cooling-off period.",
           "source": { "doc": "flexi", "quote": "You have 14 days from when your Flexi Pension is opened to decide if it's right for you." } }
       ],
       "mistakes": [
@@ -95,7 +95,7 @@
         { "do": "Explain the limits: a minimum by age, and a maximum of 10% of the balance a year (the maximum isn't pro-rated in the first year).",
           "source": { "doc": "flexi", "quote": "The maximum amount for TTR Flexi Pension isn't subject to the pro-rata rules." }, "calc": "drawdown" },
         { "do": "Explain lump sums are only available in limited cases while it's a TTR pension.", "rule": "ttr-lump-sum" },
-        { "do": "Explain tax: earnings are taxed up to 15% until it converts to Retirement Phase at 65 or on retirement.",
+        { "do": "Explain tax: earnings are taxed up to 15% until it converts to Retirement Phase: automatically at 65, or once the member tells us they've met a condition of release such as retiring.",
           "source": { "doc": "flexi", "quote": "Investment earnings on a TTR Flexi Pension can be subject to tax of up to 15%" } },
         { "do": "DBD members: using the defined benefit component ends DBD membership.", "rule": "dbd-pension-db",
           "member": [{ "cond": "has_dbd", "text": "{name} is a DBD member: check which component they're using." }] },
@@ -221,7 +221,7 @@
       "aliases": ["downsizer", "sold my house", "home sale contribution"],
       "when": "The member has sold their home and wants to put some of the proceeds into super.",
       "steps": [
-        { "do": "Check age: 55 or older at the time of the contribution.",
+        { "do": "Check age: 55 or older.",
           "member": [{ "cond": "under_55", "text": "{name} is {age}: too young for a downsizer contribution." }] },
         { "do": "Check the home was owned for at least 10 years.",
           "source": { "doc": "hsw", "quote": "If you're aged 55 or older and have owned your house for at least 10 years, you may be able to contribute up to $300,000 ($600,000 per couple) into super from the proceeds of selling your home." } },
@@ -278,8 +278,8 @@
       "steps": [
         { "do": "Check they're receiving eligible Commonwealth income support: it's a condition of this release.",
           "source": { "doc": "hsw", "quote": "You must be receiving eligible government income support benefits to qualify." } },
-        { "do": "It's applied for through UniSuper (the Trustee), online or with the Financial hardship form.", "form": "super-withdraw-your-super-due-to-financial-hardship" },
-        { "do": "Medical treatment, palliative care or mortgage arrears instead? That's compassionate grounds, which the member applies for with the ATO.", "rule": "compassionate" },
+        { "do": "It's applied for through UniSuper (the Trustee), {{account-path-labels:online}} or with the Financial hardship form.", "form": "super-withdraw-your-super-due-to-financial-hardship" },
+        { "do": "{{compassionate-examples:Medical treatment, palliative care or mortgage arrears}} instead? That's compassionate grounds, which the member applies for with the ATO.", "rule": "compassionate" },
         { "do": "Explain early access can affect insurance.",
           "member": [{ "cond": "has_insurance", "text": "{name} has insurance in super: early access may affect it." }] }
       ],
