@@ -16,7 +16,7 @@
     { id: 'rp', label: 'Retirement Phase' }, { id: 'ttr', label: 'TTR' }, { id: 'bis', label: 'BIS' }
   ];
   var TABS = [
-    { id: 'all', label: 'All', types: null }, { id: 'rule', label: 'Rules', types: ['rule'] },
+    { id: 'all', label: 'Search', types: null }, { id: 'rule', label: 'Rules', types: ['rule'] },
     { id: 'form', label: 'Forms', types: ['form'] }, { id: 'timeframe', label: 'Timeframes', types: ['timeframe'] },
     { id: 'explainer', label: 'Explainers', types: ['explainer'] }, { id: 'calc', label: 'Drawdown calculator', types: [] }
   ];
@@ -34,7 +34,9 @@
     set: function (k, v) { try { window.localStorage.setItem('companion.' + k, v); } catch (e) { /* storage unavailable */ } }
   };
 
-  var state = { member: null, stripOpen: false, ticks: {}, q: '', product: store.get('product') || '', tab: store.get('tab') || 'all', memberText: '', age: null, dob: null, showHidden: false, calcPreset: null };
+  // Every launch starts on the quiet start screen; 'recent' is what was opened during this call.
+  var state = { member: null, stripOpen: false, ticks: {}, q: '', product: store.get('product') || '', tab: 'all', memberText: '', age: null, dob: null, showHidden: false, calcPreset: null,
+    sel: null, pinned: false, recent: [], railList: [] };
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -447,8 +449,7 @@
   function procedureView(p) {
     var ticks = state.ticks[p.id] || {}, ctx = memberCtx(), seen = {};
     var done = p.steps.filter(function (s, i) { return ticks[i]; }).length;
-    return '<button class="btn ghost back" data-tab="proc">← All checklists</button>' +
-      '<article class="card proc" data-proc="' + esc(p.id) + '">' + head(p.topic + ' · checklist', '<span class="badge" id="proc-progress">' + done + ' of ' + p.steps.length + ' done</span>') +
+    return '<article class="card proc" data-proc="' + esc(p.id) + '">' + head(p.topic + ' · checklist', '<span class="badge" id="proc-progress">' + done + ' of ' + p.steps.length + ' done</span>') +
       '<h3 class="card-title proc-title">' + esc(p.title) + '</h3><p class="detail">' + esc(p.when) + ' <span class="meta">Steps are in ' + assumeSpan('checklist-order', 'a suggested order') + '.</span></p>' +
       (state.member ? '<div class="proc-member">Notes for <b>#' + esc(state.member.number) + ' ' + esc(state.member.name) + '</b> (test member) are shown under the steps they affect.</div>' : '') +
       '<ol class="steps-list">' + p.steps.map(function (st, i) {
@@ -458,12 +459,7 @@
       (p.mistakes && p.mistakes.length ? '<div class="general"><span class="label">Common mistakes</span><ul class="reqs">' + p.mistakes.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' : '') +
       '<div class="actions"><button class="btn solid" data-copy-proc>Copy as call note</button><button class="btn ghost" data-reset-proc>Reset ticks</button></div></article>';
   }
-  function openProcedure(id) {
-    state.tab = 'proc'; state.q = ''; qEl.value = ''; state.openProc = id;
-    renderTabs();
-    setMain(procedureView(PROCS[id]));
-    window.scrollTo(0, 0);
-  }
+  function openProcedure(id) { openItem('procedure', id); }
   function procNote(p) {
     var ticks = state.ticks[p.id] || {};
     var who = state.member ? ' for test member #' + state.member.number + ' ' + state.member.name : '';
@@ -489,107 +485,245 @@
   }
 
   // ----- views -----
+  // Call flow: a quiet start screen; once the consultant types or browses, a three-column workspace:
+  // results (compact, keyboard-navigable) | the selected answer | related timeframes, forms, checklists.
   function sectionTitle(text, count) {
     return '<h2 class="section-title"><span class="label">' + esc(text) + '</span>' + (count != null ? '<span class="count">' + count + '</span>' : '') + '</h2>';
   }
-  function renderSearch() {
-    var tab = TABS.filter(function (t) { return t.id === state.tab; })[0];
-    var res = engine.search(state.q, { types: tab.types, product: state.showHidden ? '' : state.product });
-    var html = '';
-    if (res.corrections && res.corrections.length) {
-      html += '<div class="fixes"><span class="label">Spelling</span>' + res.corrections.map(function (f) {
-        return '<s>' + esc(f.from) + '</s> → <b>' + esc(f.to) + '</b>';
-      }).join(', ') + '</div>';
-    }
-    if (res.glossary.length) {
-      html += '<div class="gloss">' + res.glossary.map(function (g) { return '<span><b>' + esc(g.term) + '</b>' + esc(g.means) + '</span>'; }).join('') + '</div>';
-    }
-    if (res.hidden) {
-      html += '<div class="notice">' + res.hidden + ' rule card' + (res.hidden > 1 ? 's' : '') + ' hidden by the product filter. <button class="link" data-show-hidden>Show them</button></div>';
-    }
-    if (!res.results.length) {
-      html += '<div class="empty"><span class="label">No cards</span><p>Nothing matches “' + esc(state.q) + '”. The PDS text search is below.</p></div>';
-      setMain(html + pagesHtml(state.q, true));
-      return;
-    }
-    var groups = {}, order = [];
-    res.results.forEach(function (r) {
-      if (!groups[r.type]) { groups[r.type] = []; order.push(r.type); }
-      groups[r.type].push(r);
-    });
-    order.forEach(function (type) {
-      if (state.tab === 'all') html += sectionTitle(TYPE_LABEL[type], groups[type].length);
-      var list = state.tab === 'all' ? groups[type].slice(0, type === 'rule' ? 6 : 3) : groups[type];
-      html += '<div class="stack">' + list.map(function (r) { return RENDER[r.type](r.item); }).join('') + '</div>';
-      if (state.tab === 'all' && groups[type].length > list.length) {
-        html += '<button class="btn ghost more" data-tab="' + type + '">All ' + groups[type].length + ' ' + TYPE_LABEL[type].toLowerCase() + ' →</button>';
-      }
-    });
-    setMain(html + pagesHtml(state.q, res.results.length < 2));
-  }
-
   function groupBy(list, key) {
     var g = {}, order = [];
     list.forEach(function (x) { var k = x[key] || 'Other'; if (!g[k]) { g[k] = []; order.push(k); } g[k].push(x); });
     return order.map(function (k) { return [k, g[k]]; });
   }
 
-  var TRY = ['ttr max', '6000', 'noi deadline', 'change my bank', 'how long withdrawal', 'perservation age'];
-  function homeHtml() {
-    var tiles = [['rule', DATA.rules.length, 'Rule cards', 'Each with its PDS page'], ['form', DATA.forms.length, 'Forms', 'With directions to read out'],
-      ['timeframe', DATA.timeframes.length, 'Timeframes', 'With a date calculator'], ['explainer', DATA.explainers.length, 'Explainers', 'Simple, standard, detailed'],
-      ['calc', '$', 'Drawdown calculator', 'Minimum and maximum payments']];
-    var html = '<section class="hero"><div class="hero-text"><span class="label">Call companion · PDS issued ' + esc(issued('flexi')) + '</span>' +
-      '<h1>Find the rule, the form, the date, or the words to say.</h1>' +
-      '<p>Type what the member said. Underlined terms explain themselves when you hover over them.</p>' +
-      '<div class="try"><span class="label">Try</span>' + TRY.map(function (t) { return '<button class="chip" data-q="' + esc(t) + '">' + esc(t) + '</button>'; }).join('') + '</div></div>' +
-      '<div class="hero-fig fig" data-figure="terrain" aria-hidden="true"></div></section>';
-    html += sectionTitle('Explainers', DATA.explainers.length) + '<p class="hint">Each comes in three levels, step by step: simple, standard and detailed. Hover over one for the standard version; click to open all three.</p>' +
-      '<div class="explainer-index">' + groupBy(DATA.explainers, 'topic').map(function (g) {
-        return '<div class="ex-group"><span class="label">' + esc(g[0]) + '</span><div class="chips">' + g[1].map(function (e) {
-          return '<button type="button" class="term-chip" data-explainer="' + e.id + '" data-open-explainer="' + e.id + '">' + esc(e.title) + (FIGURE_FOR[e.id] ? '<span class="dot" title="Has an interactive picture"></span>' : '') + '</button>';
+  var TYPE_ONE = { procedure: 'Checklist', rule: 'Rule', form: 'Form', timeframe: 'Timeframe', explainer: 'Explainer' };
+  var TYPE_TAB = { procedure: 'proc', rule: 'rule', form: 'form', timeframe: 'timeframe', explainer: 'explainer' };
+  function itemOf(type, id) {
+    return type === 'procedure' ? PROCS[id] : type === 'rule' ? RULES[id] : type === 'form' ? FORMS[id] : type === 'timeframe' ? TIMEFRAMES[id] : type === 'explainer' ? EXPLAINERS[id] : null;
+  }
+  function titleOf(type, x) {
+    return type === 'rule' ? x.q : type === 'timeframe' ? x.task : x.title;
+  }
+  // The one line under a result: enough to answer from the list without opening it.
+  function subOf(type, x) {
+    if (type === 'rule') return plain(x.a);
+    if (type === 'timeframe') return x.timeframe;
+    if (type === 'form') return x.summary || '';
+    if (type === 'procedure') return x.steps.length + ' steps · ' + x.when;
+    if (type === 'explainer') { var s = x.standard.filter(function (b) { return typeof b === 'string'; })[0] || (x.standard[0] && x.standard[0].lead) || ''; return plain(s); }
+    return '';
+  }
+  function key(type, id) { return type + ':' + id; }
+
+  function hitHtml(type, x, selected) {
+    return '<button class="hit' + (selected ? ' on' : '') + '" data-sel="' + esc(key(type, x.id)) + '" aria-current="' + selected + '">' +
+      '<span class="hit-type t-' + type + '">' + TYPE_ONE[type] + '</span>' +
+      '<span class="hit-title">' + esc(titleOf(type, x)) + '</span>' +
+      '<span class="hit-sub">' + esc(subOf(type, x)) + '</span></button>';
+  }
+
+  // What the results rail lists right now: search results, or everything of the browsed type.
+  function railModel() {
+    var tab = TABS.filter(function (t) { return t.id === state.tab; })[0] || TABS[0];
+    if (state.q.trim()) {
+      var res = engine.search(state.q, { product: state.showHidden ? '' : state.product, limit: 80 });
+      var counts = {};
+      res.results.forEach(function (r) { counts[r.type] = (counts[r.type] || 0) + 1; });
+      var list = res.results.filter(function (r) { return !tab.types || tab.types.indexOf(r.type) >= 0; })
+        .map(function (r) { return { type: r.type, id: r.item.id, item: r.item }; });
+      return { search: true, res: res, counts: counts, total: res.results.length, list: list, groups: null };
+    }
+    var type = tab.types && tab.types[0];
+    var source = { procedure: DATA.procedures, rule: DATA.rules.filter(function (r) { return !state.product || !r.products.length || r.products.indexOf(state.product) >= 0; }),
+      form: DATA.forms, timeframe: DATA.timeframes, explainer: DATA.explainers }[type] || [];
+    var groups = groupBy(source, type === 'form' ? 'group' : 'topic').map(function (g) {
+      return [g[0], g[1].map(function (x) { return { type: type, id: x.id, item: x }; })];
+    });
+    return { search: false, list: [].concat.apply([], groups.map(function (g) { return g[1]; })), groups: groups };
+  }
+
+  function railHtml(m) {
+    var html = '';
+    if (m.search) {
+      var res = m.res;
+      html += '<div class="rail-head"><span class="label">' + m.total + ' match' + (m.total === 1 ? '' : 'es') + '</span><div class="type-chips">' +
+        '<button class="tchip" data-tab="all" aria-pressed="' + (state.tab === 'all') + '">All <span>' + m.total + '</span></button>' +
+        ['procedure', 'rule', 'form', 'timeframe', 'explainer'].filter(function (t) { return m.counts[t]; }).map(function (t) {
+          return '<button class="tchip" data-tab="' + TYPE_TAB[t] + '" aria-pressed="' + (state.tab === TYPE_TAB[t]) + '">' + TYPE_LABEL[t] + ' <span>' + m.counts[t] + '</span></button>';
         }).join('') + '</div></div>';
-      }).join('') + '</div>';
-    html += sectionTitle('Everything in the companion') + '<section class="tiles">' + tiles.map(function (t) {
-      return '<button class="tile" data-tab="' + t[0] + '"><span class="label">' + t[2] + '</span><span class="tile-figure">' + t[1] + '</span><span class="tile-note">' + t[3] + '</span></button>';
-    }).join('') + '</section>';
+      if (res.corrections && res.corrections.length) {
+        html += '<div class="fixes"><span class="label">Spelling</span>' + res.corrections.map(function (f) { return '<s>' + esc(f.from) + '</s> → <b>' + esc(f.to) + '</b>'; }).join(', ') + '</div>';
+      }
+      if (res.glossary.length) html += '<div class="gloss">' + res.glossary.map(function (g) { return '<span><b>' + esc(g.term) + '</b>' + esc(g.means) + '</span>'; }).join('') + '</div>';
+      if (res.hidden) html += '<div class="notice">' + res.hidden + ' hidden by the product filter. <button class="link" data-show-hidden>Show</button></div>';
+      if (!m.list.length) html += '<div class="empty"><p>Nothing matches “' + esc(state.q) + '”' + (state.tab !== 'all' ? ' here. <button class="link" data-tab="all">Search everything</button>' : '.') + '</p></div>';
+      html += '<div class="hits">' + m.list.map(function (r) { return hitHtml(r.type, r.item, state.sel && key(r.type, r.id) === key(state.sel.type, state.sel.id)); }).join('') + '</div>';
+      html += pagesHtml(state.q, !m.list.length);
+    } else {
+      html += '<div class="rail-head"><span class="label">' + esc(TABS.filter(function (t) { return t.id === state.tab; })[0].label) + '</span><span class="count">' + m.list.length + '</span></div>';
+      m.groups.forEach(function (g) {
+        html += '<div class="hit-group"><span class="label">' + esc(g[0]) + '</span>' + g[1].map(function (r) {
+          return hitHtml(r.type, r.item, state.sel && key(r.type, r.id) === key(state.sel.type, state.sel.id));
+        }).join('') + '</div>';
+      });
+    }
     return html;
   }
 
-  function renderBrowse() {
-    var html = '';
-    if (state.tab === 'all') {
-      html = homeHtml();
-    } else if (state.tab === 'proc') {
-      if (state.openProc && PROCS[state.openProc]) { setMain(procedureView(PROCS[state.openProc])); return; }
-      html += '<p class="hint">Step-by-step lists for specific tasks, in ' + assumeSpan('checklist-order', 'the order you\'d do them') + '. Tick steps off during the call, then copy them as a call note. Load a test member to see notes for them.</p>';
-      groupBy(DATA.procedures, 'topic').forEach(function (g) {
-        html += sectionTitle(g[0], g[1].length) + '<div class="grid-cards">' + g[1].map(procedureCard).join('') + '</div>';
-      });
-    } else if (state.tab === 'rule') {
-      groupBy(DATA.rules.filter(function (r) { return !state.product || !r.products.length || r.products.indexOf(state.product) >= 0; }), 'topic').forEach(function (g) {
-        html += sectionTitle(g[0], g[1].length) + '<div class="ledger">' + g[1].map(function (r) {
-          return '<button class="ledger-row" data-open-rule="' + esc(r.id) + '"><span>' + esc(r.q) + '</span><span class="ledger-meta">' + esc(r.a.slice(0, 70)) + (r.a.length > 70 ? '…' : '') + '</span></button>';
-        }).join('') + '</div>';
-      });
-    } else if (state.tab === 'form') {
-      groupBy(DATA.forms, 'group').forEach(function (g) {
-        html += sectionTitle(g[0], g[1].length) + '<div class="stack">' + g[1].map(formCard).join('') + '</div>';
-      });
-      html += '<p class="meta">Forms list taken from ' + esc(DATA.formsPage) + ' on ' + esc(DATA.formsGenerated) + '.</p>';
-    } else if (state.tab === 'timeframe') {
-      html += datesToolHtml();
-      groupBy(DATA.timeframes, 'topic').forEach(function (g) {
-        html += sectionTitle(g[0], g[1].length) + '<div class="stack">' + g[1].map(timeframeCard).join('') + '</div>';
-      });
-      if (!DATA.local.timeframes) html += '<p class="meta">Internal processing times (rollovers, claims, applications) aren\'t in the PDS. Add them to data/timeframes.local.json and rebuild.</p>';
-    } else if (state.tab === 'explainer') {
-      groupBy(DATA.explainers, 'topic').forEach(function (g) {
-        html += sectionTitle(g[0], g[1].length) + '<div class="grid-cards">' + g[1].map(explainerCard).join('') + '</div>';
-      });
+  // ----- related: what sits alongside the selected item -----
+  var RELATED_CAPS = { timeframe: 3, form: 3, procedure: 2, rule: 4, explainer: 3 };
+  function relatedFor(type, x) {
+    var out = { timeframe: [], form: [], procedure: [], rule: [], explainer: [] };
+    function add(t, id) {
+      if (!out[t] || (t === type && id === x.id) || !itemOf(t, id) || out[t].indexOf(id) >= 0) return;
+      out[t].push(id);
     }
-    setMain(html);
-    if (state.tab === 'timeframe') bindDates();
+    // Direct links first: the ones the data says belong together.
+    if (type === 'rule') {
+      (x.see || []).forEach(function (id) { add('rule', id); });
+      explainersIn(x.q + ' ' + x.a + ' ' + (x.detail || '')).forEach(function (id) { add('explainer', id); });
+      DATA.procedures.forEach(function (p) { if (p.steps.some(function (s) { return s.rule === x.id; })) add('procedure', p.id); });
+    }
+    if (type === 'procedure') x.steps.forEach(function (s) { if (s.form) add('form', s.form); if (s.rule) add('rule', s.rule); });
+    if (type === 'form') DATA.procedures.forEach(function (p) { if (p.steps.some(function (s) { return s.form === x.id; })) add('procedure', p.id); });
+    if (type === 'explainer') (x.links || []).forEach(function (l) {
+      if (l.proc) add('procedure', l.proc); if (l.rule) add('rule', l.rule); if (l.form) add('form', l.form); if (l.timeframe) add('timeframe', l.timeframe); if (l.explainer) add('explainer', l.explainer);
+    });
+    if (type === 'timeframe') explainersIn(x.task + ' ' + x.say).forEach(function (id) { add('explainer', id); });
+    // Then whatever the search engine finds for the item's own title, up to a few of each type.
+    engine.search(titleOf(type, x), { product: state.product, limit: 40 }).results.forEach(function (r) {
+      if (out[r.type] && out[r.type].length < RELATED_CAPS[r.type]) add(r.type, r.item.id);
+    });
+    Object.keys(out).forEach(function (t) { out[t] = out[t].slice(0, RELATED_CAPS[t] + 1); });
+    return out;
+  }
+  function miniHtml(type, x) {
+    var sub = type === 'timeframe' ? '<span class="mini-figure">' + esc(x.timeframe) + '</span>' :
+      type === 'form' ? '<span class="mini-sub">' + (x.online ? 'Online' : '') + (x.online && x.pdf ? ' · ' : '') + (x.pdf ? 'PDF' : '') + (x.phone ? ' · Phone' : '') + '</span>' :
+      type === 'rule' ? '<span class="mini-sub">' + esc(plain(x.a).slice(0, 90)) + (plain(x.a).length > 90 ? '…' : '') + '</span>' : '';
+    return '<button class="mini" data-sel="' + esc(key(type, x.id)) + '"><span class="mini-title">' + esc(titleOf(type, x)) + '</span>' + sub + '</button>';
+  }
+  function sideHtml() {
+    var html = '';
+    if (state.sel && itemOf(state.sel.type, state.sel.id)) {
+      var rel = relatedFor(state.sel.type, itemOf(state.sel.type, state.sel.id));
+      var order = ['timeframe', 'form', 'procedure', 'explainer', 'rule'];
+      var any = false;
+      order.forEach(function (t) {
+        if (!rel[t].length) return;
+        any = true;
+        html += '<section class="side-group"><span class="label">' + TYPE_LABEL[t] + '</span>' + rel[t].map(function (id) { return miniHtml(t, itemOf(t, id)); }).join('') + '</section>';
+      });
+      if (!any) html += '<p class="meta">Nothing else linked to this one.</p>';
+      if (state.sel.type === 'rule' && RULES[state.sel.id].calc === 'drawdown' || state.sel.type === 'explainer' && (EXPLAINERS[state.sel.id].links || []).some(function (l) { return l.calc; })) {
+        html = '<button class="btn solid wide" data-goto-calc="drawdown">Drawdown calculator →</button>' + html;
+      }
+    }
+    var recent = state.recent.filter(function (r) { return !state.sel || key(r.type, r.id) !== key(state.sel.type, state.sel.id); });
+    if (recent.length) {
+      html += '<section class="side-group this-call"><span class="label">Earlier in this call</span>' + recent.slice(0, 6).map(function (r) { return miniHtml(r.type, itemOf(r.type, r.id)); }).join('') + '</section>';
+    }
+    return '<span class="label side-title">Alongside</span>' + (html || '<p class="meta">Related timeframes, forms and checklists show here.</p>');
+  }
+
+  function detailHtml() {
+    if (state.sel && state.sel.type === 'tool') return datesToolHtml();
+    if (!state.sel) return '<div class="empty detail-empty"><p>' + (state.q.trim() ? 'No card matches. Try other words, or check the PDS text matches.' : 'Pick something from the list.') + '</p></div>';
+    var x = itemOf(state.sel.type, state.sel.id);
+    if (!x) return '';
+    if (state.sel.type === 'procedure') return procedureView(x);
+    var html = RENDER[state.sel.type](x);
+    if (state.sel.type === 'timeframe' && x.calc) { state.calcPreset = x.id; html += datesToolHtml(); }
+    return html;
+  }
+
+  var ws = null;
+  function renderWorkspace(keepRailScroll) {
+    var m = railModel();
+    state.railList = m.list;
+    if (!state.sel || (!state.pinned && !m.list.some(function (r) { return key(r.type, r.id) === key(state.sel.type, state.sel.id); }))) {
+      state.sel = m.list.length ? { type: m.list[0].type, id: m.list[0].id } : (state.sel && state.sel.type === 'tool' ? state.sel : null);
+    }
+    var railScroll = ws && keepRailScroll ? ws.rail.scrollTop : 0;
+    if (!ws || !main.contains(ws.root)) {
+      setMain('<div class="ws"><aside class="rail" id="rail" aria-label="Results"></aside><section class="detail" id="detail" tabindex="-1" aria-live="polite"></section><aside class="side" id="side" aria-label="Alongside"></aside></div>');
+      ws = { root: main.querySelector('.ws'), rail: $('rail'), detail: $('detail'), side: $('side') };
+    }
+    ws.rail.innerHTML = railHtml(m);
+    ws.rail.scrollTop = railScroll;
+    renderDetail();
+  }
+  function renderDetail() {
+    unmountFigures(); hidePop(true);
+    ws.detail.innerHTML = detailHtml();
+    mountFigures(ws.detail);
+    if ($('dt-from')) bindDates();
+    ws.side.innerHTML = sideHtml();
+    ws.rail.querySelectorAll('.hit').forEach(function (b) {
+      var on = !!state.sel && b.getAttribute('data-sel') === key(state.sel.type, state.sel.id);
+      b.classList.toggle('on', on); b.setAttribute('aria-current', String(on));
+    });
+  }
+  function rememberInCall(sel) {
+    if (!sel || sel.type === 'tool') return;
+    state.recent = [sel].concat(state.recent.filter(function (r) { return key(r.type, r.id) !== key(sel.type, sel.id); })).slice(0, 8);
+  }
+  // Opens an item in the middle column without throwing away the search on the left.
+  function openItem(type, id, opts) {
+    if (!itemOf(type, id)) return;
+    hidePop(true);
+    state.sel = { type: type, id: id };
+    state.pinned = true;
+    rememberInCall(state.sel);
+    if (state.tab === 'calc' || (!state.q.trim() && (state.tab === 'all' || state.tab !== TYPE_TAB[type]))) {
+      state.tab = TYPE_TAB[type];
+      renderTabs();
+      renderWorkspace();
+    } else if (ws && main.contains(ws.root)) {
+      renderDetail();
+    } else renderWorkspace();
+    if (!opts || !opts.stay) scrollToDetail();
+  }
+  function scrollToDetail() {
+    if (!ws) return;
+    var r = ws.detail.getBoundingClientRect(), topH = document.querySelector('.top').offsetHeight;
+    if (window.innerWidth < 900 || r.top < topH || r.top > window.innerHeight * 0.6) window.scrollTo({ top: window.scrollY + r.top - topH - 12, behavior: 'smooth' });
+  }
+  // Arrow keys in the search box move through the results.
+  function moveSel(step) {
+    var list = state.railList || [];
+    if (!list.length) return;
+    var i = state.sel ? list.findIndex(function (r) { return key(r.type, r.id) === key(state.sel.type, state.sel.id); }) : -1;
+    var next = list[Math.max(0, Math.min(list.length - 1, i + step))];
+    state.sel = { type: next.type, id: next.id }; state.pinned = false;
+    renderDetail();
+    var b = ws.rail.querySelector('.hit.on');
+    if (b) b.scrollIntoView({ block: 'nearest' });
+  }
+
+  var TRY = ['ttr max', 'noi deadline', 'change my bank', 'how long withdrawal', 'perservation age', 'split with my wife'];
+  var COMMON = ['noi', 'start-rp', 'pension-withdrawal', 'bdbn', 'split', 'change-payments'];
+  function startHtml() {
+    var recent = state.recent.length ? '<section class="start-block"><span class="label">Earlier in this call</span><div class="start-list">' +
+      state.recent.slice(0, 6).map(function (r) { return miniHtml(r.type, itemOf(r.type, r.id)); }).join('') + '</div></section>' : '';
+    return '<section class="start">' +
+      '<h1>What did the member ask?</h1>' +
+      '<p>Type it in their words, in the box above. Results show on the left, the answer in the middle, and related timeframes, forms and checklists on the right. Use ↑ ↓ to move through results.</p>' +
+      '<div class="try"><span class="label">For example</span>' + TRY.map(function (t) { return '<button class="chip" data-q="' + esc(t) + '">' + esc(t) + '</button>'; }).join('') + '</div>' +
+      recent +
+      '<section class="start-block"><span class="label">Common tasks</span><div class="start-grid">' + COMMON.filter(function (id) { return PROCS[id]; }).map(function (id) {
+        return '<button class="start-task" data-open-proc="' + id + '"><span class="hit-type t-procedure">Checklist</span><b>' + esc(PROCS[id].title) + '</b></button>';
+      }).join('') + '</div></section>' +
+      '<section class="start-block"><span class="label">Tools</span><div class="start-grid">' +
+      '<button class="start-task" data-goto-calc="drawdown"><span class="hit-type">Calculator</span><b>Minimum and maximum pension payments</b></button>' +
+      '<button class="start-task" data-open-dates><span class="hit-type">Calculator</span><b>When is it due? Dates and business days</b></button>' +
+      '<button class="start-task" data-tab="explainer"><span class="hit-type t-explainer">Explainers</span><b>' + DATA.explainers.length + ' concepts, explained three ways</b></button>' +
+      '</div></section></section>';
+  }
+
+  function renderBrowse() {
+    ws = null;
+    setMain(startHtml());
   }
 
   // ----- popover for hover-over terms -----
@@ -939,9 +1073,9 @@
 
   function render() {
     renderTabs();
-    if (state.tab === 'calc') return renderCalculators();
-    if (state.q.trim()) return renderSearch();
-    renderBrowse();
+    if (state.tab === 'calc') { ws = null; return renderCalculators(); }
+    if (!state.q.trim() && state.tab === 'all') return renderBrowse();
+    renderWorkspace(true);
   }
 
   function renderTabs() {
@@ -951,21 +1085,46 @@
   }
 
   function renderProducts() {
-    $('products').innerHTML = PRODUCTS.map(function (p) {
-      return '<button class="chip" role="radio" data-product="' + p.id + '" aria-checked="' + (state.product === p.id) + '">' + esc(p.label) + '</button>';
+    $('product').innerHTML = PRODUCTS.map(function (p) {
+      return '<option value="' + p.id + '"' + (state.product === p.id ? ' selected' : '') + '>' + esc(p.label) + '</option>';
     }).join('');
+    $('product').classList.toggle('set', !!state.product);
   }
+  $('product').addEventListener('change', function () {
+    state.product = this.value; store.set('product', state.product); renderProducts(); render();
+  });
 
   // ----- events -----
   var timer = null;
   qEl.addEventListener('input', function () {
     clearTimeout(timer);
     timer = setTimeout(function () {
-      state.q = qEl.value; state.showHidden = false;
+      state.q = qEl.value; state.showHidden = false; state.sel = null; state.pinned = false;
       if (state.tab === 'calc') state.tab = 'all';
       render();
     }, 60);
   });
+  // ↑ ↓ move through the results without leaving the search box; Enter keeps the selected one for this call.
+  qEl.addEventListener('keydown', function (e) {
+    if (!ws || !main.contains(ws.root)) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); moveSel(e.key === 'ArrowDown' ? 1 : -1); }
+    else if (e.key === 'Enter' && state.sel) { e.preventDefault(); rememberInCall(state.sel); renderDetail(); scrollToDetail(); }
+  });
+  // New call: clears the search, member, product filter, ticks and the "earlier in this call" list.
+  $('new-call').addEventListener('click', function () {
+    state.q = ''; qEl.value = ''; state.tab = 'all'; state.sel = null; state.pinned = false; state.recent = []; state.ticks = {}; state.showHidden = false;
+    state.product = ''; store.set('product', '');
+    state.dd.start = ''; state.dd.bal = ''; state.dd.anchor = ''; state.dd.chosen = ''; state.dd.n = '';
+    setMember('', 'clear');
+    $('member-panel').hidden = true; $('member-pick').setAttribute('aria-expanded', 'false');
+    renderProducts(); render(); window.scrollTo(0, 0); qEl.focus();
+    toast('Ready for the next call');
+  });
+  // Keeps the sticky side columns just under the header, whatever its height.
+  var topEl = document.querySelector('.top');
+  function syncTop() { document.documentElement.style.setProperty('--top-h', topEl.offsetHeight + 'px'); }
+  if (window.ResizeObserver) new ResizeObserver(syncTop).observe(topEl);
+  syncTop();
   $('member').addEventListener('input', function () { setMember(this.value, 'member'); if (state.tab === 'calc') runDrawdown(); else render(); });
   $('member-file').addEventListener('change', function () {
     var file = this.files && this.files[0];
@@ -1001,13 +1160,18 @@
   document.addEventListener('click', function (e) {
     var t = e.target.closest('button, a, .term, .acr, .assume');
     if (!t) { if (pop && !pop.hidden && !pop.contains(e.target)) hidePop(true); return; }
-    if (t.hasAttribute('data-open-explainer')) {
-      var xid = t.getAttribute('data-open-explainer');
-      state.tab = 'explainer'; state.q = ''; qEl.value = '';
-      renderTabs();
-      setMain('<button class="btn ghost back" data-tab="explainer">← All explainers</button><div class="stack">' + explainerCard(EXPLAINERS[xid]) + '</div>');
-      window.scrollTo(0, 0);
+    if (t.hasAttribute('data-open-explainer')) { openItem('explainer', t.getAttribute('data-open-explainer')); return; }
+    if (t.hasAttribute('data-sel')) {
+      var sp = t.getAttribute('data-sel').split(':');
+      if (t.classList.contains('hit')) {
+        state.sel = { type: sp[0], id: sp[1] }; state.pinned = false;
+        rememberInCall(state.sel); renderDetail(); scrollToDetail();
+      } else openItem(sp[0], sp[1]);
       return;
+    }
+    if (t.hasAttribute('data-open-dates')) {
+      state.tab = 'timeframe'; state.q = ''; qEl.value = ''; state.sel = { type: 'tool', id: 'dates' }; state.pinned = true; state.calcPreset = null;
+      renderTabs(); renderWorkspace(); scrollToDetail(); return;
     }
     if (t.matches('.term, .acr, .assume')) { showPop(t); return; }
     if (t.hasAttribute('data-show-assumptions')) { showAssumptions(); return; } // tap on touch screens
@@ -1018,8 +1182,11 @@
       pop.querySelectorAll('.script').forEach(function (s) { s.hidden = s.getAttribute('data-script') !== pv; });
       return;
     }
-    if (t.hasAttribute('data-product')) { state.product = t.getAttribute('data-product'); store.set('product', state.product); renderProducts(); render(); return; }
-    if (t.hasAttribute('data-tab')) { state.openProc = null; state.tab = t.getAttribute('data-tab'); store.set('tab', state.tab); render(); window.scrollTo(0, 0); return; }
+    if (t.hasAttribute('data-tab')) {
+      var nt = t.getAttribute('data-tab');
+      if (nt !== state.tab) { state.sel = null; state.pinned = false; }
+      state.tab = nt; render(); if (!t.classList.contains('tchip')) window.scrollTo(0, 0); return;
+    }
     if (t.hasAttribute('data-copy')) { copy(t.getAttribute('data-copy')); return; }
     if (t.hasAttribute('data-copy-script')) {
       var card = t.closest('.card, .pop'), shown = card.querySelector('.script:not([hidden])');
@@ -1042,7 +1209,7 @@
       return;
     }
     if (t.hasAttribute('data-copy-proc')) { copy(procNote(PROCS[t.closest('[data-proc]').getAttribute('data-proc')])); return; }
-    if (t.hasAttribute('data-reset-proc')) { var rp = t.closest('[data-proc]').getAttribute('data-proc'); state.ticks[rp] = {}; openProcedure(rp); return; }
+    if (t.hasAttribute('data-reset-proc')) { var rp = t.closest('[data-proc]').getAttribute('data-proc'); state.ticks[rp] = {}; renderDetail(); return; }
     if (t.hasAttribute('data-load-member')) {
       setMember(t.getAttribute('data-load-member'), 'panel');
       $('member-panel').hidden = true; $('member-pick').setAttribute('aria-expanded', 'false');
@@ -1063,25 +1230,9 @@
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
       return;
     }
-    if (t.hasAttribute('data-open-form') || t.hasAttribute('data-open-timeframe')) {
-      var isForm = t.hasAttribute('data-open-form'), oid = t.getAttribute(isForm ? 'data-open-form' : 'data-open-timeframe');
-      var item = (isForm ? DATA.forms : DATA.timeframes).filter(function (x) { return x.id === oid; })[0];
-      if (!item) return;
-      hidePop(true);
-      state.tab = isForm ? 'form' : 'timeframe'; state.q = ''; qEl.value = '';
-      renderTabs();
-      setMain('<button class="btn ghost back" data-tab="' + state.tab + '">← All ' + (isForm ? 'forms' : 'timeframes') + '</button><div class="stack">' + (isForm ? formCard(item) : timeframeCard(item)) + '</div>');
-      window.scrollTo(0, 0);
-      return;
-    }
-    if (t.hasAttribute('data-open-rule')) {
-      var id = t.getAttribute('data-open-rule');
-      state.tab = 'rule'; state.q = '';
-      renderTabs();
-      setMain('<button class="btn ghost back" data-tab="rule">← All rules</button><div class="stack">' + ruleCard(RULES[id]) + '</div>');
-      window.scrollTo(0, 0);
-      return;
-    }
+    if (t.hasAttribute('data-open-form')) { openItem('form', t.getAttribute('data-open-form')); return; }
+    if (t.hasAttribute('data-open-timeframe')) { openItem('timeframe', t.getAttribute('data-open-timeframe')); return; }
+    if (t.hasAttribute('data-open-rule')) { openItem('rule', t.getAttribute('data-open-rule')); return; }
     if (t.hasAttribute('data-seg')) {
       setSeg(t.getAttribute('data-seg'), t.getAttribute('data-val'));
       if (t.getAttribute('data-seg') === 'unit') runDates(); else runDrawdown();
@@ -1099,7 +1250,13 @@
       setMember('', 'clear'); renderCalculators(); $('dd-quick').focus(); return;
     }
     if (t.hasAttribute('data-show-hidden')) { state.showHidden = true; render(); return; }
-    if (t.hasAttribute('data-calc-preset')) { state.calcPreset = t.getAttribute('data-calc-preset'); state.tab = 'timeframe'; state.q = ''; qEl.value = ''; render(); window.scrollTo(0, 0); var dtFrom = $('dt-from'); if (dtFrom) dtFrom.focus(); return; }
+    if (t.hasAttribute('data-calc-preset')) {
+      // The date calculator sits under the timeframe in the middle column, already set to it.
+      var tfId = t.getAttribute('data-calc-preset');
+      if (!state.sel || state.sel.type !== 'timeframe' || state.sel.id !== tfId) openItem('timeframe', tfId, { stay: true });
+      var dtFrom = $('dt-from'); if (dtFrom) { dtFrom.scrollIntoView({ block: 'center', behavior: 'smooth' }); dtFrom.focus({ preventScroll: true }); }
+      return;
+    }
     if (t.hasAttribute('data-goto-calc')) { state.tab = 'calc'; render(); window.scrollTo(0, 0); return; }
   });
 
@@ -1109,9 +1266,9 @@
     } else if (e.key === 'Escape' && pop && !pop.hidden) {
       var back = popTarget; hidePop(true); if (back) back.focus();
     } else if (e.key === 'Escape' && document.activeElement === qEl) {
-      qEl.value = ''; state.q = ''; render();
+      qEl.value = ''; state.q = ''; state.sel = null; state.pinned = false; render();
     } else if (e.altKey && /^[1-7]$/.test(e.key)) {
-      state.tab = TABS[+e.key - 1].id; store.set('tab', state.tab); render();
+      state.tab = TABS[+e.key - 1].id; state.sel = null; state.pinned = false; render();
     }
   });
 

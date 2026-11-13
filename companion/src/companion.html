@@ -13,25 +13,28 @@
     <div class="brand"><span class="label">Member services</span><span class="brand-name">Call companion</span></div>
     <label class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="What did the member ask? Rules, forms, timeframes, explainers" autocomplete="off" spellcheck="false" aria-label="Search">
+      <input id="q" type="search" placeholder="What did the member ask?" autocomplete="off" spellcheck="false" aria-label="Search" aria-controls="rail">
       <kbd>/</kbd>
     </label>
+    <button class="btn ghost new-call" id="new-call" type="button" title="Clear the search, member, ticks and history for the next call">New call</button>
     <button class="theme" id="theme" type="button" aria-label="Change light or dark theme">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg>
       <span>Auto</span>
     </button>
   </div>
-  <div class="context">
-    <div class="chips" id="products" role="radiogroup" aria-label="Product"></div>
-    <label class="field"><span class="label">Member</span><input id="member" type="text" autocomplete="off" placeholder="member no., age or DOB" title="Type a test member number (101 to 113), an age (67) or a date of birth in any format: 14/5/1959, 14.05.59, 14 May 1959"></label>
-    <span class="echo" id="member-echo"></span>
-    <button class="chip" id="member-pick" type="button" aria-expanded="false">Test members</button>
-    <button class="link" id="clear-context" type="button">Clear</button>
+  <div class="subbar">
+    <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+    <div class="context">
+      <label class="field"><span class="label">Member</span><input id="member" type="text" autocomplete="off" placeholder="no., age or DOB" title="Type a test member number (101 to 113), an age (67) or a date of birth in any format: 14/5/1959, 14.05.59, 14 May 1959"></label>
+      <span class="echo" id="member-echo"></span>
+      <button class="chip" id="member-pick" type="button" aria-expanded="false">Test members</button>
+      <label class="field"><span class="label">Product</span><select id="product" aria-label="Product filter"></select></label>
+      <button class="link" id="clear-context" type="button">Clear</button>
+    </div>
   </div>
   <div class="member-panel" id="member-panel" hidden></div>
   <div class="member-strip" id="member-strip" hidden></div>
   <input type="file" id="member-file" accept=".json,application/json" hidden>
-  <div class="tabs-wrap"><nav class="tabs" id="tabs" aria-label="Sections"></nav></div>
 </header>
 <main id="main" tabindex="-1"></main>
 <footer class="foot" id="foot"></footer>
