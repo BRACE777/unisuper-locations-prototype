@@ -271,11 +271,11 @@ test('assumptions: every marker in the code and data names a registered assumpti
   assert.deepEqual(unused, [], 'registered but never shown');
 });
 
-test('explainers: told three ways, each as a numbered chain of steps', () => {
+test('explainers: three levels, each as a numbered chain of steps', () => {
   for (const e of data.explainers) {
-    for (const v of ['kid', 'plain', 'member']) {
+    for (const v of ['simple', 'standard', 'detailed']) {
       assert.ok(Array.isArray(e[v]) && e[v].length >= 3, `${e.id} ${v} needs at least three steps`);
     }
-    for (const old of ['short', 'walk', 'example']) assert.equal(e[old], undefined, `${e.id} still has ${old}`);
+    for (const old of ['short', 'walk', 'example', 'kid', 'plain', 'member']) assert.equal(e[old], undefined, `${e.id} still has ${old}`);
   }
 });

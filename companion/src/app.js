@@ -320,10 +320,10 @@
   }
 
   // Three listeners, each an ordered chain: every step follows from the one before, or is the next thing to do.
-  var VERSIONS = [['kid', 'Age 10', 'Explained to a 10-year-old'], ['plain', 'Everyday', 'Explained to an everyday member, no super knowledge'], ['member', 'Informed', 'Explained to an informed member, with the detail and figures']];
-  var DEFAULT_VERSION = 'plain';
+  var VERSIONS = [['simple', 'Simple', 'The concept in a few steps'], ['standard', 'Standard', 'The rule and the key numbers, in order'], ['detailed', 'Detailed', 'The full rule, worked examples and edge cases']];
+  var DEFAULT_VERSION = 'standard';
   function versionsHtml(attr) {
-    return '<div class="seg" role="group" aria-label="Who are you explaining to?">' + VERSIONS.map(function (x) {
+    return '<div class="seg" role="group" aria-label="Level of detail">' + VERSIONS.map(function (x) {
       return '<button type="button" ' + attr + '="' + x[0] + '" aria-pressed="' + (x[0] === DEFAULT_VERSION) + '" title="' + x[2] + '">' + x[1] + '</button>';
     }).join('') + '</div>';
   }
@@ -483,14 +483,14 @@
   var TRY = ['ttr max', '6000', 'noi deadline', 'change my bank', 'how long withdrawal', 'perservation age'];
   function homeHtml() {
     var tiles = [['rule', DATA.rules.length, 'Rule cards', 'Each with its PDS page'], ['form', DATA.forms.length, 'Forms', 'With directions to read out'],
-      ['timeframe', DATA.timeframes.length, 'Timeframes', 'With a date calculator'], ['explainer', DATA.explainers.length, 'Explainers', 'Age 10, everyday, informed'],
+      ['timeframe', DATA.timeframes.length, 'Timeframes', 'With a date calculator'], ['explainer', DATA.explainers.length, 'Explainers', 'Simple, standard, detailed'],
       ['calc', '$', 'Drawdown calculator', 'Minimum and maximum payments']];
     var html = '<section class="hero"><div class="hero-text"><span class="label">Call companion · PDS issued ' + esc(issued('flexi')) + '</span>' +
       '<h1>Find the rule, the form, the date, or the words to say.</h1>' +
       '<p>Type what the member said. Underlined terms explain themselves when you hover over them.</p>' +
       '<div class="try"><span class="label">Try</span>' + TRY.map(function (t) { return '<button class="chip" data-q="' + esc(t) + '">' + esc(t) + '</button>'; }).join('') + '</div></div>' +
       '<div class="hero-fig fig" data-figure="terrain" aria-hidden="true"></div></section>';
-    html += sectionTitle('Explainers', DATA.explainers.length) + '<p class="hint">Each is told three ways, step by step: to a 10-year-old, to an everyday member, and to an informed member. Hover over one for the everyday version; click to open all three.</p>' +
+    html += sectionTitle('Explainers', DATA.explainers.length) + '<p class="hint">Each comes in three levels, step by step: simple, standard and detailed. Hover over one for the standard version; click to open all three.</p>' +
       '<div class="explainer-index">' + groupBy(DATA.explainers, 'topic').map(function (g) {
         return '<div class="ex-group"><span class="label">' + esc(g[0]) + '</span><div class="chips">' + g[1].map(function (e) {
           return '<button type="button" class="term-chip" data-explainer="' + e.id + '" data-open-explainer="' + e.id + '">' + esc(e.title) + (FIGURE_FOR[e.id] ? '<span class="dot" title="Has an interactive picture"></span>' : '') + '</button>';
