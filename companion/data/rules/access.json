@@ -35,7 +35,8 @@
           "doc": "ato-access",
           "quote": "Your preservation age is not the same as your pension age."
         }
-      ]
+      ],
+      "detail": "Anyone under 60 today was born after 1 July 1964, so their preservation age is 60: retiring before 60 doesn't release their super."
     },
     {
       "id": "conditions-of-release",
@@ -53,7 +54,7 @@
         "65 and still working"
       ],
       "a": "Retiring permanently at or after preservation age; leaving a job on or after 60; turning 65; permanent incapacity; a balance under $200 when leaving a contributing employer; death.",
-      "detail": "Early access in limited cases: compassionate grounds (ATO), severe financial hardship, terminal medical condition.",
+      "detail": "Early access in limited cases: compassionate grounds (ATO), severe financial hardship, terminal medical condition. Retiring counts only at or after preservation age, which is 60 for everyone under 60 today.",
       "sources": [
         {
           "doc": "hsw",

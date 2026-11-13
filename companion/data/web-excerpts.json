@@ -1,0 +1,21 @@
+{
+  "note": "Supplementary material from UniSuper's public website. The PDS stays the primary source; these pages add detail the PDS points to (for example the Retirement Bonus rate and cap). Each page was opened in an ordinary browser visit and the sentences were copied here word for word. check-data.mjs verifies every quote that cites these pages. The website may change: refresh 'excerpts' and 'retrieved' when it does.",
+  "retrieved": "2026-11-13",
+  "pages": [
+    {
+      "id": "web-rb",
+      "title": "Retirement Bonus",
+      "url": "https://www.unisuper.com.au/retirement-bonus",
+      "excerpts": [
+        "Your Retirement Bonus is calculated as: the amount you transfer from eligible investment options × 0.7% bonus rate.",
+        "have money invested in eligible investment options (this excludes the Cash, Australian Bond and Australian Income options).",
+        "Your 12 months starts when money first reaches your account.",
+        "Time in a Retirement Phase account doesn't count.",
+        "If you're invested in a pre-mixed option, your full balance in that option counts towards your bonus, even if the option itself holds some Cash, Australian Bond or Australian Income assets as part of its mix.",
+        "You may be eligible when you transfer money from your Defined Benefit Division (DBD) account to a Retirement Phase Flexi Pension, if you meet the other eligibility criteria.",
+        "There's no limit to how many times you can receive a Retirement Bonus. For example, you could receive another if you open a new Flexi Pension later. However, the total you can receive across all your accounts is capped at $14,700.",
+        "If you withdraw 50% or more of your Flexi Pension starting balance within 12 months of opening the account, we reserve the right to deduct the Retirement Bonus from your Flexi Pension."
+      ]
+    }
+  ]
+}

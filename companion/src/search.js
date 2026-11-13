@@ -155,9 +155,16 @@ var CompanionSearch = (function () {
         { text: t.task, weight: 3 }, { text: t.timeframe + ' how long days', weight: 1.5 }, { text: t.topic, weight: 1 },
         { text: t.say, weight: 0.8 }, { text: t.starts || '', weight: 0.5 }] }));
     });
+    // Explainer levels mix plain steps with option, table, example and note blocks: index all the words.
+    var flat = function (x) {
+      if (typeof x === 'string') return x;
+      if (Array.isArray(x)) return x.map(flat).join(' ');
+      if (x && typeof x === 'object') return Object.keys(x).map(function (k) { return flat(x[k]); }).join(' ');
+      return '';
+    };
     (data.explainers || []).forEach(function (e) {
       docs.push(indexItem({ type: 'explainer', id: e.id, aliases: [e.title], item: e, fields: [
-        { text: e.title + ' explain', weight: 3 }, { text: e.topic, weight: 1 }, { text: (e.standard || []).join(' '), weight: 1.2 }, { text: (e.simple || []).join(' '), weight: 0.8 }, { text: (e.detailed || []).join(' '), weight: 0.6 }] }));
+        { text: e.title + ' explain', weight: 3 }, { text: e.topic, weight: 1 }, { text: flat(e.standard), weight: 1.2 }, { text: flat(e.simple), weight: 0.8 }, { text: flat(e.detailed), weight: 0.6 }] }));
     });
 
     var pages = (data.pages || []).map(function (p) {

@@ -198,7 +198,8 @@
           "doc": "ato-cc",
           "quote": "Your available carry-forward contribution amounts are shown on ATO online services"
         }
-      ]
+      ],
+      "detail": "Order: this year's general cap fills first, then unused amounts, oldest year first (ATO)."
     },
     {
       "id": "noi-deadline",
@@ -397,7 +398,7 @@
         "split super with spouse"
       ],
       "a": "Up to the lesser of 85% of concessional contributions or the concessional cap, to a spouse under 60, or 60 to 64 and not retired. Usually last year's contributions, by 30 June; once a year. Lodge any notice of intent first.",
-      "detail": "Can be done in the same year if the whole balance is leaving. May be refused if the balance would fall below $6,000. Non-concessional contributions, rollovers and co-contributions can't be split.",
+      "detail": "Can be done in the same year if the whole balance is leaving. May be refused if the balance would fall below $6,000. Non-concessional contributions, rollovers and co-contributions can't be split. Once transferred, the split money belongs to the spouse and is preserved in their account; it still counts towards the member's own concessional cap.",
       "sources": [
         {
           "doc": "hsw",

@@ -149,7 +149,7 @@ test('data: every PDS quote resolved to a PDF page', () => {
   const walk = (n, path) => {
     if (Array.isArray(n)) return n.forEach((x, i) => walk(x, `${path}[${i}]`));
     if (!n || typeof n !== 'object') return;
-    if (typeof n.quote === 'string' && typeof n.doc === 'string' && !n.doc.startsWith('ato-') && !n.page) missing.push(path);
+    if (typeof n.quote === 'string' && typeof n.doc === 'string' && !/^(ato|web)-/.test(n.doc) && !n.page) missing.push(path);
     for (const [k, v] of Object.entries(n)) if (v && typeof v === 'object') walk(v, `${path}.${k}`);
   };
   walk([data.rates, data.rules, data.forms, data.timeframes, data.explainers], 'bundle');
@@ -271,11 +271,24 @@ test('assumptions: every marker in the code and data names a registered assumpti
   assert.deepEqual(unused, [], 'registered but never shown');
 });
 
-test('explainers: three levels, each as a numbered chain of steps', () => {
+test('explainers: three levels of steps and blocks, with links that resolve', () => {
+  const kinds = ['lead', 'options', 'table', 'example', 'note'];
+  const exists = {
+    rule: new Set(data.rules.map((r) => r.id)), proc: new Set(data.procedures.map((p) => p.id)),
+    form: new Set(data.forms.map((f) => f.id)), timeframe: new Set(data.timeframes.map((t) => t.id)), explainer: new Set(data.explainers.map((x) => x.id)),
+  };
   for (const e of data.explainers) {
     for (const v of ['simple', 'standard', 'detailed']) {
-      assert.ok(Array.isArray(e[v]) && e[v].length >= 3, `${e.id} ${v} needs at least three steps`);
+      assert.ok(Array.isArray(e[v]) && e[v].length >= 2, `${e.id} ${v} needs at least two blocks`);
+      for (const b of e[v]) assert.ok(typeof b === 'string' || kinds.some((k) => k in b), `${e.id} ${v}: unknown block ${JSON.stringify(b).slice(0, 60)}`);
     }
     for (const old of ['short', 'walk', 'example', 'kid', 'plain', 'member']) assert.equal(e[old], undefined, `${e.id} still has ${old}`);
+    assert.ok(e.links && e.links.length, `${e.id} has no links`);
+    for (const l of e.links) {
+      const [kind, id] = Object.entries(l)[0];
+      assert.ok(kind === 'calc' || exists[kind]?.has(id), `${e.id} links to missing ${kind} ${id}`);
+    }
   }
+  const drawdown = data.explainers.find((x) => x.id === 'drawdown-order');
+  for (const v of ['simple', 'standard', 'detailed']) assert.equal(drawdown[v].find((b) => b.options).options.length, 3, 'drawdown order shows its three methods as options');
 });

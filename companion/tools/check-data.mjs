@@ -13,6 +13,8 @@ const pages = loadPages(root);
 const docs = new Set(read('sources.json').documents.map((d) => d.id));
 const atoDocs = new Set(read('ato-excerpts.json').pages.map((a) => a.id));
 atoDocs.forEach((id) => docs.add(id));
+const webDocs = new Set(read('web-excerpts.json').pages.map((w) => w.id));
+webDocs.forEach((id) => docs.add(id));
 const problems = [];
 
 function walkQuotes(file, node, path = file) {
@@ -94,8 +96,31 @@ if (explainers) {
   walkQuotes('explainers.json', explainers);
   uniqueIds('explainers.json', explainers.items);
   requireFields('explainers.json', explainers.items, ['title', 'simple', 'standard', 'detailed', 'general', 'source']);
+  // A level is a list of blocks: a string is a numbered step; objects are lead, options, table, example or note.
+  const blockOk = (b) => (typeof b === 'string' && b.trim()) ||
+    (b && typeof b.lead === 'string') || (b && typeof b.example === 'string') || (b && typeof b.note === 'string') ||
+    (b && Array.isArray(b.options) && b.options.length >= 2 && b.options.every((o) => o.name && o.text)) ||
+    (b && b.table && Array.isArray(b.table.head) && Array.isArray(b.table.rows) && b.table.rows.length && b.table.rows.every((r) => r.length === b.table.head.length));
   for (const e of explainers.items) for (const v of ['simple', 'standard', 'detailed']) {
-    if (!Array.isArray(e[v]) || e[v].length < 3 || e[v].some((s) => typeof s !== 'string' || !s.trim())) problems.push(`explainers.json: "${e.id}" ${v} must be a list of at least three steps`);
+    if (!Array.isArray(e[v]) || e[v].length < 2) problems.push(`explainers.json: "${e.id}" ${v} must be a list of at least two blocks`);
+    else e[v].forEach((b, i) => { if (!blockOk(b)) problems.push(`explainers.json: "${e.id}" ${v}[${i}] isn't a step, lead, options, table, example or note`); });
+  }
+
+  // 'links' must point at something that exists.
+  const ruleIds = new Set(cards.map((r) => r.id));
+  const procIds = new Set((optional('procedures.json')?.items ?? []).map((x) => x.id));
+  const formIds = new Set((optional('forms.json')?.forms ?? []).map((x) => x.id));
+  const tfIds = new Set((optional('timeframes.json')?.items ?? []).map((x) => x.id));
+  const exIds = new Set(explainers.items.map((x) => x.id));
+  for (const e of explainers.items) for (const l of e.links ?? []) {
+    const ok = l.calc === 'drawdown' || ruleIds.has(l.rule) || procIds.has(l.proc) || formIds.has(l.form) || tfIds.has(l.timeframe) || exIds.has(l.explainer);
+    if (!ok) problems.push(`explainers.json: "${e.id}" links to something that doesn't exist: ${JSON.stringify(l)}`);
+  }
+  for (const e of explainers.items) for (const s of e.also ?? []) {
+    if (!/^(ato|web)-/.test(s.doc)) problems.push(`explainers.json: "${e.id}" has a PDS quote in 'also'; put it in 'source'`);
+  }
+  for (const e of explainers.items) for (const s of [].concat(e.source)) {
+    if (/^(ato|web)-/.test(s.doc)) problems.push(`explainers.json: "${e.id}" cites ${s.doc} as a primary source; move it to 'also'`);
   }
 
   // Every dollar figure in an explainer must exist somewhere we have verified.
@@ -105,10 +130,10 @@ if (explainers) {
   for (const t of Object.values(rates.tables)) addNums(JSON.stringify(t));
   for (const e of explainers.items) {
     const own = new Set(known);
-    for (const m of JSON.stringify(e.source).matchAll(/\d[\d,]*(?:\.\d+)?/g)) own.add(m[0].replace(/,/g, ''));
+    for (const m of JSON.stringify([e.source, e.also ?? []]).matchAll(/\d[\d,]*(?:\.\d+)?/g)) own.add(m[0].replace(/,/g, ''));
     for (const m of (e.allow_numbers ?? [])) own.add(String(m).replace(/[$,]/g, ''));
     for (const field of ['simple', 'standard', 'detailed']) {
-      for (const m of [].concat(e[field] ?? []).join(' ').matchAll(/\$\d[\d,]*(?:\.\d+)?/g)) {
+      for (const m of JSON.stringify(e[field] ?? []).matchAll(/\$\d[\d,]*(?:\.\d+)?/g)) {
         const n = m[0].replace(/[$,]/g, '');
         if (!own.has(n)) problems.push(`explainers.json: "${e.id}" ${field} uses ${m[0]}, which isn't in rates.json, its source, or allow_numbers`);
       }

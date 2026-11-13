@@ -11,7 +11,7 @@ Both are generated. `dist/` is git-ignored, so build them first (below).
 
 ## Using the page
 
-- **Explainers** are listed on the home page under the search hero, and have their own tab. Any phrase they cover (pro-rata, transfer balance cap, preservation age, binding nomination and so on) is underlined wherever it appears in a card: hover over it, or tab to it, for the standard version, with the simple and detailed versions one click away. Each level is a numbered chain: every step follows from the one before, or is the next thing to do. Acronyms (TBC, NOI, BDBN...) are dotted-underlined and show what they stand for.
+- **Explainers** are listed on the home page under the search hero, and have their own tab. Any phrase they cover (pro-rata, transfer balance cap, preservation age, binding nomination and so on) is underlined wherever it appears in a card: hover over it, or tab to it, for the standard version, with the simple and detailed versions one click away. Each level is a chain of numbered steps (each follows from the one before, or is the next thing to do), broken up where a list would blur together: choices shown side by side (the three drawdown methods, the three nomination types), comparison tables (TTR against Retirement Phase, bring-forward thresholds), examples and "watch for" notes. A "Go to" row links each explainer to the drawdown calculator, checklists, rules, forms, timeframes and related explainers. Acronyms (TBC, NOI, BDBN...) are dotted-underlined and show what they stand for.
 - **Interactive figures** explain four rules by pointing at them: the minimum percentage by age (pillars), the first-year pro-rata (months), the drawdown order (stacked options) and the transfer balance cap (a box that fills). Arrow keys work too. They appear on the matching rule cards, explainers and hover-overs.
 
 - Press `/` and type what the member said, a figure or an acronym: `ttr max`, `6000`, `noi deadline`, `change my bank`, `how long withdrawal`. `Esc` clears.
@@ -51,7 +51,8 @@ Needs Node 20+, `pdftotext` (Poppler), Python with `openpyxl`, and Excel for the
 | `rules/*.json` | 154 rule cards, one file per topic | Hand |
 | `glossary.json` | Acronyms and member phrasing used to expand searches | Hand |
 | `timeframes.json` | 39 timeframes from the PDS, with wording to say | Hand |
-| `explainers.json` | 22 concepts, each in three levels (simple, standard, detailed) as numbered steps | Hand |
+| `explainers.json` | 22 concepts, each in three levels (simple, standard, detailed) made of steps, options, tables, examples and notes, with links | Hand |
+| `web-excerpts.json` | UniSuper website wording (Retirement Bonus page), supplementary to the PDS | Hand, from a browser visit |
 | `forms-extra.json` | Directions, requirements and keywords added to each form | Hand |
 | `forms.json` | Generated from the public forms page plus `forms-extra.json` | `tools/fetch-forms.mjs` |
 | `holidays.json` | Grand Final eve holiday (set yearly by the Victorian Government) | Hand |
@@ -103,7 +104,7 @@ The built page is committed in `site/` and published by the repository's GitHub 
 
 The UniSuper PDS is the primary source for every card. 24 rule cards and 3 timeframes also show an **ATO · supplementary** block with the relevant ATO page, its "last updated" date and the sentence that backs the rule up (for example the co-contribution age limit of 71, which the PDS doesn't mention). The build refuses a card that cites the ATO as its main source.
 
-ato.gov.au refuses automated downloads, so the ATO wording was copied from ordinary browser visits into `data/ato-excerpts.json` (15 pages, read 13 Nov 2026). Every ATO quote on a card is checked against that file. To refresh: open each page listed there, compare, and update the excerpt, `updated` and `retrieved`.
+ato.gov.au refuses automated downloads, so the ATO wording was copied from ordinary browser visits into `data/ato-excerpts.json` (15 pages, read 13 Nov 2026). Every ATO quote on a card is checked against that file. The same applies to UniSuper's public website: `data/web-excerpts.json` holds the Retirement Bonus page wording (rate, $14,700 lifetime cap, clawback), shown as "UniSuper website · supplementary" under the PDS source. To refresh: open each page listed there, compare, and update the excerpt, `updated` and `retrieved`.
 
 ## Credits and licences
 

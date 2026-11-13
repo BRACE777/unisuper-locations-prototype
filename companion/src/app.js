@@ -92,14 +92,17 @@
     return '<footer class="sources"><span class="label">' + (list.length > 1 ? 'Sources' : 'Source') + ' · UniSuper PDS</span>' + list.map(sourceHtml).join('') +
       (ato && ato.length ? atoHtml(ato) : '') + '</footer>';
   }
-  // Supplementary ATO material: shown under the PDS source, never instead of it.
+  // Supplementary material (ATO pages, UniSuper's public website): shown under the PDS source, never instead of it.
   function atoHtml(list) {
-    return '<div class="ato"><span class="label">ATO · supplementary</span>' + list.map(function (s) {
-      var d = DOCS[s.doc] || { title: s.doc, url: '#' };
-      return '<div class="src"><a href="' + esc(d.url) + '" target="_blank" rel="noopener"><span class="src-doc">' + esc(d.title) + '</span>' +
-        '<span class="src-meta">' + (d.updated ? 'updated ' + esc(d.updated) + ' · ' : '') + 'read ' + esc(isoText(d.retrieved)) + ' ↗</span></a>' +
-        '<q>' + esc(s.quote) + '</q></div>';
-    }).join('') + '</div>';
+    return [['ato', 'ATO · supplementary'], ['web', 'UniSuper website · supplementary']].map(function (k) {
+      var group = list.filter(function (s) { return (DOCS[s.doc] || {}).kind === k[0]; });
+      return group.length ? '<div class="ato"><span class="label">' + k[1] + '</span>' + group.map(function (s) {
+        var d = DOCS[s.doc];
+        return '<div class="src"><a href="' + esc(d.url) + '" target="_blank" rel="noopener"><span class="src-doc">' + esc(d.title) + '</span>' +
+          '<span class="src-meta">' + (d.updated ? 'updated ' + esc(d.updated) + ' · ' : '') + 'read ' + esc(isoText(d.retrieved)) + ' ↗</span></a>' +
+          '<q>' + esc(s.quote) + '</q></div>';
+      }).join('') + '</div>' : '';
+    }).join('');
   }
   function isoText(iso) {
     if (!iso) return '';
@@ -327,20 +330,71 @@
       return '<button type="button" ' + attr + '="' + x[0] + '" aria-pressed="' + (x[0] === DEFAULT_VERSION) + '" title="' + x[2] + '">' + x[1] + '</button>';
     }).join('') + '</div>';
   }
+  // A level is a list of blocks. A plain string is a numbered step (the chain); the others break the
+  // chain up where a list would blur together: {lead}, {options:[{name,text}]}, {table:{head,rows}},
+  // {example}, {note}.
+  var LETTERS = 'ABCDEFGH';
+  function blockHtml(b) {
+    if (typeof b === 'string') return '<div class="xstep">' + rich(b) + '</div>';
+    if (b.lead) return '<p class="lead">' + rich(b.lead) + '</p>';
+    if (b.options) {
+      return '<div class="options" style="--n:' + Math.min(b.options.length, 3) + '"><span class="label">' + esc(b.label || b.options.length + ' options') + '</span><div class="opt-grid">' +
+        b.options.map(function (o, i) {
+          return '<div class="opt"><span class="opt-key">' + LETTERS[i] + '</span><strong>' + esc(o.name) + '</strong><p>' + rich(o.text) + '</p></div>';
+        }).join('') + '</div></div>';
+    }
+    if (b.table) {
+      return '<div class="table-wrap"><table class="ex-table"><thead><tr>' + b.table.head.map(function (h) { return '<th>' + esc(h) + '</th>'; }).join('') +
+        '</tr></thead><tbody>' + b.table.rows.map(function (r) {
+          return '<tr>' + r.map(function (c, i) { return i ? '<td>' + rich(c) + '</td>' : '<th scope="row">' + rich(c) + '</th>'; }).join('') + '</tr>';
+        }).join('') + '</tbody></table></div>';
+    }
+    if (b.example) return '<div class="callout ex"><span class="label">Example</span><p>' + rich(b.example) + '</p></div>';
+    if (b.note) return '<div class="callout note"><span class="label">Watch for</span><p>' + rich(b.note) + '</p></div>';
+    return '';
+  }
+  function blockText(blocks) {
+    var n = 0, numbered = blocks.filter(function (b) { return typeof b === 'string'; }).length > 1;
+    return blocks.map(function (b) {
+      if (typeof b === 'string') return (numbered ? (++n) + '. ' : '') + plain(b);
+      if (b.lead) return plain(b.lead);
+      if (b.options) return b.options.map(function (o, i) { return LETTERS[i] + ') ' + o.name + ': ' + plain(o.text); }).join('\n');
+      if (b.table) return [b.table.head.filter(Boolean).join(' | ')].concat(b.table.rows.map(function (r) { return r.map(plain).join(' | '); })).join('\n');
+      if (b.example) return 'Example: ' + plain(b.example);
+      if (b.note) return 'Watch for: ' + plain(b.note);
+      return '';
+    }).join('\n');
+  }
   function chainsHtml(e) {
     return VERSIONS.map(function (x) {
-      return '<ol class="script chain" data-script="' + x[0] + '" aria-label="' + x[2] + '"' + (x[0] === DEFAULT_VERSION ? '' : ' hidden') + '>' +
-        e[x[0]].map(function (s) { return '<li>' + rich(s) + '</li>'; }).join('') + '</ol>';
+      // A single numbered step reads oddly as "1", so it's shown without a number.
+      var steps = e[x[0]].filter(function (b) { return typeof b === 'string'; }).length;
+      return '<div class="script chain' + (steps < 2 ? ' no-num' : '') + '" data-script="' + x[0] + '" data-explainer-id="' + esc(e.id) + '" aria-label="' + x[2] + '"' + (x[0] === DEFAULT_VERSION ? '' : ' hidden') + '>' +
+        e[x[0]].map(blockHtml).join('') + '</div>';
     }).join('');
   }
-  function chainText(ol) {
-    return Array.prototype.map.call(ol.querySelectorAll('li'), function (li, i) { return (i + 1) + '. ' + li.textContent; }).join('\n');
+  function chainText(el) {
+    var e = EXPLAINERS[el.getAttribute('data-explainer-id')];
+    return e ? e.title + '\n' + blockText(e[el.getAttribute('data-script')]) : el.textContent;
+  }
+  // "Go to" links from an explainer to the calculator, checklists, rules, forms, timeframes and other explainers.
+  function goLink(l) {
+    if (l.calc) return '<button class="btn sm ghost" data-goto-calc="drawdown">Drawdown calculator →</button>';
+    if (l.proc) { var p = DATA.procedures.filter(function (x) { return x.id === l.proc; })[0]; return p ? '<button class="btn sm ghost" data-open-proc="' + esc(p.id) + '">Checklist: ' + esc(p.title) + ' →</button>' : ''; }
+    if (l.rule && RULES[l.rule]) return '<button class="btn sm ghost" data-open-rule="' + esc(l.rule) + '">Rule: ' + esc(RULES[l.rule].q) + '</button>';
+    if (l.explainer && EXPLAINERS[l.explainer]) return '<button class="btn sm ghost" data-open-explainer="' + esc(l.explainer) + '">Explainer: ' + esc(EXPLAINERS[l.explainer].title) + '</button>';
+    if (l.form) { var f = DATA.forms.filter(function (x) { return x.id === l.form; })[0]; return f ? '<button class="btn sm ghost" data-open-form="' + esc(f.id) + '">Form: ' + esc(f.title) + '</button>' : ''; }
+    if (l.timeframe) { var t = DATA.timeframes.filter(function (x) { return x.id === l.timeframe; })[0]; return t ? '<button class="btn sm ghost" data-open-timeframe="' + esc(t.id) + '">Timeframe: ' + esc(t.task) + '</button>' : ''; }
+    return '';
+  }
+  function linksHtml(e) {
+    return e.links && e.links.length ? '<div class="go-row"><span class="label">Go to</span>' + e.links.map(goLink).join('') + '</div>' : '';
   }
   function explainerCard(e) {
     return '<article class="card explainer" data-id="' + esc(e.id) + '">' + head(e.topic + ' · explainer', '') +
       '<h3 class="card-title">' + esc(e.title) + '</h3>' + figureSlot(e.id) + versionsHtml('data-version') +
-      chainsHtml(e) +
-      '<div class="general"><span class="label">Stay general</span><p>' + esc(e.general) + '</p></div>' + sourcesHtml([e.source]) +
+      chainsHtml(e) + linksHtml(e) +
+      '<div class="general"><span class="label">Stay general</span><p>' + esc(e.general) + '</p></div>' + sourcesHtml([].concat(e.source), e.also) +
       '<div class="actions"><button class="btn" data-copy-script>Copy this version</button></div></article>';
   }
 
@@ -567,7 +621,7 @@
     if (id && EXPLAINERS[id]) {
       var e = EXPLAINERS[id];
       p.innerHTML = '<span class="label">' + esc(e.topic) + ' · explainer</span><h4>' + esc(e.title) + '</h4>' + figureSlot(id) + versionsHtml('data-pop-version') +
-        chainsHtml(e) +
+        chainsHtml(e) + linksHtml(e) +
         '<div class="actions"><button class="btn" data-copy-script>Copy</button><button class="btn ghost" data-open-explainer="' + id + '">Open explainer →</button></div>';
       p.setAttribute('aria-label', e.title);
     } else if (acr) {
@@ -969,7 +1023,7 @@
     if (t.hasAttribute('data-copy')) { copy(t.getAttribute('data-copy')); return; }
     if (t.hasAttribute('data-copy-script')) {
       var card = t.closest('.card, .pop'), shown = card.querySelector('.script:not([hidden])');
-      copy(shown.tagName === 'OL' ? chainText(shown) : shown.textContent); return;
+      copy(shown.hasAttribute('data-explainer-id') ? chainText(shown) : shown.textContent); return;
     }
     if (t.hasAttribute('data-version')) {
       var c = t.closest('.card'), v = t.getAttribute('data-version');
@@ -1007,6 +1061,17 @@
       a.href = URL.createObjectURL(new Blob([JSON.stringify(sample, null, 2)], { type: 'application/json' }));
       a.download = 'test-members-template.json'; a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      return;
+    }
+    if (t.hasAttribute('data-open-form') || t.hasAttribute('data-open-timeframe')) {
+      var isForm = t.hasAttribute('data-open-form'), oid = t.getAttribute(isForm ? 'data-open-form' : 'data-open-timeframe');
+      var item = (isForm ? DATA.forms : DATA.timeframes).filter(function (x) { return x.id === oid; })[0];
+      if (!item) return;
+      hidePop(true);
+      state.tab = isForm ? 'form' : 'timeframe'; state.q = ''; qEl.value = '';
+      renderTabs();
+      setMain('<button class="btn ghost back" data-tab="' + state.tab + '">← All ' + (isForm ? 'forms' : 'timeframes') + '</button><div class="stack">' + (isForm ? formCard(item) : timeframeCard(item)) + '</div>');
+      window.scrollTo(0, 0);
       return;
     }
     if (t.hasAttribute('data-open-rule')) {
@@ -1071,7 +1136,7 @@
   }
 
   $('foot').innerHTML = 'General information from the public UniSuper PDS documents issued ' + esc(issued('flexi')) + ': ' +
-    DATA.sources.filter(function (s) { return s.kind !== 'ato'; }).map(function (s) { return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + '</a>'; }).join(', ') +
+    DATA.sources.filter(function (s) { return s.kind === 'pds'; }).map(function (s) { return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + '</a>'; }).join(', ') +
     '. ATO pages are linked as supplementary sources only. Words with a red dotted underline are <button class="link" data-show-assumptions>assumptions (' + DATA.assumptions.length + ')</button>. Built ' + esc(DATA.built) + '. Not personal advice. Nothing typed here is saved or sent anywhere.';
 
   if (!TABS.some(function (t) { return t.id === state.tab; })) state.tab = 'all';
