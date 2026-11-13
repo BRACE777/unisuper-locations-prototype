@@ -63,7 +63,12 @@
       "account_path": {
         "path": "Manage account, Third party authority",
         "verified": false
-      }
+      },
+      "aliases": [
+        "let my adviser access my account",
+        "let my financial adviser access my account",
+        "someone to call on my behalf"
+      ]
     },
     "super-nominate-a-binding-beneficiary": {
       "keywords": "binding nomination bdbn beneficiary death benefit lapsing non-lapsing witness form",
@@ -90,7 +95,12 @@
       "pds": {
         "doc": "hsw",
         "quote": "We need your TFN before we can accept your government co-contribution or personal contribution."
-      }
+      },
+      "aliases": [
+        "bpay contribution",
+        "make a personal contribution",
+        "pay into my super"
+      ]
     },
     "super-change-default-member-contributions": {
       "keywords": "member contributions default rate dbd accumulation 2 change"
@@ -396,7 +406,15 @@
       "pds": {
         "doc": "flexi",
         "quote": "This statutory declaration can be made on the Applying for a death benefit form, which is available by calling us."
-      }
+      },
+      "aliases": [
+        "claim for someone who died",
+        "late husband",
+        "late wife",
+        "late partner",
+        "passed away",
+        "death claim"
+      ]
     },
     {
       "id": "manual-insurance-claim",

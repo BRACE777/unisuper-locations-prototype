@@ -18,7 +18,9 @@ var CompanionSearch = (function () {
     'grandson granddaughter nephew niece kid kids child baby boyfriend girlfriend fiance widow widower ex expensive cheap price ' +
     'mortgage rent bills debt broke struggling bank house home car holiday boss job work working worked fired redundant redundancy ' +
     'casual contractor uni university student teen teenager young old older pay paid payday cash money ' +
-    'anymore anyway anything anyone everything nothing someone something half whole help sorry yes yeah nope').split(' '));
+    'anymore anyway anything anyone everything nothing someone something half whole help sorry yes yeah nope ' +
+    'friend friends mate girlfriend partner carer flatmate housemate stepson stepdaughter stepchild cousin aunt uncle charity church ' +
+    'bpay statement mistake wrong').split(' '));
 
   // Misspellings heard on calls that are too far from the word for the edit-distance check.
   var MISSPELT = { penshun: 'pension', penshon: 'pension', pention: 'pension', pensoin: 'pension', superanuation: 'superannuation',
@@ -27,6 +29,7 @@ var CompanionSearch = (function () {
     consoldate: 'consolidate', consolodate: 'consolidate', withdrawl: 'withdrawal', withdrawel: 'withdrawal', benificiary: 'beneficiary',
     beneficary: 'beneficiary', benefishary: 'beneficiary', contibution: 'contribution', contribtion: 'contribution', contribtions: 'contributions',
     insurence: 'insurance', insurace: 'insurance', retirment: 'retirement', nomanation: 'nomination',
+    benefactor: 'beneficiary', benefactors: 'beneficiaries', beneficiarys: 'beneficiaries', nominee: 'beneficiary', nominees: 'beneficiaries',
     hardshp: 'hardship', compasionate: 'compassionate', compassonate: 'compassionate', terminaly: 'terminally', tranfer: 'transfer' };
 
   var WORD_NUM = { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
@@ -197,13 +200,16 @@ var CompanionSearch = (function () {
     for (var b = 1; b < base.length; b++) if (doc.pairs[base[b - 1] + ' ' + base[b]]) score += 1.5;
     var joined = base.join(' ');
     if (joined) {
+      // The best-matching alias counts once, so a card with many similar aliases doesn't pile up bonuses.
+      var bonus = 0;
       for (var a = 0; a < doc.aliasTokens.length; a++) {
         var al = doc.aliasTokens[a];
-        if (al === joined) score += 8;
+        if (al === joined) bonus = Math.max(bonus, 8);
         else if (doc.exactOnly[al]) continue;
-        else if ((' ' + joined + ' ').indexOf(' ' + al + ' ') >= 0) score += 4;
-        else if (al.indexOf(joined) === 0 && joined.length >= 3) score += 3;
+        else if ((' ' + joined + ' ').indexOf(' ' + al + ' ') >= 0) bonus = Math.max(bonus, 4);
+        else if (al.indexOf(joined) === 0 && joined.length >= 3) bonus = Math.max(bonus, 3);
       }
+      score += bonus;
     }
     var coverage = counted ? matchedBase / counted : (score > 0 ? 1 : 0);
     return { score: score * (0.4 + 0.6 * coverage), coverage: coverage };
@@ -224,8 +230,8 @@ var CompanionSearch = (function () {
         { text: c.topic, weight: 1 }, { text: c.a, weight: 1.5 }, { text: c.detail || '', weight: 1 }] }));
     });
     (data.forms || []).forEach(function (f) {
-      docs.push(indexItem({ type: 'form', id: f.id, aliases: [f.title], item: f, fields: [
-        { text: f.title, weight: 3 }, { text: f.keywords || '', weight: 2.5 }, { text: (f.topics || []).join(' ') + ' form', weight: 1.2 },
+      docs.push(indexItem({ type: 'form', id: f.id, aliases: [f.title].concat(f.aliases || []), item: f, fields: [
+        { text: f.title, weight: 3 }, { text: (f.aliases || []).join(' '), weight: 3 }, { text: f.keywords || '', weight: 2.5 }, { text: (f.topics || []).join(' ') + ' form', weight: 1.2 },
         { text: f.summary || '', weight: 1 }, { text: (f.requirements || []).join(' '), weight: 0.6 }] }));
     });
     (data.timeframes || []).forEach(function (t) {
@@ -241,8 +247,8 @@ var CompanionSearch = (function () {
       return '';
     };
     (data.explainers || []).forEach(function (e) {
-      docs.push(indexItem({ type: 'explainer', id: e.id, aliases: [e.title], item: e, fields: [
-        { text: e.title + ' explain', weight: 3 }, { text: e.topic, weight: 1 }, { text: flat(e.standard), weight: 1.2 }, { text: flat(e.simple), weight: 0.8 }, { text: flat(e.detailed), weight: 0.6 }] }));
+      docs.push(indexItem({ type: 'explainer', id: e.id, aliases: [e.title].concat(e.aliases || []), item: e, fields: [
+        { text: e.title + ' explain', weight: 3 }, { text: (e.aliases || []).join(' '), weight: 3 }, { text: e.topic, weight: 1 }, { text: flat(e.standard), weight: 1.2 }, { text: flat(e.simple), weight: 0.8 }, { text: flat(e.detailed), weight: 0.6 }] }));
     });
 
     // How rare each word is across the cards: "super" and "pension" are everywhere, "hardship" isn't,

@@ -120,7 +120,9 @@
         "default investment",
         "mysuper",
         "balanced",
-        "future contributions strategy"
+        "future contributions strategy",
+        "what am i invested in",
+        "where is my super invested"
       ],
       "a": "Balanced (MySuper). Members can set a future contributions strategy and a rollover strategy, and switch existing balances.",
       "sources": [
@@ -317,7 +319,10 @@
       "aliases": [
         "accumulation 2",
         "acc2 leave",
-        "rejoin acc2"
+        "rejoin acc2",
+        "leaving my uni job",
+        "leave the university",
+        "stop working at the uni"
       ],
       "a": "They're moved to Accumulation 1, and can't rejoin Accumulation 2.",
       "sources": [
@@ -358,7 +363,11 @@
       "aliases": [
         "error",
         "compensation",
-        "unit pricing error"
+        "unit pricing error",
+        "mistake on my account",
+        "you made a mistake",
+        "error on my account",
+        "compensation for an error"
       ],
       "a": "For material errors caused by UniSuper, generally where the error is 0.30% of the account or more. On closed accounts, under $20 (unit pricing) or $5 (other) isn't usually paid.",
       "sources": [
@@ -374,7 +383,10 @@
       "q": "How does a member get confirmation of a transaction?",
       "aliases": [
         "confirmation",
-        "proof of transaction"
+        "proof of transaction",
+        "statement",
+        "annual statement",
+        "proof of a transaction"
       ],
       "a": "Call and quote the member number, write to Level 1, 385 Bourke Street, Melbourne, or view and download it online.",
       "sources": [

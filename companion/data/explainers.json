@@ -386,6 +386,11 @@
         "can't be added",
         "can't add further amounts",
         "nothing more can be added"
+      ],
+      "aliases": [
+        "two pensions",
+        "second pension",
+        "another pension"
       ]
     },
     {
@@ -1566,6 +1571,10 @@
         "non-binding nomination",
         "reversionary beneficiary",
         "reversionary"
+      ],
+      "aliases": [
+        "types of beneficiary",
+        "binding vs non binding"
       ]
     },
     {

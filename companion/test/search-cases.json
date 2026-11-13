@@ -367,6 +367,60 @@
       "q": "when will I get my money",
       "expect": "pension-lump-sum",
       "type": "timeframe"
+    },
+    {
+      "q": "do i need a beneficiary on every account",
+      "expect": "bdbn-multi-account"
+    },
+    {
+      "q": "does my nomination cover my pension too",
+      "expect": "bdbn-multi-account"
+    },
+    {
+      "q": "remove my ex as beneficiary",
+      "expect": "nom-types"
+    },
+    {
+      "q": "can i have more than one beneficiary",
+      "expect": "bdbn-valid"
+    },
+    {
+      "q": "can my friend be my beneficiary",
+      "expect": "dependant-super"
+    },
+    {
+      "q": "what if i dont nominate anyone",
+      "expect": "no-nomination"
+    },
+    {
+      "q": "how much do i need to start a pension",
+      "expect": "pension-min-start"
+    },
+    {
+      "q": "will i lose the bonus if i take money out",
+      "expect": "rb-clawback"
+    },
+    {
+      "q": "what am i invested in",
+      "expect": "default-option"
+    },
+    {
+      "q": "you made a mistake on my account",
+      "expect": "errors"
+    },
+    {
+      "q": "will my pension run out",
+      "expect": "pension-longevity"
+    },
+    {
+      "q": "how do i claim my late husbands super",
+      "expect": "manual-death-benefit-claim",
+      "type": "form"
+    },
+    {
+      "q": "bpay contribution",
+      "expect": "super-make-an-after-tax-voluntary-contribution-by-cheque",
+      "type": "form"
     }
   ],
   "hidden": [
@@ -459,6 +513,54 @@
     {
       "q": "seperation super",
       "expect": "family-law"
+    },
+    {
+      "q": "beneficary",
+      "expect": "nom-types"
+    },
+    {
+      "q": "benefishary",
+      "expect": "nom-types"
+    },
+    {
+      "q": "benefeciary",
+      "expect": "nom-types"
+    },
+    {
+      "q": "benificary",
+      "expect": "nom-types"
+    },
+    {
+      "q": "beneficiery",
+      "expect": "nom-types"
+    },
+    {
+      "q": "benefitiary",
+      "expect": "nom-types"
+    },
+    {
+      "q": "benefiary",
+      "expect": "nom-types"
+    },
+    {
+      "q": "beneficairy",
+      "expect": "nom-types"
+    },
+    {
+      "q": "beneficiry",
+      "expect": "nom-types"
+    },
+    {
+      "q": "bennificiary",
+      "expect": "nom-types"
+    },
+    {
+      "q": "benefactor",
+      "expect": "nom-types"
+    },
+    {
+      "q": "nominee",
+      "expect": "nom-types"
     }
   ],
   "situations": [

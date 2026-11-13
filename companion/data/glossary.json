@@ -1639,6 +1639,102 @@
     {
       "phrase": "how much can i contribute",
       "expands_to": "contribution cap concessional non-concessional"
+    },
+    {
+      "phrase": "remove beneficiary",
+      "expands_to": "nomination beneficiary binding non-binding change"
+    },
+    {
+      "phrase": "change beneficiary",
+      "expands_to": "nomination beneficiary binding non-binding change"
+    },
+    {
+      "phrase": "update beneficiary",
+      "expands_to": "nomination beneficiary binding non-binding change"
+    },
+    {
+      "phrase": "add beneficiary",
+      "expands_to": "nomination beneficiary binding non-binding change"
+    },
+    {
+      "phrase": "change nomination",
+      "expands_to": "nomination beneficiary binding non-binding change"
+    },
+    {
+      "phrase": "update nomination",
+      "expands_to": "nomination beneficiary binding non-binding change"
+    },
+    {
+      "phrase": "take my ex off",
+      "expands_to": "nomination beneficiary binding non-binding change"
+    },
+    {
+      "phrase": "every account",
+      "expands_to": "nomination multiple accounts"
+    },
+    {
+      "phrase": "each account",
+      "expands_to": "nomination multiple accounts"
+    },
+    {
+      "phrase": "all my accounts",
+      "expands_to": "nomination multiple accounts"
+    },
+    {
+      "phrase": "more than one beneficiary",
+      "expands_to": "beneficiary nomination 100% allocated dependant"
+    },
+    {
+      "phrase": "between my kids",
+      "expands_to": "beneficiary nomination 100% allocated dependant"
+    },
+    {
+      "phrase": "between my children",
+      "expands_to": "beneficiary nomination 100% allocated dependant"
+    },
+    {
+      "phrase": "friend",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "girlfriend",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "boyfriend",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "carer",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "flatmate",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "bpay",
+      "expands_to": "after-tax personal contribution"
+    },
+    {
+      "phrase": "buy a house",
+      "expands_to": "first home super saver fhss"
+    },
+    {
+      "phrase": "buy a home",
+      "expands_to": "first home super saver fhss"
+    },
+    {
+      "phrase": "house deposit",
+      "expands_to": "first home super saver fhss"
+    },
+    {
+      "phrase": "access my account",
+      "expands_to": "third party authority"
+    },
+    {
+      "phrase": "speak to you for me",
+      "expands_to": "third party authority"
     }
   ]
 }

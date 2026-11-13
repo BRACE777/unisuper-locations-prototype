@@ -389,3 +389,11 @@ test('parse: the member box rejects ages and birth dates that cannot be right', 
   assert.ok(P.parseAgeOrDate('1/1/' + (thisYear - 5)).error, 'five years old');
   assert.ok(P.parseAgeOrDate('14/5/1959').dob);
 });
+
+test('search: every common misspelling of beneficiary is read as beneficiary', () => {
+  for (const w of ['benificiary', 'beneficary', 'benefishary', 'benefeciary', 'benificary', 'beneficiery', 'benefitiary', 'benefiary', 'beneficairy', 'beneficiry', 'bennificiary', 'benefactor', 'nominee']) {
+    const fix = engine.correctQuery(w).fixes[0];
+    assert.equal(fix && fix.to, 'beneficiary', `${w} should be read as beneficiary`);
+    assert.equal(engine.search(w).results[0].id, 'nom-types', `${w} should put the nomination types card first`);
+  }
+});

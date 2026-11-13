@@ -8,7 +8,19 @@
       "aliases": [
         "nomination types",
         "who gets my super",
-        "beneficiary options"
+        "beneficiary options",
+        "beneficiary",
+        "beneficiaries",
+        "who are my beneficiaries",
+        "change my beneficiary",
+        "update my beneficiary",
+        "add a beneficiary",
+        "remove a beneficiary",
+        "remove my ex as beneficiary",
+        "take my ex off my super",
+        "change my nomination",
+        "update my nomination",
+        "check my beneficiary"
       ],
       "a": "Super: binding (lapsing or non-lapsing) or non-binding. Flexi Pension also has reversionary (not for BIS). With no nomination, the Trustee decides.",
       "sources": [
@@ -169,7 +181,13 @@
         "binding valid",
         "witness",
         "100%",
-        "power of attorney nomination"
+        "power of attorney nomination",
+        "more than one beneficiary",
+        "multiple beneficiaries",
+        "split between beneficiaries",
+        "split my super between my kids",
+        "percentages for beneficiaries",
+        "who can witness my nomination"
       ],
       "a": "Only dependants or the legal personal representative; 100% allocated exactly; paper forms signed and dated by the member (not a power of attorney) in front of two witnesses aged 18+ who aren't beneficiaries, with their declaration.",
       "sources": [
@@ -224,7 +242,16 @@
       "q": "Does one binding nomination cover all of a member's accounts?",
       "aliases": [
         "nomination multiple accounts",
-        "pension and super nomination"
+        "pension and super nomination",
+        "beneficiary on every account",
+        "beneficiary on each account",
+        "nomination on every account",
+        "nomination on each account",
+        "separate nomination for my pension",
+        "separate nomination for each account",
+        "one nomination for all my accounts",
+        "does my nomination cover my pension",
+        "nomination for pension and super"
       ],
       "a": "It can: one nomination for all UniSuper accounts, or separate nominations for each.",
       "sources": [
@@ -278,7 +305,11 @@
       "q": "What happens with no nomination?",
       "aliases": [
         "no beneficiary",
-        "trustee decides"
+        "trustee decides",
+        "dont nominate anyone",
+        "didnt nominate anyone",
+        "no beneficiary what happens",
+        "nobody nominated"
       ],
       "a": "The Trustee pays dependants and/or the legal personal representative in proportions it decides. With neither, it pays whoever superannuation law allows.",
       "sources": [
@@ -299,7 +330,13 @@
         "children beneficiary",
         "can i leave my super to my kids",
         "can my mum be my beneficiary",
-        "can my parents be my beneficiary"
+        "can my parents be my beneficiary",
+        "can my friend be my beneficiary",
+        "can my girlfriend be my beneficiary",
+        "can my boyfriend be my beneficiary",
+        "can my partner be my beneficiary",
+        "who can be my beneficiary",
+        "can my adult son be my beneficiary"
       ],
       "a": "A spouse (including de facto, any sex), children of any age, an interdependent at death, and anyone the Trustee considers was financially dependent at death.",
       "sources": [

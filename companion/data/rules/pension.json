@@ -100,7 +100,10 @@
       "aliases": [
         "25000",
         "minimum balance pension",
-        "how much to start"
+        "how much to start",
+        "how much do i need to start a pension",
+        "minimum to start a pension",
+        "minimum balance for a pension"
       ],
       "a": "$25,000.",
       "sources": [
@@ -389,7 +392,9 @@
         "11%",
         "14%",
         "how much can a pensioner take out",
-        "how much do i have to take out"
+        "how much do i have to take out",
+        "minimum",
+        "minimum payment"
       ],
       "age_table": "minimum_drawdown",
       "a": "Under 65: 4%. 65 to 74: 5%. 75 to 79: 6%. 80 to 84: 7%. 85 to 89: 9%. 90 to 94: 11%. 95+: 14%. Based on age at the start, then each 1 July.",
@@ -1091,7 +1096,11 @@
       "q": "Can the Retirement Bonus be taken back?",
       "aliases": [
         "clawback",
-        "retirement bonus withdraw 50%"
+        "retirement bonus withdraw 50%",
+        "lose the bonus",
+        "lose my bonus",
+        "bonus taken back",
+        "bonus clawed back"
       ],
       "a": "Yes. Withdrawing 50% or more of the opening balance within 12 months of starting may mean the bonus is clawed back.",
       "sources": [
@@ -1135,7 +1144,9 @@
         "drawdown order",
         "drawdown method",
         "pro rata drawdown",
-        "your choice drawdown"
+        "your choice drawdown",
+        "which option are payments taken from",
+        "which investment are payments taken from"
       ],
       "a": "Three choices: Default order (Cash first, then Australian Bond, Conservative and so on), Your choice (member sets the order), or Pro-rata (in proportion to each option). Changeable online any time.",
       "sources": [
@@ -1335,7 +1346,9 @@
       "q": "Are pension payments guaranteed?",
       "aliases": [
         "pension guaranteed",
-        "run out of money"
+        "run out of money",
+        "will my pension run out",
+        "how long will my pension last"
       ],
       "a": "No. Payments stop when there isn't enough for the next one, and the rest is paid out. Withdrawals and returns affect how long it lasts.",
       "sources": [
