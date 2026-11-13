@@ -297,7 +297,9 @@
         "who can i nominate",
         "kids beneficiary",
         "children beneficiary",
-        "can i leave my super to my kids"
+        "can i leave my super to my kids",
+        "can my mum be my beneficiary",
+        "can my parents be my beneficiary"
       ],
       "a": "A spouse (including de facto, any sex), children of any age, an interdependent at death, and anyone the Trustee considers was financially dependent at death.",
       "sources": [
@@ -353,7 +355,9 @@
       "aliases": [
         "lpr",
         "estate",
-        "executor"
+        "executor",
+        "does my will cover my super",
+        "leave my super to my estate"
       ],
       "a": "The executor of the will, or the estate administrator. A benefit paid to them becomes part of the estate.",
       "sources": [

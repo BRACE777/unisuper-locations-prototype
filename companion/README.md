@@ -14,7 +14,10 @@ Both are generated. `dist/` is git-ignored, so build them first (below).
 The page follows a call. It opens on a quiet start screen: one question, a few example searches, the six most common checklists and the calculators. Nothing else until you type.
 
 - **Three columns once you search.** Left: every match as a compact line (type, title and the answer itself), so the fifth result is as easy to read as the first. Filter by type with the chips above the list. Middle: the selected item in full. Right, **Alongside**: the timeframes, forms, checklists, explainers and rules related to it. Timeframes show the actual time ("Usually within 5 business days") without opening them.
-- **Keyboard.** `/` jumps to the search box. `↑` `↓` move through the results while you keep typing; `Enter` keeps the selected one in **Earlier in this call**. `Esc` clears. `Alt`+`1`–`7` switch sections.
+- **Keyboard.** `/` jumps to the search box. `↑` `↓` move through the results while you keep typing; `Enter` keeps the selected one in **Earlier in this call**. `Ctrl`+`Enter` copies the open answer (the card's main copy button), from the search box or anywhere. `Shift`+`Enter` moves into the answer, so `Tab` reaches its buttons without passing every result. `Esc` clears. `Alt`+`1`–`7` switch sections.
+- **Due dates.** A timeframe with a fixed length shows the date it lands on if the clock starts today, on the card and in the results list. Business-day counts that run through late September warn when that year's Grand Final eve holiday isn't in `holidays.json` yet (`check-data` warns too).
+- **Calculator from a card.** **Drawdown calculator** on a TTR, BIS or Retirement Phase rule opens the calculator set to that type, with the cursor in the first empty box. **Copy summary** includes the inputs (date of birth or age, type, start date, balance, frequency), so it stands on its own in call notes.
+- **An age is enough for the age-based notes.** Without a test member, an age or date of birth still adds the age notes to checklists. Preservation age is 60 for anyone under 60 now, and anyone 60 or over has reached theirs, so an age alone settles it.
 - **Nothing is lost when you follow a link.** Opening a related item, an explainer chip or a "Go to" link shows it in the middle column; your search stays on the left. Items you open are listed under **Earlier in this call** (right column and start screen).
 - **Timeframes with a date** show the date calculator under them, already set to that timeframe.
 - **New call** (top right) clears the search, member, product filter, checklist ticks and the call history.
@@ -23,12 +26,14 @@ The page follows a call. It opens on a quiet start screen: one question, a few e
 - **Interactive figures** explain four rules by pointing at them: the minimum percentage by age (pillars), the first-year pro-rata (months), the drawdown order (stacked options) and the transfer balance cap (a box that fills). Arrow keys work too. They appear on the matching rule cards, explainers and hover-overs.
 
 - Press `/` and type what the member said, a figure or an acronym: `ttr max`, `6000`, `noi deadline`, `change my bank`, `how long withdrawal`. `Esc` clears.
-- Misspellings are fine: `perservation`, `reversonary`, `chnage my bank` and `nio` all work, and the page shows what it corrected.
+- Misspellings are fine: `perservation`, `reversonary`, `chnage my bank`, `penshun` and `nio` all work, and the page shows what it corrected. Everyday words the cards don't use (cancer, sick, surgery, mum) are left alone rather than "corrected".
+- Type it the way the member says it: `sal sac`, `my husband died`, `get rid of my insurance`, `ex wife wants my super`, `how young super`, `backpacker super`. Member phrasings live in `glossary.json` (`phrases`) and in each rule's `aliases`; add one whenever a search lets you down on a call, plus a case in `test/search-cases.json`.
+- How the question is worded picks the kind of answer: "how long…" or "when will I get…" puts timeframes first, "what form…" forms, "difference between…" or "explain…" explainers. Rarer words count for more than common ones ("hardship" more than "super").
 - Pick the product (Super, DBD, Retirement Phase, TTR, BIS) from the **Product** menu to hide rules that don't apply. The **Member** box takes an age (`67`) or a date of birth in any common format (`14/5/1959`, `14.05.59`, `14 May 1959`, `14051959`); it highlights the right row in the minimum-percentage and preservation-age tables and fills the calculator.
 - In the drawdown calculator, type or paste one line into **Quick entry**, such as `14/5/1959 500k 1/10/2026 TTR fortnightly`, and it fills every field. Each field also accepts loose formats (`500k`, `$500,000`, `1 Oct`, `today`) and shows what it understood underneath. Enter moves to the next field. An age works instead of a date of birth.
 - Every rule card shows the PDS, issue date, PDF page and the exact sentence it relies on. The link opens the PDF at that page.
 - No matching card? The page searches the full PDS text and shows the best passages.
-- Alt+1 to Alt+6 switch tabs. The **date calculator** sits at the top of the Timeframes tab; timeframe cards have **Work out the date**, which fills it (business days skip weekends and Victorian public holidays). The **Drawdown calculator** has its own tab.
+- Alt+1 to Alt+7 switch tabs. The **date calculator** opens from the start screen ("When is it due?"); timeframe cards have **Work out the date**, which shows it under the card already set to that timeframe (business days skip weekends and Victorian public holidays). The **Drawdown calculator** has its own tab.
 - The **Auto / Light / Dark** button in the header switches the theme; Auto follows Windows.
 
 ## Building

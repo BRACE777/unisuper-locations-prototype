@@ -178,4 +178,9 @@ if (problems.length) {
   console.error(`${problems.length} problem(s):\n- ` + problems.join('\n- '));
   process.exit(1);
 }
+// Warnings don't fail the check: things to update soon.
+const year = new Date().getFullYear();
+const gf = (read('holidays.json').extra ?? []).filter((h) => /grand final/i.test(h.name)).map((h) => Number(h.date.slice(0, 4)));
+const gfMissing = [year, year + 1].filter((y) => !gf.includes(y));
+if (gfMissing.length) console.warn(`Warning: holidays.json has no "Friday before the AFL Grand Final" for ${gfMissing.join(' or ')}. Add it once the Victorian Government announces it, so business-day counts skip it.`);
 console.log('Data checks passed.');

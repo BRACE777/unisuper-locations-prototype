@@ -15,7 +15,11 @@
         "75 70 67",
         "age limit insurance",
         "insurance age",
-        "when does insurance end"
+        "when does insurance end",
+        "life insurance",
+        "life cover",
+        "total and permanent disability",
+        "death cover"
       ],
       "a": "Death (including terminal illness) to 75, TPD to 70, Income Protection to 67. Premiums come from the super account. Insurer: MetLife.",
       "sources": [
@@ -141,7 +145,10 @@
         "ip",
         "23 units",
         "85% salary",
-        "waiting period"
+        "waiting period",
+        "salary continuance",
+        "injured and cant work",
+        "off work sick"
       ],
       "a": "Up to 23 units without health evidence, each $100 a week, capped at 85% of income. Default terms: 90-day waiting period, two-year benefit period. Apply within 180 days of starting with an eligible employer.",
       "detail": "Benefits can be reduced by other income such as workers' compensation. Not all occupations are eligible.",
@@ -186,7 +193,9 @@
         "tax adjustment",
         "how much does insurance cost",
         "insurance cost",
-        "premiums"
+        "premiums",
+        "why is my insurance so expensive",
+        "insurance too expensive"
       ],
       "a": "By cover type, amount, age and sex at birth (and IP waiting and benefit periods). Includes stamp duty and a 4% admin fee. Deducted monthly; a 15% tax adjustment is credited back.",
       "sources": [
@@ -231,7 +240,9 @@
         "16 months",
         "insufficient funds",
         "when does insurance stop",
-        "insurance cancelled automatically"
+        "insurance cancelled automatically",
+        "insurance lapsed",
+        "cover lapsed"
       ],
       "a": "At the cessation age, on request, leaving UniSuper, death, not enough money for premiums, or 16 consecutive months with no contribution or rollover (unless the member elected to keep cover).",
       "sources": [
@@ -279,7 +290,9 @@
         "reduce cover",
         "stop my insurance",
         "cancel my insurance",
-        "turn off insurance"
+        "turn off insurance",
+        "stop paying insurance",
+        "get rid of my insurance"
       ],
       "a": "Online, with the Changing your insurance cover form, or by calling 1800 331 685. Getting cover back later needs health evidence.",
       "sources": [

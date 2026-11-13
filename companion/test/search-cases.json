@@ -232,6 +232,141 @@
       "q": "pro rata",
       "type": "explainer",
       "expect": "first-year-pro-rata"
+    },
+    {
+      "q": "sal sac",
+      "expect": "salary-sacrifice"
+    },
+    {
+      "q": "section 290",
+      "expect": "noi-deadline"
+    },
+    {
+      "q": "catch up contributions",
+      "expect": "carry-forward"
+    },
+    {
+      "q": "put my own money in",
+      "expect": "ncc-cap"
+    },
+    {
+      "q": "government matching contribution",
+      "expect": "co-contribution"
+    },
+    {
+      "q": "use my super to pay for surgery",
+      "expect": "compassionate"
+    },
+    {
+      "q": "work part time and draw super",
+      "expect": "ttr-eligibility"
+    },
+    {
+      "q": "pension pay day",
+      "expect": "pay-dates"
+    },
+    {
+      "q": "increase my pension",
+      "expect": "pay-change-online"
+    },
+    {
+      "q": "bonus when I start a pension",
+      "expect": "rb-what"
+    },
+    {
+      "q": "total and permanent disability",
+      "expect": "cover-types"
+    },
+    {
+      "q": "salary continuance",
+      "expect": "ip-cover"
+    },
+    {
+      "q": "insurance lapsed",
+      "expect": "cover-stops"
+    },
+    {
+      "q": "get rid of my insurance",
+      "expect": "opt-out"
+    },
+    {
+      "q": "can my mum be my beneficiary",
+      "expect": "dependant-super"
+    },
+    {
+      "q": "ex wife wants my super",
+      "expect": "family-law"
+    },
+    {
+      "q": "backpacker super",
+      "expect": "dasp"
+    },
+    {
+      "q": "unclaimed super",
+      "expect": "unclaimed"
+    },
+    {
+      "q": "how young super",
+      "expect": "pa-eligibility"
+    },
+    {
+      "q": "can a 14 year old have super",
+      "expect": "pa-eligibility"
+    },
+    {
+      "q": "dying of cancer access super",
+      "expect": "terminal"
+    },
+    {
+      "q": "im sick and cant work anymore",
+      "expect": "ip-cover"
+    },
+    {
+      "q": "whats the max i can put in",
+      "expect": "ncc-cap"
+    },
+    {
+      "q": "i lost my job can i get my super",
+      "expect": "conditions-of-release"
+    },
+    {
+      "q": "how much does my employer pay",
+      "expect": "sg-rate"
+    },
+    {
+      "q": "my husband died",
+      "expect": "manual-death-benefit-claim",
+      "type": "form"
+    },
+    {
+      "q": "consolidate super",
+      "expect": "super-combine-your-super",
+      "type": "form"
+    },
+    {
+      "q": "binding nomination form",
+      "expect": "super-nominate-a-binding-beneficiary",
+      "type": "form"
+    },
+    {
+      "q": "move my super to cash",
+      "expect": "super-manage-your-investment-choices",
+      "type": "form"
+    },
+    {
+      "q": "let my son speak on my behalf",
+      "expect": "super-third-party-authority-form",
+      "type": "form"
+    },
+    {
+      "q": "how long does a rollover take",
+      "expect": "transfers-out",
+      "type": "timeframe"
+    },
+    {
+      "q": "when will I get my money",
+      "expect": "pension-lump-sum",
+      "type": "timeframe"
     }
   ],
   "hidden": [
@@ -312,6 +447,18 @@
       "q": "cooling of perid",
       "type": "timeframe",
       "expect": "pension-cooling-off"
+    },
+    {
+      "q": "penshun",
+      "expect": "pension-types"
+    },
+    {
+      "q": "insurence",
+      "expect": "cover-types"
+    },
+    {
+      "q": "seperation super",
+      "expect": "family-law"
     }
   ],
   "situations": [

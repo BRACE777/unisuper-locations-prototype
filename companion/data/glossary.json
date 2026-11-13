@@ -542,15 +542,11 @@
     },
     {
       "phrase": "too young",
-      "expands_to": "age aged eligible 15 preservation"
+      "expands_to": "age 15 join open personal account"
     },
     {
       "phrase": "too old",
       "expands_to": "age 75 cease contribution"
-    },
-    {
-      "phrase": "who can",
-      "expands_to": "eligible eligibility"
     },
     {
       "phrase": "can i join",
@@ -577,20 +573,12 @@
       "expands_to": "condition release access preservation age"
     },
     {
-      "phrase": "when can i",
-      "expands_to": "condition release access age"
-    },
-    {
       "phrase": "pay out",
       "expands_to": "lump sum withdrawal"
     },
     {
       "phrase": "money out",
       "expands_to": "withdrawal lump sum access"
-    },
-    {
-      "phrase": "how much does",
-      "expands_to": "fee cost premium"
     },
     {
       "phrase": "cost",
@@ -621,10 +609,6 @@
       "expands_to": "spouse"
     },
     {
-      "phrase": "will",
-      "expands_to": "legal personal representative estate"
-    },
-    {
       "phrase": "deadline",
       "expands_to": "deadline 30 june days"
     },
@@ -651,6 +635,1010 @@
     {
       "phrase": "add money to my pension",
       "expands_to": "can't add pension new account"
+    },
+    {
+      "phrase": "my will",
+      "expands_to": "legal personal representative estate"
+    },
+    {
+      "phrase": "a will",
+      "expands_to": "legal personal representative estate"
+    },
+    {
+      "phrase": "in my will",
+      "expands_to": "legal personal representative estate"
+    },
+    {
+      "phrase": "the will",
+      "expands_to": "legal personal representative estate"
+    },
+    {
+      "phrase": "executor",
+      "expands_to": "legal personal representative estate"
+    },
+    {
+      "phrase": "my estate",
+      "expands_to": "legal personal representative estate"
+    },
+    {
+      "phrase": "the estate",
+      "expands_to": "legal personal representative estate"
+    },
+    {
+      "phrase": "who can join",
+      "expands_to": "eligible eligibility join"
+    },
+    {
+      "phrase": "who is eligible",
+      "expands_to": "eligible eligibility join"
+    },
+    {
+      "phrase": "am i eligible",
+      "expands_to": "eligible eligibility join"
+    },
+    {
+      "phrase": "how much does it cost",
+      "expands_to": "fee cost premium"
+    },
+    {
+      "phrase": "how much do i pay",
+      "expands_to": "fee cost premium"
+    },
+    {
+      "phrase": "what does it cost",
+      "expands_to": "fee cost premium"
+    },
+    {
+      "phrase": "how much is it",
+      "expands_to": "fee cost premium"
+    },
+    {
+      "phrase": "sal sac",
+      "expands_to": "salary sacrifice concessional"
+    },
+    {
+      "phrase": "salary packaging",
+      "expands_to": "salary sacrifice concessional"
+    },
+    {
+      "phrase": "packaging",
+      "expands_to": "salary sacrifice concessional"
+    },
+    {
+      "phrase": "pre tax",
+      "expands_to": "salary sacrifice concessional"
+    },
+    {
+      "phrase": "pretax",
+      "expands_to": "salary sacrifice concessional"
+    },
+    {
+      "phrase": "before tax",
+      "expands_to": "salary sacrifice concessional"
+    },
+    {
+      "phrase": "section 290",
+      "expands_to": "notice intent deduction"
+    },
+    {
+      "phrase": "deductible",
+      "expands_to": "notice intent deduction"
+    },
+    {
+      "phrase": "tax deductible",
+      "expands_to": "notice intent deduction"
+    },
+    {
+      "phrase": "claim on my tax",
+      "expands_to": "notice intent deduction"
+    },
+    {
+      "phrase": "claim it on tax",
+      "expands_to": "notice intent deduction"
+    },
+    {
+      "phrase": "tax return",
+      "expands_to": "notice intent deduction"
+    },
+    {
+      "phrase": "intent to claim",
+      "expands_to": "notice intent deduction"
+    },
+    {
+      "phrase": "notice of intention",
+      "expands_to": "notice intent deduction"
+    },
+    {
+      "phrase": "own money",
+      "expands_to": "non-concessional after-tax personal contribution"
+    },
+    {
+      "phrase": "extra money",
+      "expands_to": "non-concessional after-tax personal contribution"
+    },
+    {
+      "phrase": "voluntary",
+      "expands_to": "non-concessional after-tax personal contribution"
+    },
+    {
+      "phrase": "top up my super",
+      "expands_to": "non-concessional after-tax personal contribution"
+    },
+    {
+      "phrase": "chuck money in",
+      "expands_to": "non-concessional after-tax personal contribution"
+    },
+    {
+      "phrase": "after tax money",
+      "expands_to": "non-concessional after-tax personal contribution"
+    },
+    {
+      "phrase": "put money in",
+      "expands_to": "non-concessional after-tax personal contribution"
+    },
+    {
+      "phrase": "lump sum in",
+      "expands_to": "non-concessional after-tax personal contribution"
+    },
+    {
+      "phrase": "government matching",
+      "expands_to": "co-contribution government"
+    },
+    {
+      "phrase": "govt",
+      "expands_to": "co-contribution government"
+    },
+    {
+      "phrase": "gov top up",
+      "expands_to": "co-contribution government"
+    },
+    {
+      "phrase": "free money",
+      "expands_to": "co-contribution government"
+    },
+    {
+      "phrase": "government contribution",
+      "expands_to": "co-contribution government"
+    },
+    {
+      "phrase": "catch up",
+      "expands_to": "carry forward unused concessional"
+    },
+    {
+      "phrase": "catch-up",
+      "expands_to": "carry forward unused concessional"
+    },
+    {
+      "phrase": "went over",
+      "expands_to": "excess cap"
+    },
+    {
+      "phrase": "over the cap",
+      "expands_to": "excess cap"
+    },
+    {
+      "phrase": "over contributed",
+      "expands_to": "excess cap"
+    },
+    {
+      "phrase": "overcontributed",
+      "expands_to": "excess cap"
+    },
+    {
+      "phrase": "breach",
+      "expands_to": "excess cap"
+    },
+    {
+      "phrase": "my boss",
+      "expands_to": "superannuation guarantee sg rate employer"
+    },
+    {
+      "phrase": "employer pay",
+      "expands_to": "superannuation guarantee sg rate employer"
+    },
+    {
+      "phrase": "employer super",
+      "expands_to": "superannuation guarantee sg rate employer"
+    },
+    {
+      "phrase": "employer contributions",
+      "expands_to": "superannuation guarantee sg rate employer"
+    },
+    {
+      "phrase": "compulsory super",
+      "expands_to": "superannuation guarantee sg rate employer"
+    },
+    {
+      "phrase": "surgery",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "operation",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "medical bills",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "medical treatment",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "dental",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "ivf",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "mortgage arrears",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "behind on my mortgage",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "behind on mortgage",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "foreclosure",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "funeral",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "palliative",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "home modifications",
+      "expands_to": "compassionate grounds"
+    },
+    {
+      "phrase": "dying",
+      "expands_to": "terminal medical condition"
+    },
+    {
+      "phrase": "cancer",
+      "expands_to": "terminal medical condition"
+    },
+    {
+      "phrase": "terminally ill",
+      "expands_to": "terminal medical condition"
+    },
+    {
+      "phrase": "terminal illness",
+      "expands_to": "terminal medical condition"
+    },
+    {
+      "phrase": "months to live",
+      "expands_to": "terminal medical condition"
+    },
+    {
+      "phrase": "life expectancy",
+      "expands_to": "terminal medical condition"
+    },
+    {
+      "phrase": "struggling",
+      "expands_to": "severe financial hardship"
+    },
+    {
+      "phrase": "cant pay bills",
+      "expands_to": "severe financial hardship"
+    },
+    {
+      "phrase": "cant pay my bills",
+      "expands_to": "severe financial hardship"
+    },
+    {
+      "phrase": "hard time",
+      "expands_to": "severe financial hardship"
+    },
+    {
+      "phrase": "money troubles",
+      "expands_to": "severe financial hardship"
+    },
+    {
+      "phrase": "centrelink payments",
+      "expands_to": "severe financial hardship"
+    },
+    {
+      "phrase": "part time",
+      "expands_to": "transition to retirement ttr"
+    },
+    {
+      "phrase": "reduce hours",
+      "expands_to": "transition to retirement ttr"
+    },
+    {
+      "phrase": "reduce my hours",
+      "expands_to": "transition to retirement ttr"
+    },
+    {
+      "phrase": "cut back",
+      "expands_to": "transition to retirement ttr"
+    },
+    {
+      "phrase": "cut down",
+      "expands_to": "transition to retirement ttr"
+    },
+    {
+      "phrase": "semi retire",
+      "expands_to": "transition to retirement ttr"
+    },
+    {
+      "phrase": "semi retired",
+      "expands_to": "transition to retirement ttr"
+    },
+    {
+      "phrase": "draw super while working",
+      "expands_to": "transition to retirement ttr"
+    },
+    {
+      "phrase": "still working",
+      "expands_to": "transition to retirement ttr"
+    },
+    {
+      "phrase": "annuity",
+      "expands_to": "flexi pension"
+    },
+    {
+      "phrase": "income stream",
+      "expands_to": "flexi pension"
+    },
+    {
+      "phrase": "retirement income",
+      "expands_to": "flexi pension"
+    },
+    {
+      "phrase": "allocated pension",
+      "expands_to": "flexi pension"
+    },
+    {
+      "phrase": "account based pension",
+      "expands_to": "flexi pension"
+    },
+    {
+      "phrase": "regular income",
+      "expands_to": "flexi pension"
+    },
+    {
+      "phrase": "increase my pension",
+      "expands_to": "change payment amount frequency"
+    },
+    {
+      "phrase": "decrease my pension",
+      "expands_to": "change payment amount frequency"
+    },
+    {
+      "phrase": "more from my pension",
+      "expands_to": "change payment amount frequency"
+    },
+    {
+      "phrase": "less from my pension",
+      "expands_to": "change payment amount frequency"
+    },
+    {
+      "phrase": "change my pension",
+      "expands_to": "change payment amount frequency"
+    },
+    {
+      "phrase": "change pension amount",
+      "expands_to": "change payment amount frequency"
+    },
+    {
+      "phrase": "change my payments",
+      "expands_to": "change payment amount frequency"
+    },
+    {
+      "phrase": "pay day",
+      "expands_to": "payment dates"
+    },
+    {
+      "phrase": "payday",
+      "expands_to": "payment dates"
+    },
+    {
+      "phrase": "pay date",
+      "expands_to": "payment dates"
+    },
+    {
+      "phrase": "payment date",
+      "expands_to": "payment dates"
+    },
+    {
+      "phrase": "when do i get paid",
+      "expands_to": "payment dates"
+    },
+    {
+      "phrase": "bonus",
+      "expands_to": "retirement bonus"
+    },
+    {
+      "phrase": "pension cap",
+      "expands_to": "transfer balance cap"
+    },
+    {
+      "phrase": "over the pension cap",
+      "expands_to": "transfer balance cap"
+    },
+    {
+      "phrase": "life insurance",
+      "expands_to": "death cover"
+    },
+    {
+      "phrase": "life cover",
+      "expands_to": "death cover"
+    },
+    {
+      "phrase": "disability",
+      "expands_to": "total permanent disablement tpd"
+    },
+    {
+      "phrase": "permanent disability",
+      "expands_to": "total permanent disablement tpd"
+    },
+    {
+      "phrase": "never work again",
+      "expands_to": "total permanent disablement tpd"
+    },
+    {
+      "phrase": "cant work again",
+      "expands_to": "total permanent disablement tpd"
+    },
+    {
+      "phrase": "salary continuance",
+      "expands_to": "income protection"
+    },
+    {
+      "phrase": "sickness",
+      "expands_to": "income protection"
+    },
+    {
+      "phrase": "sick",
+      "expands_to": "income protection"
+    },
+    {
+      "phrase": "injured",
+      "expands_to": "income protection"
+    },
+    {
+      "phrase": "injury",
+      "expands_to": "income protection"
+    },
+    {
+      "phrase": "off work",
+      "expands_to": "income protection"
+    },
+    {
+      "phrase": "cant work",
+      "expands_to": "income protection"
+    },
+    {
+      "phrase": "workers comp",
+      "expands_to": "income protection"
+    },
+    {
+      "phrase": "insurance lapsed",
+      "expands_to": "cover stops"
+    },
+    {
+      "phrase": "cover lapsed",
+      "expands_to": "cover stops"
+    },
+    {
+      "phrase": "dropped off",
+      "expands_to": "cover stops"
+    },
+    {
+      "phrase": "cover dropped",
+      "expands_to": "cover stops"
+    },
+    {
+      "phrase": "cover cancelled",
+      "expands_to": "cover stops"
+    },
+    {
+      "phrase": "insurance cancelled",
+      "expands_to": "cover stops"
+    },
+    {
+      "phrase": "stop paying",
+      "expands_to": "opt out cancel cover"
+    },
+    {
+      "phrase": "get rid of",
+      "expands_to": "opt out cancel cover"
+    },
+    {
+      "phrase": "dont want insurance",
+      "expands_to": "opt out cancel cover"
+    },
+    {
+      "phrase": "remove insurance",
+      "expands_to": "opt out cancel cover"
+    },
+    {
+      "phrase": "remove my insurance",
+      "expands_to": "opt out cancel cover"
+    },
+    {
+      "phrase": "turn off insurance",
+      "expands_to": "opt out cancel cover"
+    },
+    {
+      "phrase": "no insurance",
+      "expands_to": "opt out cancel cover"
+    },
+    {
+      "phrase": "expensive",
+      "expands_to": "premium cost"
+    },
+    {
+      "phrase": "why so much",
+      "expands_to": "premium cost"
+    },
+    {
+      "phrase": "price",
+      "expands_to": "premium cost"
+    },
+    {
+      "phrase": "mum",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "mom",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "dad",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "mother",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "father",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "parents",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "brother",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "sister",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "grandchild",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "grandkids",
+      "expands_to": "dependant interdependency"
+    },
+    {
+      "phrase": "died",
+      "expands_to": "death benefit claim"
+    },
+    {
+      "phrase": "passed away",
+      "expands_to": "death benefit claim"
+    },
+    {
+      "phrase": "passed",
+      "expands_to": "death benefit claim"
+    },
+    {
+      "phrase": "deceased",
+      "expands_to": "death benefit claim"
+    },
+    {
+      "phrase": "late husband",
+      "expands_to": "death benefit claim"
+    },
+    {
+      "phrase": "late wife",
+      "expands_to": "death benefit claim"
+    },
+    {
+      "phrase": "widow",
+      "expands_to": "death benefit claim"
+    },
+    {
+      "phrase": "widower",
+      "expands_to": "death benefit claim"
+    },
+    {
+      "phrase": "has died",
+      "expands_to": "death benefit claim"
+    },
+    {
+      "phrase": "death claim",
+      "expands_to": "death benefit claim"
+    },
+    {
+      "phrase": "ex",
+      "expands_to": "family law split separation"
+    },
+    {
+      "phrase": "ex wife",
+      "expands_to": "family law split separation"
+    },
+    {
+      "phrase": "ex husband",
+      "expands_to": "family law split separation"
+    },
+    {
+      "phrase": "ex partner",
+      "expands_to": "family law split separation"
+    },
+    {
+      "phrase": "property settlement",
+      "expands_to": "family law split separation"
+    },
+    {
+      "phrase": "court order",
+      "expands_to": "family law split separation"
+    },
+    {
+      "phrase": "family court",
+      "expands_to": "family law split separation"
+    },
+    {
+      "phrase": "splitting order",
+      "expands_to": "family law split separation"
+    },
+    {
+      "phrase": "consolidate",
+      "expands_to": "combine rollover"
+    },
+    {
+      "phrase": "roll in",
+      "expands_to": "combine rollover"
+    },
+    {
+      "phrase": "bring my super over",
+      "expands_to": "combine rollover"
+    },
+    {
+      "phrase": "bring super across",
+      "expands_to": "combine rollover"
+    },
+    {
+      "phrase": "other super",
+      "expands_to": "combine rollover"
+    },
+    {
+      "phrase": "other fund",
+      "expands_to": "combine rollover"
+    },
+    {
+      "phrase": "another fund",
+      "expands_to": "combine rollover"
+    },
+    {
+      "phrase": "two super accounts",
+      "expands_to": "multiple accounts combine"
+    },
+    {
+      "phrase": "two accounts",
+      "expands_to": "multiple accounts combine"
+    },
+    {
+      "phrase": "more than one account",
+      "expands_to": "multiple accounts combine"
+    },
+    {
+      "phrase": "move to cash",
+      "expands_to": "switch investment option"
+    },
+    {
+      "phrase": "cash option",
+      "expands_to": "switch investment option"
+    },
+    {
+      "phrase": "investment mix",
+      "expands_to": "switch investment option"
+    },
+    {
+      "phrase": "conservative",
+      "expands_to": "switch investment option"
+    },
+    {
+      "phrase": "high growth",
+      "expands_to": "switch investment option"
+    },
+    {
+      "phrase": "change investment",
+      "expands_to": "switch investment option"
+    },
+    {
+      "phrase": "switch options",
+      "expands_to": "switch investment option"
+    },
+    {
+      "phrase": "change my investment",
+      "expands_to": "switch investment option"
+    },
+    {
+      "phrase": "backpacker",
+      "expands_to": "dasp temporary resident departing australia"
+    },
+    {
+      "phrase": "working holiday",
+      "expands_to": "dasp temporary resident departing australia"
+    },
+    {
+      "phrase": "whv",
+      "expands_to": "dasp temporary resident departing australia"
+    },
+    {
+      "phrase": "417 visa",
+      "expands_to": "dasp temporary resident departing australia"
+    },
+    {
+      "phrase": "going home",
+      "expands_to": "dasp temporary resident departing australia"
+    },
+    {
+      "phrase": "temp visa",
+      "expands_to": "dasp temporary resident departing australia"
+    },
+    {
+      "phrase": "visa expired",
+      "expands_to": "dasp temporary resident departing australia"
+    },
+    {
+      "phrase": "find my super",
+      "expands_to": "lost unclaimed ato"
+    },
+    {
+      "phrase": "missing super",
+      "expands_to": "lost unclaimed ato"
+    },
+    {
+      "phrase": "ato has my super",
+      "expands_to": "lost unclaimed ato"
+    },
+    {
+      "phrase": "super with the ato",
+      "expands_to": "lost unclaimed ato"
+    },
+    {
+      "phrase": "unclaimed super",
+      "expands_to": "lost unclaimed ato"
+    },
+    {
+      "phrase": "new address",
+      "expands_to": "change personal details"
+    },
+    {
+      "phrase": "moved house",
+      "expands_to": "change personal details"
+    },
+    {
+      "phrase": "surname",
+      "expands_to": "change personal details"
+    },
+    {
+      "phrase": "married name",
+      "expands_to": "change personal details"
+    },
+    {
+      "phrase": "maiden name",
+      "expands_to": "change personal details"
+    },
+    {
+      "phrase": "mobile",
+      "expands_to": "change personal details"
+    },
+    {
+      "phrase": "phone number",
+      "expands_to": "change personal details"
+    },
+    {
+      "phrase": "email address",
+      "expands_to": "change personal details"
+    },
+    {
+      "phrase": "name change",
+      "expands_to": "change personal details"
+    },
+    {
+      "phrase": "on my behalf",
+      "expands_to": "third party authority"
+    },
+    {
+      "phrase": "authorise",
+      "expands_to": "third party authority"
+    },
+    {
+      "phrase": "speak for me",
+      "expands_to": "third party authority"
+    },
+    {
+      "phrase": "my son",
+      "expands_to": "third party authority"
+    },
+    {
+      "phrase": "my daughter",
+      "expands_to": "third party authority"
+    },
+    {
+      "phrase": "accountant",
+      "expands_to": "third party authority"
+    },
+    {
+      "phrase": "leaving my job",
+      "expands_to": "change jobs leave employer"
+    },
+    {
+      "phrase": "resign",
+      "expands_to": "change jobs leave employer"
+    },
+    {
+      "phrase": "change jobs",
+      "expands_to": "change jobs leave employer"
+    },
+    {
+      "phrase": "new job",
+      "expands_to": "change jobs leave employer"
+    },
+    {
+      "phrase": "quit my job",
+      "expands_to": "change jobs leave employer"
+    },
+    {
+      "phrase": "leave my job",
+      "expands_to": "change jobs leave employer"
+    },
+    {
+      "phrase": "unhappy",
+      "expands_to": "complaint afca"
+    },
+    {
+      "phrase": "not happy",
+      "expands_to": "complaint afca"
+    },
+    {
+      "phrase": "dispute",
+      "expands_to": "complaint afca"
+    },
+    {
+      "phrase": "ombudsman",
+      "expands_to": "complaint afca"
+    },
+    {
+      "phrase": "make a complaint",
+      "expands_to": "complaint afca"
+    },
+    {
+      "phrase": "how young",
+      "expands_to": "age 15 join open personal account"
+    },
+    {
+      "phrase": "kids super",
+      "expands_to": "age 15 join open personal account"
+    },
+    {
+      "phrase": "child super",
+      "expands_to": "age 15 join open personal account"
+    },
+    {
+      "phrase": "minimum age for super",
+      "expands_to": "age 15 join open personal account"
+    },
+    {
+      "phrase": "how old do i need to be",
+      "expands_to": "age 15 join open personal account"
+    },
+    {
+      "phrase": "teenager",
+      "expands_to": "age 15 join open personal account"
+    },
+    {
+      "phrase": "under 18",
+      "expands_to": "age 15 join open personal account"
+    },
+    {
+      "phrase": "first job",
+      "expands_to": "age 15 join open personal account"
+    },
+    {
+      "phrase": "when will i get my money",
+      "expands_to": "lump sum withdrawal paid payment"
+    },
+    {
+      "phrase": "to cash",
+      "expands_to": "switch investment option cash"
+    },
+    {
+      "phrase": "into cash",
+      "expands_to": "switch investment option cash"
+    },
+    {
+      "phrase": "husband died",
+      "expands_to": "death benefit claim deceased"
+    },
+    {
+      "phrase": "wife died",
+      "expands_to": "death benefit claim deceased"
+    },
+    {
+      "phrase": "partner died",
+      "expands_to": "death benefit claim deceased"
+    },
+    {
+      "phrase": "separated",
+      "expands_to": "family law split separation"
+    },
+    {
+      "phrase": "split up",
+      "expands_to": "family law split separation"
+    },
+    {
+      "phrase": "broke up",
+      "expands_to": "family law split separation"
+    },
+    {
+      "phrase": "break up",
+      "expands_to": "family law split separation"
+    },
+    {
+      "phrase": "lost my job",
+      "expands_to": "ceasing employment condition release stopped working"
+    },
+    {
+      "phrase": "made redundant",
+      "expands_to": "ceasing employment condition release stopped working"
+    },
+    {
+      "phrase": "redundancy",
+      "expands_to": "ceasing employment condition release stopped working"
+    },
+    {
+      "phrase": "laid off",
+      "expands_to": "ceasing employment condition release stopped working"
+    },
+    {
+      "phrase": "got fired",
+      "expands_to": "ceasing employment condition release stopped working"
+    },
+    {
+      "phrase": "finished up at work",
+      "expands_to": "ceasing employment condition release stopped working"
+    },
+    {
+      "phrase": "max i can put in",
+      "expands_to": "contribution cap concessional non-concessional"
+    },
+    {
+      "phrase": "most i can put in",
+      "expands_to": "contribution cap concessional non-concessional"
+    },
+    {
+      "phrase": "contribution limit",
+      "expands_to": "contribution cap concessional non-concessional"
+    },
+    {
+      "phrase": "limit on contributions",
+      "expands_to": "contribution cap concessional non-concessional"
+    },
+    {
+      "phrase": "how much can i contribute",
+      "expands_to": "contribution cap concessional non-concessional"
     }
   ]
 }

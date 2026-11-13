@@ -48,7 +48,10 @@ var CompanionDrawdown = (function () {
     var out = { warnings: [] };
     // A date of birth gives exact ages; an age on its own is taken as the age at the start date.
     out.age = dob ? ageOn(dob, start) : input.age;
-    out.preservationAge = dob ? preservationAge(rates.tables.preservation_age.rows, dob) : null;
+    // Without a date of birth the age still settles it: preservation age is 60 for anyone under 60
+    // now, and anyone 60 or over has reached theirs whatever their date of birth.
+    out.preservationAge = dob ? preservationAge(rates.tables.preservation_age.rows, dob) : (out.age < 60 ? 60 : null);
+    out.preservationReached = dob ? out.age >= out.preservationAge : out.age >= 60;
     var b = band(bands, out.age);
     out.band = b.label;
     out.pct = b.pct;
@@ -71,12 +74,12 @@ var CompanionDrawdown = (function () {
     var nextJuly = new Date(fyEnd.getFullYear(), 6, 1);
     out.ageNext = dob ? ageOn(dob, nextJuly) : null;
     out.pctNext = dob ? band(bands, out.ageNext).pct : null;
-    if (!dob) out.warnings.push("{{age-only:Age entered without a date of birth}}: next 1 July’s percentage and the preservation age can’t be checked.");
+    if (!dob) out.warnings.push("{{age-only:Age entered without a date of birth}}: next 1 July’s percentage can’t be checked.");
 
     if (bal < r.pension_min_start) out.warnings.push('Below the $' + r.pension_min_start.toLocaleString('en-AU') + ' minimum to start a Flexi Pension.');
     if (dob && start <= dob) out.warnings.push('Start date is before the date of birth.');
     if (start.getMonth() === 5) out.warnings.push('Starts in June: the member can choose no payment until the next financial year.');
-    if (input.type === 'TTR' && dob && out.age < out.preservationAge) out.warnings.push('Under preservation age (' + out.preservationAge + '): a TTR pension cannot start yet.');
+    if (input.type === 'TTR' && !out.preservationReached) out.warnings.push('Under preservation age (' + out.preservationAge + '): a TTR pension cannot start yet.');
     if (input.type === 'TTR' && out.age >= 65) out.warnings.push('65 or over: TTR converts to Retirement Phase, so the 10% maximum no longer applies.');
     if (input.chosen && input.chosen < out.proMin) out.warnings.push('Chosen amount is below the pro-rata minimum.');
     if (input.chosen && out.max != null && input.chosen > out.max) out.warnings.push('Chosen amount is above the TTR maximum.');

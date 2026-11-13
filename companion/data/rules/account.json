@@ -200,7 +200,8 @@
       "aliases": [
         "lost member",
         "lost super",
-        "returned mail"
+        "returned mail",
+        "find my lost super"
       ],
       "a": "Broadly: no address ever held, or mail returned, and no contact, online access, contribution or rollover in the last 12 months. Lost members under $6,000 go to the ATO.",
       "sources": [
@@ -218,7 +219,8 @@
       "q": "When does super become unclaimed money?",
       "aliases": [
         "unclaimed money",
-        "eligibility age ato"
+        "eligibility age ato",
+        "unclaimed super"
       ],
       "a": "At eligibility age with no contributions for two years and no contact for five years; or a former temporary resident after six months and an ATO notice. The member then claims from the ATO.",
       "sources": [
@@ -236,7 +238,9 @@
       "q": "What if a member has two UniSuper accounts?",
       "aliases": [
         "merge accounts",
-        "duplicate account"
+        "duplicate account",
+        "two super accounts",
+        "two accounts"
       ],
       "a": "We check every year and merge them where it's in the member's best interests, and tell them.",
       "sources": [
@@ -264,7 +268,12 @@
         "join personal account",
         "eligibility personal account",
         "open a super account",
-        "15 years old"
+        "15 years old",
+        "how young",
+        "too young for super",
+        "child super account",
+        "minimum age for super",
+        "how old to have super"
       ],
       "a": "Anyone aged 15+, living in Australia, with a personal email. Apply online at unisuper.com.au/join. Starting with an eligible employer, the employer sets up an account instead.",
       "sources": [
@@ -330,7 +339,9 @@
       "q": "What happens to DBD when a member changes jobs?",
       "aliases": [
         "dbd change jobs",
-        "defer dbd"
+        "defer dbd",
+        "leaving my job dbd",
+        "resign dbd"
       ],
       "a": "Within higher education and still eligible: stays in DBD. Outside the sector: needs to defer membership to stay in DBD.",
       "sources": [
@@ -380,7 +391,9 @@
       "aliases": [
         "complaint",
         "afca",
-        "45 days"
+        "45 days",
+        "make a complaint",
+        "unhappy with unisuper"
       ],
       "a": "Super complaints 45 days; advice complaints 30 days; death benefit objections 90 days after the 28-day objection window. If unresolved, AFCA on 1800 931 678.",
       "sources": [
@@ -418,7 +431,10 @@
       "aliases": [
         "family law",
         "divorce",
-        "separation split"
+        "separation split",
+        "ex wife wants my super",
+        "property settlement",
+        "divorce super"
       ],
       "a": "Yes, by agreement or court order. See the Super and family law fact sheet, or request information with the Family law information request form.",
       "sources": [

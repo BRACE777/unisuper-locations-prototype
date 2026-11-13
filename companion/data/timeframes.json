@@ -113,17 +113,27 @@
       "topic": "Pension",
       "task": "Membership needed for the Retirement Bonus",
       "timeframe": "12 continuous months before the transfer",
-      "starts": "Joining UniSuper (super or TTR account)",
+      "starts": "When money first reaches the member's UniSuper super or TTR account. Time in Retirement Phase doesn't count.",
       "kind": "pds",
       "calc": {
         "type": "months",
         "n": 12
       },
-      "say": "To be eligible for the Retirement Bonus you need to have held a UniSuper super or TTR account for 12 continuous months immediately before the transfer.",
+      "say": "To get the Retirement Bonus, your money needs to have been in a UniSuper super or TTR account for 12 continuous months before you move it to a Retirement Phase Flexi Pension. The 12 months starts when money first reaches the account. Once you've met that, the bonus is added automatically when the Flexi Pension starts.",
       "source": {
         "doc": "flexi",
         "quote": "for a continuous 12-month period immediately before the transfer"
-      }
+      },
+      "ato": [
+        {
+          "doc": "web-rb",
+          "quote": "Your 12 months starts when money first reaches your account."
+        },
+        {
+          "doc": "web-rb",
+          "quote": "Time in a Retirement Phase account doesn't count."
+        }
+      ]
     },
     {
       "id": "rb-clawback",
@@ -565,7 +575,7 @@
     {
       "id": "transfers-out",
       "topic": "Account",
-      "task": "Transfers out to another fund",
+      "task": "Transfers out (rollovers) to another fund",
       "timeframe": "Up to eight requests in any 12 months",
       "starts": "Rolling 12 months",
       "kind": "pds",

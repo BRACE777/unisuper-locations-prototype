@@ -133,7 +133,10 @@
       "q": "How does early release on compassionate grounds work?",
       "aliases": [
         "compassionate grounds",
-        "medical treatment release"
+        "medical treatment release",
+        "pay for surgery",
+        "medical treatment",
+        "behind on my mortgage"
       ],
       "a": "The member applies to the ATO directly, not UniSuper.",
       "sources": [
@@ -156,7 +159,9 @@
       "aliases": [
         "terminal illness",
         "terminal medical condition",
-        "24 months"
+        "24 months",
+        "terminally ill",
+        "dying"
       ],
       "a": "Two registered medical practitioners (one a specialist) certify less than 24 months to live. Apply to the Trustee. DBD inbuilt benefits use 12 months. Early access may end insurance or inbuilt benefits.",
       "sources": [
@@ -223,7 +228,9 @@
         "dasp",
         "leaving australia",
         "temporary resident",
-        "visa"
+        "visa",
+        "backpacker super",
+        "working holiday super"
       ],
       "a": "Through a Departing Australia Superannuation Payment once the visa has expired or been cancelled and they've left. Taxed 35% (65% for working holiday makers). Unclaimed after six months it goes to the ATO, with no exit statement.",
       "sources": [

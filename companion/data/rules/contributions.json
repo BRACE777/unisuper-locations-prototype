@@ -11,7 +11,9 @@
         "sg",
         "12%",
         "employer contribution rate",
-        "superannuation guarantee"
+        "superannuation guarantee",
+        "how much does my employer pay",
+        "employer contributions"
       ],
       "a": "12% of qualifying earnings at minimum. 15% contributions tax is deducted from employer and concessional contributions.",
       "sources": [
@@ -89,7 +91,11 @@
       "aliases": [
         "ncc cap",
         "130000",
-        "after tax cap"
+        "after tax cap",
+        "put my own money in",
+        "after tax contribution",
+        "voluntary contribution",
+        "add extra money to my super"
       ],
       "a": "$130,000 a year if total super balance at the previous 30 June was under $2.1 million; nil at or above $2.1 million.",
       "sources": [
@@ -176,7 +182,9 @@
       "aliases": [
         "carry forward",
         "unused cap",
-        "500000"
+        "500000",
+        "catch up contributions",
+        "catch-up contributions"
       ],
       "a": "Yes, for up to five years, if total super balance was under $500,000 at the previous 30 June. Unused 2021-22 cap expires at the end of 2026-27.",
       "sources": [
@@ -212,7 +220,8 @@
         "noi",
         "notice of intent",
         "tax deduction deadline",
-        "s290"
+        "s290",
+        "section 290"
       ],
       "a": "Acknowledged before the earlier of lodging that year's tax return or the end of the following financial year. And before the contributions are rolled over, withdrawn, or used to start a pension.",
       "detail": "Online: log in, Manage account, Notice of intent. Lodge it before any contribution split too.",
@@ -258,7 +267,9 @@
       "q": "How does salary sacrifice work?",
       "aliases": [
         "salary sacrifice",
-        "ss"
+        "ss",
+        "sal sac",
+        "salary packaging"
       ],
       "a": "Arranged through the employer's payroll. It's a concessional contribution (15% tax) and counts in some income tests, including the co-contribution and Division 293.",
       "sources": [
@@ -303,7 +314,9 @@
         "co-contribution",
         "government contribution",
         "49293",
-        "64293"
+        "64293",
+        "government matching",
+        "government co-contribution"
       ],
       "a": "For total income up to $49,293 (2026-27), the government adds 50c per $1 of non-concessional contributions, up to $500. It phases out at $64,293. Paid automatically the next year; needs a TFN.",
       "sources": [

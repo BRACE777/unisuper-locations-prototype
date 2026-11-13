@@ -354,7 +354,7 @@
           "options": [
             {
               "name": "Second pension",
-              "text": "Start a new Flexi Pension with the new money. Separate minimum, separate tax components, and both count towards the transfer balance cap."
+              "text": "Start a new Flexi Pension with the new money. Separate minimum, separate tax components, and both count towards the transfer balance cap if they're Retirement Phase pensions (a TTR pension doesn't count)."
             },
             {
               "name": "Restart",
@@ -1752,9 +1752,10 @@
       "topic": "Insurance",
       "title": "Why unitised cover goes down with age",
       "simple": [
-        "Unitised cover is bought in units, and the cost per unit stays roughly the same.",
-        "The amount each unit pays out depends on your age: it peaks in your late 30s, then falls.",
-        "So with the same number of units, your cover goes down as you get older."
+        "Unitised cover is bought in units. Each unit pays out an amount set by your age.",
+        "The cover per unit rises to a peak at 38, then falls as you get older.",
+        "Because the cover per unit falls, the cost per unit moves far less than the cover does, though it still changes with age.",
+        "So with the same number of units, the premium stays fairly even while your cover goes down."
       ],
       "standard": [
         "With unitised cover you hold a set number of units. Each unit's value is set by your age.",
@@ -1769,20 +1770,20 @@
               [
                 "Cover amount",
                 "Changes with age: peaks at 38, then falls",
-                "Stays the same"
+                "Death stays the same. TPD reduces each year from 61 to 70"
               ],
               [
                 "Cost",
-                "Roughly steady per unit",
-                "Rises with age"
+                "Changes with age, but far less than the cover does",
+                "Changes with age"
               ]
             ]
           }
         },
         {
-          "example": "10 units are worth $266,000 at 35 but $86,000 at 55."
+          "example": "One unit of Death cover for a man costs $8.12 a year at 30 and $11.56 at 60, while the cover it buys falls from $20,300 to $4,700. 10 units are worth $266,000 at 35 but $86,000 at 55."
         },
-        "If you'd rather keep the same amount of cover, you can convert to fixed cover."
+        "If you'd rather keep the same amount of Death cover, you can convert to fixed cover. Its cost still changes with age."
       ],
       "detailed": [
         {
@@ -1796,20 +1797,21 @@
               [
                 "Cover amount",
                 "Changes with age: peaks at 38, then falls",
-                "Stays the same"
+                "Death stays the same. TPD reduces each year from 61 to 70"
               ],
               [
                 "Cost",
-                "Roughly steady per unit",
-                "Rises with age"
+                "Changes with age, but far less than the cover does",
+                "Changes with age"
               ]
             ]
           }
         },
-        "Cover per unit peaks at $27,500 for death and TPD at age 38, then falls.",
+        "Cover per unit peaks at $27,500 for death and TPD at age 38, then falls to $900 at 70. TPD stops at 70; Death cover continues to 74.",
         {
-          "example": "10 units are worth $266,000 at 35 but $86,000 at 55."
+          "example": "One unit of Death cover for a man costs $8.12 a year at 30 and $11.56 at 60, while the cover it buys falls from $20,300 to $4,700. 10 units are worth $266,000 at 35 but $86,000 at 55."
         },
+        "Premiums in the PDS table are illustrative annual examples per unit. The actual cost is worked out from rates per $1,000 of cover, and Personal Account members also apply an occupation factor.",
         {
           "note": "Which type suits is a personal decision."
         }
@@ -1824,13 +1826,37 @@
       ],
       "allow_numbers": [
         86000,
-        266000
+        266000,
+        8.12,
+        11.56,
+        20300,
+        4700,
+        900,
+        1000
       ],
       "general": "Explain how it works. Whether unitised or fixed suits someone is a personal decision.",
-      "source": {
-        "doc": "acc1",
-        "quote": "The amount of cover you receive from each unit depends on your age and ranges from $27,500 for death and TPD (at age 38)"
-      },
+      "source": [
+        {
+          "doc": "acc1",
+          "quote": "The amount of cover you receive from each unit depends on your age and ranges from $27,500 for death and TPD (at age 38)"
+        },
+        {
+          "doc": "ins",
+          "quote": "The amount of cover and cost will change as you get older."
+        },
+        {
+          "doc": "ins",
+          "quote": "It also provides illustrative examples of the annual premiums for one unit of Death cover or one unit of TPD cover based on age and sex at birth."
+        },
+        {
+          "doc": "ins",
+          "quote": "From age 61 to 70, the amount of TPD cover you hold will automatically reduce proportionately each year."
+        },
+        {
+          "doc": "ins",
+          "quote": "Actual cost of insurance is calculated by premium rates per $1,000 of cover."
+        }
+      ],
       "terms": [
         "unitised cover",
         "unitised",

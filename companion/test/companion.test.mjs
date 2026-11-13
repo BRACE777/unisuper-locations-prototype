@@ -292,3 +292,89 @@ test('explainers: three levels of steps and blocks, with links that resolve', ()
   const drawdown = data.explainers.find((x) => x.id === 'drawdown-order');
   for (const v of ['simple', 'standard', 'detailed']) assert.equal(drawdown[v].find((b) => b.options).options.length, 3, 'drawdown order shows its three methods as options');
 });
+
+// Loads the page script against a stand-in DOM and renders every card. A time limit turns a
+// rendering loop (which would freeze the real page) into a failed test.
+function loadApp() {
+  const el = () => {
+    const e = {
+      value: '', textContent: '', innerHTML: '', hidden: false, style: { setProperty() {} }, offsetHeight: 60, offsetWidth: 300, files: null,
+      classList: { add() {}, remove() {}, toggle() {}, contains: () => false },
+      setAttribute() {}, getAttribute: () => null, hasAttribute: () => false, removeAttribute() {}, addEventListener() {},
+      querySelector: () => null, querySelectorAll: () => [], contains: () => true, appendChild() {}, focus() {}, select() {}, click() {},
+      getBoundingClientRect: () => ({ top: 0, left: 0, bottom: 0, right: 0 }), closest: () => null, scrollIntoView() {},
+    };
+    e.querySelector = () => el();
+    return e;
+  };
+  const els = {};
+  const bundle = readFileSync(new URL('dist/companion-data.json', root), 'utf8');
+  const document = {
+    getElementById: (id) => (els[id] ||= Object.assign(el(), id === 'data' ? { textContent: bundle } : {})),
+    querySelector: () => el(), querySelectorAll: () => [], createElement: () => el(), addEventListener() {},
+    documentElement: el(), body: el(), activeElement: el(),
+  };
+  const window = { __companionTest: {}, localStorage: { getItem: () => null, setItem() {} }, addEventListener() {}, scrollTo() {}, innerWidth: 1366, innerHeight: 768, isSecureContext: false };
+  const appCtx = vm.createContext({ console, document, window, navigator: {}, setTimeout, clearTimeout, URL, Blob: class {} });
+  for (const f of ['search.js', 'dates.js', 'parse.js', 'drawdown.js', 'figures.js', 'members.js', 'app.js']) {
+    vm.runInContext(readFileSync(new URL(`src/${f}`, root), 'utf8'), appCtx, { filename: f, timeout: 5000 });
+  }
+  appCtx.api = window.__companionTest.api;
+  return appCtx;
+}
+
+test('page: every card, checklist and explainer renders without hanging', () => {
+  const app = loadApp();
+  const run = (code) => vm.runInContext(code, app, { timeout: 3000 });
+  const types = { rule: 'rules', form: 'forms', timeframe: 'timeframes', explainer: 'explainers', procedure: 'procedures' };
+  for (const [type, list] of Object.entries(types)) {
+    for (const x of data[list]) {
+      app.item = x;
+      const html = type === 'procedure' ? run('api.procedureView(item)') : run(`api.RENDER.${type}(item)`);
+      assert.ok(html.length > 100, `${type} ${x.id} rendered nothing`);
+      assert.ok(!/\{\{[a-z0-9-]+:/.test(html), `${type} ${x.id} shows a raw assumption marker`);
+      run(`api.state.sel = { type: '${type}', id: item.id }; api.sideHtml()`);
+    }
+  }
+  // Checklists again with each test member loaded, so the member notes render too.
+  for (const m of data.members) {
+    app.num = m.number;
+    run('api.setMember(num, "render")');
+    for (const p of data.procedures) { app.item = p; run('api.procedureView(item)'); }
+  }
+  assert.ok(run('api.startHtml()').includes('What did the member ask?'));
+  assert.ok(run('api.datesToolHtml()').includes('When is it due?'));
+});
+
+test('search: common words and small-word phrases do not hijack results', () => {
+  const top = (q) => engine.search(q).results.slice(0, 3).map((r) => r.id);
+  assert.notEqual(top('super')[0], 'conditions-of-release', '"super" alone should not jump to conditions of release');
+  assert.ok(!top('when will I get my money').includes('lpr'), '"when will…" should not bring up estates');
+  assert.ok(!top('how much does my employer pay').some((id) => /fee/.test(id)), '"how much does…" should not bring up fees');
+  assert.deepEqual([...engine.correctQuery('dying of cancer').fixes], [], 'cancer is a real word, not a typo of cancel');
+  assert.deepEqual([...engine.correctQuery('im sick and cant work anymore').fixes], []);
+  const fix = engine.correctQuery('insurence').fixes[0];
+  assert.equal(fix && fix.to, 'insurance', 'corrections show a whole word, not a stem');
+});
+
+test('search: the wording of the question picks the kind of answer', () => {
+  const first = (q) => engine.search(q).results[0];
+  assert.equal(first('how long does a rollover take').type, 'timeframe');
+  assert.equal(first('how long for my lump sum').type, 'timeframe');
+  assert.equal(first('what form to change my address').type, 'form');
+  assert.equal(first('whats the difference between ttr and retirement phase').type, 'explainer');
+  // The very first result, across every type, for questions consultants hear daily.
+  for (const [q, id] of [['how young super', 'pa-eligibility'], ['sal sac', 'salary-sacrifice'], ['my husband died', 'manual-death-benefit-claim'],
+    ['get rid of my insurance', 'opt-out'], ['backpacker super', 'dasp'], ['ex wife wants my super', 'family-law']]) {
+    assert.equal(first(q).id, id, `"${q}" should put ${id} first`);
+  }
+});
+
+test('drawdown: an age alone still settles preservation age', () => {
+  const start = new Date(2026, 10, 1);
+  const at = (age, type) => CompanionDrawdown.calculate({ age, start, balance: 300000, type, freq: 'Monthly' }, data.rates);
+  assert.equal(at(62, 'TTR').preservationReached, true);
+  assert.ok(!at(62, 'TTR').warnings.some((w) => /Under preservation age/.test(w)));
+  assert.equal(at(58, 'TTR').preservationAge, 60);
+  assert.ok(at(58, 'TTR').warnings.some((w) => /Under preservation age \(60\)/.test(w)));
+});

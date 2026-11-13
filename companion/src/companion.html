@@ -23,7 +23,7 @@
     </button>
   </div>
   <div class="subbar">
-    <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Sections"></nav>
     <div class="context">
       <label class="field"><span class="label">Member</span><input id="member" type="text" autocomplete="off" placeholder="no., age or DOB" title="Type a test member number (101 to 113), an age (67) or a date of birth in any format: 14/5/1959, 14.05.59, 14 May 1959"></label>
       <span class="echo" id="member-echo"></span>
@@ -39,6 +39,7 @@
 <main id="main" tabindex="-1"></main>
 <footer class="foot" id="foot"></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sr-only" id="sr-live" aria-live="polite"></div>
 <script type="application/json" id="data">/*DATA*/</script>
 <script>/*SCRIPTS*/</script>
 </body>

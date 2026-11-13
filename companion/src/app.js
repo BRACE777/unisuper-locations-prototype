@@ -143,14 +143,14 @@
 
   function annotate(escaped, seen) {
     // Assumption markers are kept whole; terms and acronyms are found in the text around them.
-    if (MARK_RE.test(escaped)) {
-      MARK_RE.lastIndex = 0;
-      var parts = [], last = 0, mm;
-      while ((mm = MARK_RE.exec(escaped))) { parts.push(annotate(escaped.slice(last, mm.index), seen)); parts.push(ASSUMPTIONS[mm[1]] ? assumeSpan(mm[1], mm[2]) : mm[2]); last = mm.index + mm[0].length; }
-      MARK_RE.lastIndex = 0;
+    // A local regex: the recursive calls below must not share (and reset) a global regex's position,
+    // or the loop finds the same marker forever and the page freezes.
+    var markRe = new RegExp(MARK_RE.source, 'g'), mm = markRe.exec(escaped);
+    if (mm) {
+      var parts = [], last = 0;
+      for (; mm; mm = markRe.exec(escaped)) { parts.push(annotate(escaped.slice(last, mm.index), seen)); parts.push(ASSUMPTIONS[mm[1]] ? assumeSpan(mm[1], mm[2]) : mm[2]); last = mm.index + mm[0].length; }
       return parts.join('') + annotate(escaped.slice(last), seen);
     }
-    MARK_RE.lastIndex = 0;
     var found = [], m;
     if (TERM_RE) { TERM_RE.lastIndex = 0; while ((m = TERM_RE.exec(escaped))) found.push({ s: m.index, e: m.index + m[0].length, t: m[0], id: TERM_TO_ID[m[0].toLowerCase()], kind: 'x' }); }
     ACR_RE.lastIndex = 0;
@@ -271,8 +271,20 @@
       (c.detail ? '<p class="detail">' + annotate(esc(c.detail), seen) + '</p>' : '') + figureSlot(c.id) + ageTableHtml(c) +
       explainChips(explainersIn(c.q + ' ' + c.a + ' ' + (c.detail || ''))) +
       sourcesHtml(c.sources, c.ato) +
-      '<div class="actions"><button class="btn" data-copy="' + esc(copy) + '">Copy answer and source</button>' +
-      (c.calc === 'drawdown' ? '<button class="btn ghost" data-goto-calc="drawdown">Drawdown calculator →</button>' : '') + '</div>' + see + '</article>';
+      '<div class="actions"><button class="btn" data-main-copy data-copy="' + esc(copy) + '">Copy answer and source</button>' +
+      (c.calc === 'drawdown' ? calcButton('btn ghost', calcTypeOf(c)) : '') + '</div>' + see + '</article>';
+  }
+  // The pension type a rule is about, so the calculator opens already set to it.
+  function calcTypeOf(c) {
+    if (!c) return '';
+    var p = c.products || [];
+    if (/^ttr/.test(c.id) || (p.indexOf('ttr') >= 0 && p.indexOf('rp') < 0)) return 'TTR';
+    if (/^bis/.test(c.id) || (p.indexOf('bis') >= 0 && p.indexOf('rp') < 0)) return 'Beneficiary (BIS)';
+    if (p.indexOf('rp') >= 0 && p.indexOf('ttr') < 0) return 'Retirement Phase';
+    return '';
+  }
+  function calcButton(cls, type) {
+    return '<button class="' + cls + '" data-goto-calc="drawdown"' + (type ? ' data-calc-type="' + esc(type) + '"' : '') + '>Drawdown calculator' + (type ? ' (' + esc(type === 'Beneficiary (BIS)' ? 'BIS' : type) + ')' : '') + ' →</button>';
   }
 
   function formSteps(f) {
@@ -310,17 +322,25 @@
       '<div class="actions">' +
       (f.online ? '<a class="btn solid" href="' + esc(f.online) + '" target="_blank" rel="noopener">' + esc(f.online_label || 'Complete online') + ' ↗</a>' : '') +
       (f.pdf ? '<a class="btn" href="' + esc(f.pdf) + '" target="_blank" rel="noopener">Open PDF ↗</a><button class="btn" data-copy="' + esc(f.pdf) + '">Copy PDF link</button>' : '') +
-      '<button class="btn" data-copy="' + esc(directionsText) + '">Copy directions</button></div></article>';
+      '<button class="btn" data-main-copy data-copy="' + esc(directionsText) + '">Copy directions</button></div></article>';
   }
 
+  // The date a timeframe lands on if its clock starts today, so it can be read out without the calculator.
+  function dueDate(t) {
+    if (!t.calc) return null;
+    return CompanionDates.apply({ type: t.calc.type, n: t.calc.n }, CompanionParse.today(), cal).date;
+  }
+  function shortDate(d) { return d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }); }
   function timeframeCard(t) {
-    var seen = {};
+    var seen = {}, due = dueDate(t);
     var kind = { pds: 'PDS', law: 'Law', internal: 'Internal' }[t.kind] || t.kind;
     return '<article class="card" data-id="' + esc(t.id) + '">' + head((t.topic || 'Timeframe') + ' · timeframe', badge(kind, t.kind === 'internal' ? 'caution' : '')) +
       '<h3 class="card-title">' + esc(t.task) + '</h3>' +
-      '<div class="figure-line">' + esc(t.timeframe) + '</div>' + (t.starts ? '<div class="meta">Clock starts: ' + esc(t.starts) + '</div>' : '') +
+      '<div class="figure-line">' + esc(t.timeframe) + '</div>' +
+      (due ? '<div class="due-line"><span class="label">If the clock starts today</span><b>' + esc(shortDate(due)) + '</b></div>' : '') +
+      (t.starts ? '<div class="meta">Clock starts: ' + esc(t.starts) + '</div>' : '') +
       '<div class="say"><span class="label">Say</span><p>' + annotate(esc(t.say), seen) + '</p></div>' + (t.source ? sourcesHtml([t.source], t.ato) : '') +
-      '<div class="actions"><button class="btn" data-copy="' + esc(plain(t.say)) + '">Copy wording</button>' +
+      '<div class="actions"><button class="btn" data-main-copy data-copy="' + esc(plain(t.say)) + '">Copy wording</button>' +
       (t.calc ? '<button class="btn ghost" data-calc-preset="' + esc(t.id) + '">Work out the date →</button>' : '') + '</div></article>';
   }
 
@@ -397,7 +417,7 @@
       '<h3 class="card-title">' + esc(e.title) + '</h3>' + figureSlot(e.id) + versionsHtml('data-version') +
       chainsHtml(e) + linksHtml(e) +
       '<div class="general"><span class="label">Stay general</span><p>' + esc(e.general) + '</p></div>' + sourcesHtml([].concat(e.source), e.also) +
-      '<div class="actions"><button class="btn" data-copy-script>Copy this version</button></div></article>';
+      '<div class="actions"><button class="btn" data-main-copy data-copy-script>Copy this version</button></div></article>';
   }
 
 
@@ -416,11 +436,25 @@
   }
 
   // ----- checklists -----
-  function memberCtx() { return state.member ? CompanionMembers.context(state.member, DATA.rates, new Date()) : null; }
+  // A test member gives every note; an age or date of birth alone still gives the age-based ones.
+  // Preservation age is 60 for anyone under 60 now, and anyone 60 or over has reached theirs.
+  function memberCtx() {
+    if (state.member) return CompanionMembers.context(state.member, DATA.rates, new Date());
+    var age = currentAge();
+    if (age == null) return null;
+    var pa = null;
+    if (state.dob) { pa = 60; DATA.rates.tables.preservation_age.rows.some(function (r) { if (state.dob < r.born_before) { pa = r.age; return true; } return false; }); }
+    else if (age < 60) pa = 60;
+    var reached = pa == null || age >= pa;
+    return { ageOnly: true, cond: { under_25: age < 25, under_55: age < 55, under_60: age < 60, over_60: age >= 60, age_67_74: age >= 67 && age <= 74,
+      age_75_plus: age >= 75, preservation_reached: reached, preservation_not_reached: !reached },
+      vars: { name: 'The member', age: age, presAge: pa != null ? pa : '60 or under' } };
+  }
   function stepNotes(st, ctx) {
     if (!ctx || !st.member) return '';
+    var tag = ctx.ageOnly ? 'Age ' + ctx.vars.age : '#' + state.member.number;
     return st.member.filter(function (n) { return ctx.cond[n.cond]; }).map(function (n) {
-      return '<div class="step-member"><span class="label">#' + esc(state.member.number) + '</span>' + rich(CompanionMembers.fill(n.text, ctx.vars)) + '</div>';
+      return '<div class="step-member"><span class="label">' + esc(tag) + '</span>' + rich(CompanionMembers.fill(n.text, ctx.vars)) + '</div>';
     }).join('');
   }
   function stepLinks(st) {
@@ -451,13 +485,14 @@
     var done = p.steps.filter(function (s, i) { return ticks[i]; }).length;
     return '<article class="card proc" data-proc="' + esc(p.id) + '">' + head(p.topic + ' · checklist', '<span class="badge" id="proc-progress">' + done + ' of ' + p.steps.length + ' done</span>') +
       '<h3 class="card-title proc-title">' + esc(p.title) + '</h3><p class="detail">' + esc(p.when) + ' <span class="meta">Steps are in ' + assumeSpan('checklist-order', 'a suggested order') + '.</span></p>' +
-      (state.member ? '<div class="proc-member">Notes for <b>#' + esc(state.member.number) + ' ' + esc(state.member.name) + '</b> (test member) are shown under the steps they affect.</div>' : '') +
+      (state.member ? '<div class="proc-member">Notes for <b>#' + esc(state.member.number) + ' ' + esc(state.member.name) + '</b> (test member) are shown under the steps they affect.</div>' :
+        ctx ? '<div class="proc-member">Notes for a member aged <b>' + esc(ctx.vars.age) + '</b> are shown under the steps their age affects.</div>' : '') +
       '<ol class="steps-list">' + p.steps.map(function (st, i) {
         return '<li class="step' + (ticks[i] ? ' done' : '') + '"><button class="tick" data-tick="' + i + '" aria-pressed="' + !!ticks[i] + '" aria-label="Mark step ' + (i + 1) + ' done"><span class="tick-n">' + (i + 1) + '</span></button>' +
           '<div class="step-body"><p>' + annotate(esc(st.do), seen) + '</p>' + stepNotes(st, ctx) + stepLinks(st) + (st.source ? stepSource(st.source) : '') + '</div></li>';
       }).join('') + '</ol>' +
       (p.mistakes && p.mistakes.length ? '<div class="general"><span class="label">Common mistakes</span><ul class="reqs">' + p.mistakes.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' : '') +
-      '<div class="actions"><button class="btn solid" data-copy-proc>Copy as call note</button><button class="btn ghost" data-reset-proc>Reset ticks</button></div></article>';
+      '<div class="actions"><button class="btn solid" data-main-copy data-copy-proc>Copy as call note</button><button class="btn ghost" data-reset-proc>Reset ticks</button></div></article>';
   }
   function openProcedure(id) { openItem('procedure', id); }
   function procNote(p) {
@@ -507,7 +542,7 @@
   // The one line under a result: enough to answer from the list without opening it.
   function subOf(type, x) {
     if (type === 'rule') return plain(x.a);
-    if (type === 'timeframe') return x.timeframe;
+    if (type === 'timeframe') { var due = dueDate(x); return x.timeframe + (due ? ' · from today: ' + shortDate(due) : ''); }
     if (type === 'form') return x.summary || '';
     if (type === 'procedure') return x.steps.length + ' steps · ' + x.when;
     if (type === 'explainer') { var s = x.standard.filter(function (b) { return typeof b === 'string'; })[0] || (x.standard[0] && x.standard[0].lead) || ''; return plain(s); }
@@ -616,7 +651,7 @@
       });
       if (!any) html += '<p class="meta">Nothing else linked to this one.</p>';
       if (state.sel.type === 'rule' && RULES[state.sel.id].calc === 'drawdown' || state.sel.type === 'explainer' && (EXPLAINERS[state.sel.id].links || []).some(function (l) { return l.calc; })) {
-        html = '<button class="btn solid wide" data-goto-calc="drawdown">Drawdown calculator →</button>' + html;
+        html = calcButton('btn solid wide', state.sel.type === 'rule' ? calcTypeOf(RULES[state.sel.id]) : '') + html;
       }
     }
     var recent = state.recent.filter(function (r) { return !state.sel || key(r.type, r.id) !== key(state.sel.type, state.sel.id); });
@@ -646,7 +681,7 @@
     }
     var railScroll = ws && keepRailScroll ? ws.rail.scrollTop : 0;
     if (!ws || !main.contains(ws.root)) {
-      setMain('<div class="ws"><aside class="rail" id="rail" aria-label="Results"></aside><section class="detail" id="detail" tabindex="-1" aria-live="polite"></section><aside class="side" id="side" aria-label="Alongside"></aside></div>');
+      setMain('<div class="ws"><aside class="rail" id="rail" aria-label="Results"></aside><section class="detail" id="detail" tabindex="-1" aria-label="Answer"></section><aside class="side" id="side" aria-label="Alongside"></aside></div>');
       ws = { root: main.querySelector('.ws'), rail: $('rail'), detail: $('detail'), side: $('side') };
     }
     ws.rail.innerHTML = railHtml(m);
@@ -657,6 +692,10 @@
     unmountFigures(); hidePop(true);
     ws.detail.innerHTML = detailHtml();
     mountFigures(ws.detail);
+    // Screen readers hear which item is open, not the whole card on every arrow press.
+    var sel = state.sel && state.sel.type !== 'tool' && itemOf(state.sel.type, state.sel.id);
+    var live = $('sr-live');
+    if (live) live.textContent = sel ? TYPE_ONE[state.sel.type] + ': ' + titleOf(state.sel.type, sel) : '';
     if ($('dt-from')) bindDates();
     ws.side.innerHTML = sideHtml();
     ws.rail.querySelectorAll('.hit').forEach(function (b) {
@@ -708,7 +747,8 @@
       state.recent.slice(0, 6).map(function (r) { return miniHtml(r.type, itemOf(r.type, r.id)); }).join('') + '</div></section>' : '';
     return '<section class="start">' +
       '<h1>What did the member ask?</h1>' +
-      '<p>Type it in their words, in the box above. Results show on the left, the answer in the middle, and related timeframes, forms and checklists on the right. Use ↑ ↓ to move through results.</p>' +
+      '<p>Type it in their words, in the box above. Results show on the left, the answer in the middle, and related timeframes, forms and checklists on the right.</p>' +
+      '<p class="keys"><kbd>↑</kbd> <kbd>↓</kbd> move through results · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> copy the answer · <kbd>Shift</kbd>+<kbd>Enter</kbd> jump into the answer · <kbd>/</kbd> back to the search box</p>' +
       '<div class="try"><span class="label">For example</span>' + TRY.map(function (t) { return '<button class="chip" data-q="' + esc(t) + '">' + esc(t) + '</button>'; }).join('') + '</div>' +
       recent +
       '<section class="start-block"><span class="label">Common tasks</span><div class="start-grid">' + COMMON.filter(function (id) { return PROCS[id]; }).map(function (id) {
@@ -1034,12 +1074,17 @@
       chosen: P.parseMoney(dd.chosen), paymentsOverride: dd.n.trim() ? parseInt(dd.n, 10) : null
     }, DATA.rates);
     var range = money(r.proMin) + (r.max != null ? ' to ' + money(r.max) : ' or more');
-    var summary = 'Age ' + r.age + ', ' + pct(r.pct) + ' minimum. Pro-rata minimum to 30 June: ' + money(r.proMin) +
+    // The inputs go into the copied note too, so it stands on its own in the call notes.
+    var anchor = P.parseDate(dd.anchor, 'any'), chosen = P.parseMoney(dd.chosen);
+    var inputs = (state.dob ? 'Born ' + P.fmt(CompanionDates.parse(state.dob)) : 'Age ' + state.age) + '. ' + dd.type + ' Flexi Pension starting ' + P.fmt(start) +
+      ', opening balance ' + money(bal) + ', ' + dd.freq.toLowerCase() + ' payments' + (anchor ? ' (a pay date: ' + P.fmt(anchor) + ')' : '') +
+      (chosen ? ', chosen amount ' + money(chosen) + ' a year' : '') + (dd.n.trim() ? ', ' + parseInt(dd.n, 10) + ' payments left (entered)' : '') + '.\n';
+    var summary = inputs + 'Age ' + r.age + ', ' + pct(r.pct) + ' minimum. Pro-rata minimum to 30 June: ' + money(r.proMin) +
       (r.max != null ? '; TTR maximum ' + money(r.max) : '') + ' (' + r.daysLeft + ' of ' + r.daysYear + ' days, rounded to the nearest $10).' +
       (r.perMin != null ? ' ' + r.payments + ' ' + dd.freq.toLowerCase() + ' payments of at least ' + money(r.perMin) + '.' : '');
     out.innerHTML = '<div class="headline">' + esc(range) + '<span>allowed this financial year</span></div>' +
       row(state.dob ? 'Age at start' : '{{age-only:Age at start}}', r.age) + row('Minimum percentage', pct(r.pct) + ' (' + esc(r.band) + ')') +
-      (r.preservationAge != null ? row('Preservation age', r.preservationAge) : '') +
+      row('Preservation age', r.preservationAge != null ? r.preservationAge + (r.preservationReached ? ' (reached)' : ' (not reached yet)') : 'Reached (60 or over)') +
       row('{{day-count:Days left / days in year}}', r.daysLeft + ' / ' + r.daysYear) + row('Full-year minimum', money(r.fullMin)) +
       row('Pro-rata minimum to 30 June', money(r.proMin)) + row('Maximum', r.max != null ? money(r.max) : 'No maximum') +
       row(dd.freq === 'Fortnightly' && !dd.anchor.trim() ? '{{fortnightly:Payments left}}' : '{{payments-left:Payments left}}', r.payments == null ? '–' : r.payments) +
@@ -1049,6 +1094,21 @@
       (r.pctNext != null ? row('Minimum from next 1 July (age ' + r.ageNext + ')', pct(r.pctNext)) : '') +
       (r.warnings.length ? '<ul class="warns">' + r.warnings.map(function (w) { return '<li>' + rich(w) + '</li>'; }).join('') + '</ul>' : '') +
       '<div class="actions"><button class="btn" data-copy="' + esc(summary) + '">Copy summary</button></div>';
+  }
+
+  // The Friday before the AFL Grand Final is set each year by the Victorian Government, so it's only
+  // counted once it's in holidays.json. Flag a business-day count that runs through late September of
+  // a year that has no entry yet.
+  function grandFinalNote(from, to, unit) {
+    if (unit !== 'business_days') return '';
+    var missing = [];
+    for (var y = from.getFullYear(); y <= to.getFullYear(); y++) {
+      var lo = new Date(y, 8, 18), hi = new Date(y, 9, 2);
+      var known = (DATA.holidays || []).some(function (h) { return h.date.slice(0, 4) === String(y) && /grand final/i.test(h.name); });
+      if (!known && from <= hi && to >= lo) missing.push(y);
+    }
+    return missing.length ? '<ul class="warns"><li>' + rich('{{vic-holidays:The Friday before the AFL Grand Final}} for ' + missing.join(' and ') +
+      ' isn\'t loaded. If it falls in this range, the due date is one business day later.') + '</li></ul>' : '';
   }
 
   function runDates() {
@@ -1067,6 +1127,7 @@
         return CompanionDates.parse(s.slice(0, 10)).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }) + ' (' + s.slice(11) + ')';
       }).join(', '))) : '') +
       (cal.holidayName(d0) ? row('Note', esc(cal.holidayName(d0)) + ' on the start date') : '') +
+      grandFinalNote(d0, res.date, unit) +
       row('Days from this date to 30 June ' + fyEnd.getFullYear() + ', both counted', CompanionDates.daysBetweenInclusive(d0, fyEnd)) +
       '<div class="actions"><button class="btn" data-copy="' + esc(text) + '">Copy</button></div>';
   }
@@ -1108,7 +1169,11 @@
   qEl.addEventListener('keydown', function (e) {
     if (!ws || !main.contains(ws.root)) return;
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); moveSel(e.key === 'ArrowDown' ? 1 : -1); }
-    else if (e.key === 'Enter' && state.sel) { e.preventDefault(); rememberInCall(state.sel); renderDetail(); scrollToDetail(); }
+    else if (e.key === 'Enter' && e.shiftKey && state.sel) {
+      // Shift+Enter: into the answer, so Tab reaches its buttons without passing every result.
+      e.preventDefault(); rememberInCall(state.sel); scrollToDetail(); ws.detail.focus({ preventScroll: true });
+    }
+    else if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey && state.sel) { e.preventDefault(); rememberInCall(state.sel); renderDetail(); scrollToDetail(); }
   });
   // New call: clears the search, member, product filter, ticks and the "earlier in this call" list.
   $('new-call').addEventListener('click', function () {
@@ -1257,10 +1322,23 @@
       var dtFrom = $('dt-from'); if (dtFrom) { dtFrom.scrollIntoView({ block: 'center', behavior: 'smooth' }); dtFrom.focus({ preventScroll: true }); }
       return;
     }
-    if (t.hasAttribute('data-goto-calc')) { state.tab = 'calc'; render(); window.scrollTo(0, 0); return; }
+    if (t.hasAttribute('data-goto-calc')) {
+      // Opened from a TTR, BIS or Retirement Phase card: start on that type, with the cursor in the first empty box.
+      if (t.getAttribute('data-calc-type')) state.dd.type = t.getAttribute('data-calc-type');
+      state.tab = 'calc'; render(); window.scrollTo(0, 0);
+      var empty = ['dd-member', 'dd-bal'].map($).filter(function (el) { return el && !el.value.trim(); })[0];
+      if (empty) empty.focus();
+      return;
+    }
   });
 
   document.addEventListener('keydown', function (e) {
+    // Ctrl+Enter: copy the open answer (the card's main copy button), from the search box or anywhere.
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && ws && main.contains(ws.root)) {
+      var mainCopy = ws.detail.querySelector('[data-main-copy]');
+      if (mainCopy) { e.preventDefault(); if (state.sel) rememberInCall(state.sel); mainCopy.click(); }
+      return;
+    }
     if (e.key === '/' && document.activeElement !== qEl && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) {
       e.preventDefault(); qEl.focus(); qEl.select();
     } else if (e.key === 'Escape' && pop && !pop.hidden) {
@@ -1295,6 +1373,9 @@
   $('foot').innerHTML = 'General information from the public UniSuper PDS documents issued ' + esc(issued('flexi')) + ': ' +
     DATA.sources.filter(function (s) { return s.kind === 'pds'; }).map(function (s) { return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + '</a>'; }).join(', ') +
     '. ATO pages are linked as supplementary sources only. Words with a red dotted underline are <button class="link" data-show-assumptions>assumptions (' + DATA.assumptions.length + ')</button>. Built ' + esc(DATA.built) + '. Not personal advice. Nothing typed here is saved or sent anywhere.';
+
+  // The tests render every card through these (see test/companion.test.mjs); unused in the page.
+  if (window.__companionTest) window.__companionTest.api = { RENDER: RENDER, procedureView: procedureView, datesToolHtml: datesToolHtml, startHtml: startHtml, sideHtml: sideHtml, state: state, setMember: setMember };
 
   if (!TABS.some(function (t) { return t.id === state.tab; })) state.tab = 'all';
   renderProducts();

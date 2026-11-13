@@ -5,7 +5,29 @@ var CompanionSearch = (function () {
 
   var STOP = new Set(('a an and are as at be by can could do does for from get got have how i if in into is it ' +
     'me my of on or our should so that the their them there they this to was we what when where which who ' +
-    'why will with would you your much many any about need want tell know please').split(' '));
+    'why will with would you your much many any about need want tell know please ' +
+    // contractions (apostrophes are dropped before this check) and call filler
+    'im ive id ill cant dont wont didnt doesnt isnt wasnt havent whats its thats theres hes shes theyre youre ' +
+    'just like actually really basically hi hello um uh ok okay thanks member members wants wanted wanting trying currently gonna wanna ' +
+    'am been has had also still some very bit').split(' '));
+
+  // Everyday words a member might say that the cards don't use. They are never "corrected"
+  // into a card word (without this, cancer became cancel and sick became tick).
+  var EVERYDAY = new Set(('cancer sick ill illness dying died dead passed passing funeral surgery operation hospital doctor medical dental ' +
+    'ivf injury injured accident disability disabled mum mom dad mother father parent parents son daughter brother sister grandchild ' +
+    'grandson granddaughter nephew niece kid kids child baby boyfriend girlfriend fiance widow widower ex expensive cheap price ' +
+    'mortgage rent bills debt broke struggling bank house home car holiday boss job work working worked fired redundant redundancy ' +
+    'casual contractor uni university student teen teenager young old older pay paid payday cash money ' +
+    'anymore anyway anything anyone everything nothing someone something half whole help sorry yes yeah nope').split(' '));
+
+  // Misspellings heard on calls that are too far from the word for the edit-distance check.
+  var MISSPELT = { penshun: 'pension', penshon: 'pension', pention: 'pension', pensoin: 'pension', superanuation: 'superannuation',
+    superanuaton: 'superannuation', superannuaton: 'superannuation', perservation: 'preservation', preservaton: 'preservation',
+    seperation: 'separation', seperated: 'separated', devorce: 'divorce', divorse: 'divorce', rolover: 'rollover', rollovr: 'rollover',
+    consoldate: 'consolidate', consolodate: 'consolidate', withdrawl: 'withdrawal', withdrawel: 'withdrawal', benificiary: 'beneficiary',
+    beneficary: 'beneficiary', benefishary: 'beneficiary', contibution: 'contribution', contribtion: 'contribution', contribtions: 'contributions',
+    insurence: 'insurance', insurace: 'insurance', retirment: 'retirement', nomanation: 'nomination',
+    hardshp: 'hardship', compasionate: 'compassionate', compassonate: 'compassionate', terminaly: 'terminally', tranfer: 'transfer' };
 
   var WORD_NUM = { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
     eleven: 11, twelve: 12, fifteen: 15, sixteen: 16, eighteen: 18, twenty: 20, thirty: 30, forty: 40, fifty: 50,
@@ -52,7 +74,7 @@ var CompanionSearch = (function () {
     var out = [];
     var parts = normaliseNumbers(String(s || '').replace(/\{\{[a-z0-9-]+:/g, '').replace(/\}\}/g, '')).split(/[^a-z0-9%.']+/);
     for (var i = 0; i < parts.length; i++) {
-      var t = parts[i].replace(/^[.']+|[.']+$/g, '').replace(/'s$/, '');
+      var t = parts[i].replace(/^[.']+|[.']+$/g, '').replace(/'s$/, '').replace(/'/g, '');
       if (!t) continue;
       if (!keepStop && STOP.has(t)) continue;
       out.push(stem(t));
@@ -63,28 +85,62 @@ var CompanionSearch = (function () {
   // Build lookups for glossary terms (single and multi-word) and member phrases.
   function buildGlossary(glossary) {
     var terms = [];
+    function seq(text) { return tokens(fold(text).replace(/[-/]/g, ' '), true); }
     (glossary.terms || []).forEach(function (g) {
-      terms.push({ key: fold(g.term).replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(), expands: tokens(g.expands_to), means: g.means, term: g.term });
+      terms.push({ key: fold(g.term).replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(), seq: seq(g.term), expands: tokens(g.expands_to), means: g.means, term: g.term });
     });
     (glossary.phrases || []).forEach(function (p) {
-      terms.push({ key: fold(p.phrase), expands: tokens(p.expands_to), phrase: true });
+      terms.push({ key: fold(p.phrase), seq: seq(p.phrase), expands: tokens(p.expands_to), phrase: true });
     });
-    terms.sort(function (a, b) { return b.key.length - a.key.length; });
+    terms.forEach(function (t) { t.content = t.seq.filter(function (w) { return !STOP.has(w); }); });
+    terms = terms.filter(function (t) { return t.seq.length; });
+    terms.sort(function (a, b) { return b.seq.length - a.seq.length || b.key.length - a.key.length; });
     return terms;
   }
 
+  function seqAt(words, sq) {
+    if (!sq.length) return false;
+    for (var i = 0; i + sq.length <= words.length; i++) {
+      var ok = true;
+      for (var j = 0; j < sq.length && ok; j++) ok = words[i + j] === sq[j];
+      if (ok) return true;
+    }
+    return false;
+  }
+
+  // Glossary entries match whole words after stemming, so "wifes" meets "wife", and a phrase also
+  // matches with the small words left out ("change my address" meets "change address"). `links`
+  // records which query words each entry explains, so a card that matches the expansion still
+  // counts those words as covered.
   function expandQuery(q, gloss) {
-    var plain = ' ' + fold(q).replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim() + ' ';
-    var base = tokens(q);
-    var extra = [];
-    var hits = [];
+    var src = fold(q).replace(/[-/]/g, ' ');
+    var words = tokens(src, true), base = tokens(src);
+    var extra = [], hits = [], links = {};
     gloss.forEach(function (g) {
-      if (plain.indexOf(' ' + g.key + ' ') >= 0) {
-        hits.push(g);
-        g.expands.forEach(function (t) { if (base.indexOf(t) < 0 && extra.indexOf(t) < 0) extra.push(t); });
-      }
+      if (!seqAt(words, g.seq) && !(g.content.length > 1 && seqAt(base, g.content))) return;
+      hits.push(g);
+      g.expands.forEach(function (t) { if (base.indexOf(t) < 0 && extra.indexOf(t) < 0) extra.push(t); });
+      g.seq.forEach(function (t) { if (base.indexOf(t) >= 0) links[t] = (links[t] || []).concat(g.expands); });
     });
-    return { base: base, extra: extra, glossary: hits.filter(function (h) { return !h.phrase; }) };
+    return { base: base, extra: extra, links: links, glossary: hits.filter(function (h) { return !h.phrase; }) };
+  }
+
+  // What kind of answer the question is after, judged from its wording. Matching items get a boost,
+  // and the words that only say what kind of answer is wanted don't have to match.
+  var INTENTS = [
+    { type: 'timeframe', boost: 1.7, drop: ['long', 'tak', 'quick', 'quickly', 'soon', 'wait', 'arriv', 'receiv', 'process'],
+      re: /\b(how long|how quick(ly)?|how soon|how many (business )?days|processing time|turn ?around|waiting time)\b|\bwhen (will|do|does|would|should|can) .*\b(get|receive|be paid|arrive|come through|hear back|go through|be processed|land)\b/ },
+    { type: 'form', boost: 1.6, drop: ['form', 'paperwork', 'fill'],
+      re: /\b(forms?|paperwork|fill (it )?(in|out)|what (do|does) (i|they|he|she) (need to )?(fill|sign|send|complete))\b/ },
+    { type: 'explainer', boost: 1.5, drop: ['explain', 'differenc', 'mean', 'work'],
+      re: /\b(explain|difference between|what('?s| is) the difference|how does .+ work|what does .+ mean)\b/ },
+    { type: 'procedure', boost: 1.3, drop: ['step', 'process'],
+      re: /\b(steps|walk me through|checklist|process for)\b/ }
+  ];
+  function intentOf(q) {
+    var f = fold(q);
+    for (var i = 0; i < INTENTS.length; i++) if (INTENTS[i].re.test(f)) return INTENTS[i];
+    return null;
   }
 
   // Each indexed item: { type, id, fields: [{ text, weight }], aliases: [], products: [], item }
@@ -96,38 +152,60 @@ var CompanionSearch = (function () {
       });
     });
     var aliasTokens = (entry.aliases || []).map(function (a) { return tokens(a).join(' '); }).filter(Boolean);
-    return { type: entry.type, id: entry.id, tf: tf, keys: Object.keys(tf), aliasTokens: aliasTokens, products: entry.products || [], item: entry.item };
+    // Aliases that were one word to begin with ("pension"), as opposed to ones that shrank to one word.
+    var aliasOneWord = {};
+    (entry.aliases || []).forEach(function (a) { if (!/\s/.test(String(a).trim())) aliasOneWord[tokens(a).join(' ')] = true; });
+    // Word pairs from the title and aliases: two query words side by side there earn a small bonus,
+    // so "life cover" prefers cover cards over "life events".
+    var pairs = {};
+    entry.fields.filter(function (f) { return f.weight >= 3; }).forEach(function (f) {
+      String(f.text).split(/[.,;:?!()]/).forEach(function (part) {
+        var w = tokens(part);
+        for (var i = 1; i < w.length; i++) pairs[w[i - 1] + ' ' + w[i]] = true;
+      });
+    });
+    (entry.aliases || []).forEach(function (a) {
+      var w = tokens(a);
+      for (var i = 1; i < w.length; i++) pairs[w[i - 1] + ' ' + w[i]] = true;
+    });
+    return { type: entry.type, id: entry.id, tf: tf, keys: Object.keys(tf), aliasTokens: aliasTokens, aliasOneWord: aliasOneWord, exactOnly: {}, pairs: pairs, products: entry.products || [], item: entry.item };
   }
 
-  function scoreDoc(doc, base, extra) {
-    var score = 0, matchedBase = 0;
+  function scoreDoc(doc, base, extra, links, idf, countable) {
+    var score = 0, matchedBase = 0, counted = 0;
     function termScore(t) {
-      if (doc.tf[t]) return doc.tf[t];
+      var w = idf(t);
+      if (doc.tf[t]) return doc.tf[t] * w;
       if (t.length >= 4) {
         var best = 0;
         for (var i = 0; i < doc.keys.length; i++) {
           var k = doc.keys[i];
           if (k.length > t.length && k.indexOf(t) === 0) best = Math.max(best, doc.tf[k] * 0.6);
         }
-        return best;
+        return best * w;
       }
       return 0;
     }
     for (var i = 0; i < base.length; i++) {
       var s = termScore(base[i]);
-      if (s > 0) { matchedBase++; score += s; }
+      if (s > 0) score += s;
+      if (!countable(base[i])) continue;
+      counted++;
+      if (s > 0 || (links[base[i]] || []).some(function (t) { return termScore(t) > 0; })) matchedBase++;
     }
     for (var j = 0; j < extra.length; j++) score += termScore(extra[j]) * 0.45;
+    for (var b = 1; b < base.length; b++) if (doc.pairs[base[b - 1] + ' ' + base[b]]) score += 1.5;
     var joined = base.join(' ');
     if (joined) {
       for (var a = 0; a < doc.aliasTokens.length; a++) {
         var al = doc.aliasTokens[a];
         if (al === joined) score += 8;
+        else if (doc.exactOnly[al]) continue;
         else if ((' ' + joined + ' ').indexOf(' ' + al + ' ') >= 0) score += 4;
         else if (al.indexOf(joined) === 0 && joined.length >= 3) score += 3;
       }
     }
-    var coverage = base.length ? matchedBase / base.length : (score > 0 ? 1 : 0);
+    var coverage = counted ? matchedBase / counted : (score > 0 ? 1 : 0);
     return { score: score * (0.4 + 0.6 * coverage), coverage: coverage };
   }
 
@@ -167,6 +245,23 @@ var CompanionSearch = (function () {
         { text: e.title + ' explain', weight: 3 }, { text: e.topic, weight: 1 }, { text: flat(e.standard), weight: 1.2 }, { text: flat(e.simple), weight: 0.8 }, { text: flat(e.detailed), weight: 0.6 }] }));
     });
 
+    // How rare each word is across the cards: "super" and "pension" are everywhere, "hardship" isn't,
+    // so rarer words count for more.
+    var df = {};
+    docs.forEach(function (d) { d.keys.forEach(function (k) { df[k] = (df[k] || 0) + 1; }); });
+    var N = docs.length, idfNorm = Math.log(1 + N / 8);
+    function idf(t) { var n = df[t] || 1; return 0.55 + 0.45 * Math.min(1.6, Math.log(1 + N / n) / idfNorm); }
+    // An alias that shrinks to one common word ("when can I get my super" -> "super") would win every
+    // query that mentions it, so those are dropped. A one-word alias that is a common word ("pension")
+    // only counts when the whole query is that word.
+    docs.forEach(function (d) {
+      d.aliasTokens = d.aliasTokens.filter(function (a) {
+        if (a.indexOf(' ') >= 0 || (df[a] || 0) <= N * 0.05) return true;
+        if (d.aliasOneWord[a]) { d.exactOnly[a] = true; return true; }
+        return false;
+      });
+    });
+
     var pages = (data.pages || []).map(function (p) {
       return { doc: p.doc, page: p.page, orig: p.text.replace(/\s+/g, ' '), norm: normaliseNumbers(p.text).replace(/\s+/g, ' ') };
     });
@@ -177,6 +272,24 @@ var CompanionSearch = (function () {
     docs.forEach(function (d) { d.keys.forEach(function (k) { vocab[k] = (vocab[k] || 0) + 1; }); });
     gloss.forEach(function (g) { g.key.split(' ').forEach(function (w) { if (w) vocab[stem(w)] = (vocab[stem(w)] || 0) + 3; }); });
     var vocabList = Object.keys(vocab).filter(function (w) { return /^[a-z][a-z'-]*$/.test(w); });
+    // The real word each stem came from, so a correction shows "expensive", not "expens".
+    var surfaceCount = {}, surface = {};
+    function noteWords(text) {
+      (fold(text).match(/[a-z][a-z]+/g) || []).forEach(function (w) {
+        var st = stem(w), c = surfaceCount[st] = surfaceCount[st] || {};
+        c[w] = (c[w] || 0) + 1;
+      });
+    }
+    (data.rules || []).forEach(function (r) { noteWords(r.q + ' ' + r.a + ' ' + (r.aliases || []).join(' ')); });
+    (data.forms || []).forEach(function (f) { noteWords(f.title + ' ' + (f.keywords || '')); });
+    (data.timeframes || []).forEach(function (t) { noteWords(t.task); });
+    (data.procedures || []).forEach(function (p) { noteWords(p.title); });
+    (data.explainers || []).forEach(function (e) { noteWords(e.title); });
+    gloss.forEach(function (g) { noteWords(g.key); });
+    Object.keys(surfaceCount).forEach(function (st) {
+      var c = surfaceCount[st];
+      surface[st] = Object.keys(c).sort(function (a, b) { return c[b] - c[a] || a.length - b.length; })[0];
+    });
 
     // Damerau-Levenshtein distance (adjacent swaps count as one edit), stopping early past `max`.
     function distance(a, b, max) {
@@ -204,17 +317,22 @@ var CompanionSearch = (function () {
     var correctionCache = {};
     function correctWord(w) {
       if (w in correctionCache) return correctionCache[w];
-      var st = stem(w), best = null, bestD = 99, bestF = 0;
-      if (vocab[st] || vocab[w] || STOP.has(w) || /\d/.test(w) || w.length < 3) return (correctionCache[w] = null);
-      var max = w.length >= 8 ? 2 : 1;
+      if (MISSPELT[w]) return (correctionCache[w] = MISSPELT[w]);
+      var st = stem(w), best = null, bestD = 99, bestF = 0, twos = 0;
+      if (vocab[st] || vocab[w] || STOP.has(w) || EVERYDAY.has(w) || EVERYDAY.has(st) || /\d/.test(w) || w.length < 3) return (correctionCache[w] = null);
+      // 1 edit for short words, 2 for 8+ letters. 6 and 7 letters may take 2 edits, but only when one
+      // word (with the same first letter) is that close.
+      var max = w.length >= 6 ? 2 : 1;
       for (var i = 0; i < vocabList.length; i++) {
         var v = vocabList[i];
         if (w.length === 3 && v.length !== 3) continue;
         var d = Math.min(distance(st, v, max), distance(w, v, max));
         if (w.length === 3 && d === 1 && st.split('').sort().join('') !== v.split('').sort().join('')) continue;
+        if (d === 2 && v[0] === w[0]) twos++;
         if (d <= max && (d < bestD || (d === bestD && vocab[v] > bestF))) { best = v; bestD = d; bestF = vocab[v]; }
       }
-      return (correctionCache[w] = best);
+      if (best && bestD === 2 && w.length < 8 && (twos !== 1 || best[0] !== w[0])) best = null;
+      return (correctionCache[w] = best ? (surface[best] || best) : null);
     }
 
     // Returns the query with misspelt words replaced, and the list of corrections made.
@@ -237,21 +355,26 @@ var CompanionSearch = (function () {
       var ex = expandQuery(corrected.text, gloss);
       ex.corrections = corrected.fixes;
       if (!ex.base.length && !ex.extra.length) return { results: [], hidden: 0, glossary: ex.glossary, query: ex, corrections: corrected.fixes };
-      var results = [], hidden = 0;
+      var results = [], hidden = 0, intent = intentOf(corrected.text);
+      var countable = function (t) { return !intent || intent.drop.indexOf(t) < 0; };
+      var counted = ex.base.filter(countable).length;
       for (var i = 0; i < docs.length; i++) {
         var d = docs[i];
         if (opts.types && opts.types.indexOf(d.type) < 0) continue;
-        var s = scoreDoc(d, ex.base, ex.extra);
-        if (s.score < 1.2 || (ex.base.length > 1 && s.coverage < 0.34)) continue;
+        var s = scoreDoc(d, ex.base, ex.extra, ex.links, idf, countable);
+        if (intent && d.type === intent.type) s.score *= intent.boost;
+        if (s.score < 1.2 || (counted > 1 && s.coverage < 0.34)) continue;
         if (opts.product && d.type === 'rule' && d.products.length && d.products.indexOf(opts.product) < 0) { hidden++; continue; }
         results.push({ type: d.type, id: d.id, score: s.score, item: d.item });
       }
-      results.sort(function (a, b) { return b.score - a.score; });
+      // Ties go to the shorter, more specific title.
+      var titleLen = function (r) { var x = r.item; return String(x.q || x.task || x.title || '').length; };
+      results.sort(function (a, b) { return b.score - a.score || titleLen(a) - titleLen(b); });
       if (results.length) {
         var top = results[0].score;
         results = results.filter(function (r) { return r.score >= top * 0.25; });
       }
-      return { results: results.slice(0, opts.limit || 40), hidden: hidden, glossary: ex.glossary, query: ex, corrections: corrected.fixes };
+      return { results: results.slice(0, opts.limit || 40), hidden: hidden, glossary: ex.glossary, query: ex, corrections: corrected.fixes, intent: intent ? intent.type : null };
     }
 
     // Full-text fallback over the PDS pages: best passages for the query terms.

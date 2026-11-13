@@ -11,7 +11,10 @@
       "q": "What types of Flexi Pension are there?",
       "aliases": [
         "flexi pension types",
-        "account based pension"
+        "account based pension",
+        "annuity",
+        "income stream",
+        "pension"
       ],
       "a": "Three: Retirement Phase, Transition to Retirement (TTR) and Beneficiary Income Stream (BIS). One PDS covers all three.",
       "sources": [
@@ -63,7 +66,9 @@
         "ttr hours",
         "minimum age ttr",
         "how old for ttr",
-        "ttr age"
+        "ttr age",
+        "work part time and draw super",
+        "part time and access super"
       ],
       "a": "Anyone who has reached preservation age and is still working. There's no minimum or maximum number of hours.",
       "detail": "Temporary residents have extra restrictions.",
@@ -577,7 +582,10 @@
         "payment date",
         "28th",
         "every second friday",
-        "when will i get paid"
+        "when will i get paid",
+        "pay day",
+        "pension pay day",
+        "payday"
       ],
       "a": "Fortnightly: by every second Friday. All other frequencies: by the 28th of the month. Some credit unions take longer to clear funds.",
       "sources": [
@@ -598,7 +606,10 @@
       "aliases": [
         "change payment",
         "change bank pension",
-        "your payments"
+        "your payments",
+        "increase my pension",
+        "decrease my pension",
+        "change my pension amount"
       ],
       "a": "Online: log in, Pension payments tab, Your payments. Or the Change of details or Change of bank account forms.",
       "sources": [
@@ -976,7 +987,9 @@
       "aliases": [
         "exceed tbc",
         "excess transfer balance",
-        "60 days"
+        "60 days",
+        "over the pension cap",
+        "too much in my pension"
       ],
       "a": "The excess and notional earnings must be removed; the ATO says how much. Tax on notional earnings is 15% for a first breach, 30% after. If the member does nothing, the fund must reduce the balance within 60 days of the ATO's notice.",
       "sources": [
@@ -1034,7 +1047,10 @@
       "aliases": [
         "retirement bonus",
         "cgt bonus",
-        "tax saving bonus"
+        "tax saving bonus",
+        "bonus",
+        "pension bonus",
+        "bonus when i start a pension"
       ],
       "a": "Tax savings that may be passed on when money moves into a Retirement Phase pension (capital gains tax set aside is no longer needed). It's added automatically; no application.",
       "detail": "Rate, maximum and eligible options: unisuper.com.au/retirement-bonus.",
