@@ -1,121 +1,208 @@
 {
   "note": "Everything the companion assumes rather than takes straight from the PDS. In data and code, mark the words that rely on one as {{id:the words}}; the page shows them with a red dotted underline and a hover-over. 'pds' says what the PDS (or ATO) does state; 'check' says how to settle it.",
   "items": [
-    { "id": "day-count", "title": "Counting the days for a pro-rata minimum",
+    {
+      "id": "day-count",
+      "title": "Counting the days for a pro-rata minimum",
       "assumed": "In a financial year with 29 February, the days in the year are taken as 366. (Counting both the start date and 30 June is shown by the PDS example.)",
       "pds": "The PDS example counts 273 days from 1 October 2026 to 30 June 2027 out of 365. It doesn't show a leap year.",
-      "check": "Confirm the leap-year treatment against the admin system." },
-    { "id": "closing-day-count", "title": "Counting the days when a pension closes mid-year",
+      "check": "Confirm the leap-year treatment against the admin system."
+    },
+    {
+      "id": "closing-day-count",
+      "title": "Counting the days when a pension closes mid-year",
       "assumed": "The pro-rata minimum on closure counts the days from 1 July (or the start date) to the closure date, both included.",
       "pds": "The PDS says a pro-rata minimum may still need to be paid on closure, but not how the days are counted.",
-      "check": "Confirm the day count before quoting an amount." },
-    { "id": "payments-left", "title": "How many payments are left this year",
+      "check": "Confirm the day count before quoting an amount."
+    },
+    {
+      "id": "payments-left",
+      "title": "How many payments are left this year",
       "assumed": "Monthly, quarterly and half-yearly payments are counted from the start month to June, assuming the first payment falls in the start month.",
       "pds": "The PDS gives the payment months, says payments are made by the 28th, and spreads Bryn's TTR income over April to June. It doesn't give a cut-off for a payment in the start month.",
-      "check": "Use 'Payments left' to override it if the first payment is later." },
-    { "id": "fortnightly", "title": "Fortnightly payment count",
+      "check": "Use 'Payments left' to override it if the first payment is later."
+    },
+    {
+      "id": "fortnightly",
+      "title": "Fortnightly payment count",
       "assumed": "Without a known payment date, one fortnightly payment every 14 days is assumed.",
       "pds": "The PDS says fortnightly payments are made by every second Friday, but not which Fridays.",
-      "check": "Enter any past fortnightly payment date for an exact count." },
-    { "id": "payment-rounding", "title": "Rounding each payment",
+      "check": "Enter any past fortnightly payment date for an exact count."
+    },
+    {
+      "id": "payment-rounding",
+      "title": "Rounding each payment",
       "assumed": "Each payment is rounded to $10: up for the minimum (so the year adds up to at least the minimum) and down for the TTR maximum.",
       "pds": "The PDS rounds the yearly minimum to the nearest $10, and the Bryn example rounds $13,333.33 a month to $13,330. It doesn't say how each payment is rounded.",
-      "check": "Confirm the per-payment rounding against the admin system." },
-    { "id": "age-only", "title": "Using an age instead of a date of birth",
+      "check": "Confirm the per-payment rounding against the admin system."
+    },
+    {
+      "id": "age-only",
+      "title": "Using an age instead of a date of birth",
       "assumed": "An age on its own is taken as the member's age on the pension start date.",
       "pds": "The minimum percentage depends on age at the start and then each 1 July, which needs the date of birth.",
-      "check": "Use the date of birth for anything near a birthday or 1 July." },
-    { "id": "business-days", "title": "What counts as a business day",
+      "check": "Use the date of birth for anything near a birthday or 1 July."
+    },
+    {
+      "id": "business-days",
+      "title": "What counts as a business day",
       "assumed": "Business days are Melbourne business days: weekends and Victorian public holidays are skipped.",
       "pds": "The PDS says 'business days' for withdrawals and cooling-off, and 'Melbourne business day' for investment switches.",
-      "check": "Confirm for timeframes that aren't investment switches." },
-    { "id": "vic-holidays", "title": "Victorian public holidays",
+      "check": "Confirm for timeframes that aren't investment switches."
+    },
+    {
+      "id": "vic-holidays",
+      "title": "Victorian public holidays",
       "assumed": "Holidays are worked out by rule. Anzac Day has no substitute when it falls on a weekend, Melbourne Cup day is a holiday, and the Friday before the AFL Grand Final only counts once it's added to holidays.json.",
       "pds": "Not covered by the PDS.",
-      "check": "Check the Victorian Government's published holiday list each year." },
-    { "id": "calendar-days", "title": "Day counts are calendar days",
+      "check": "Check the Victorian Government's published holiday list each year."
+    },
+    {
+      "id": "calendar-days",
+      "title": "Day counts are calendar days",
       "assumed": "Timeframes given in days (complaints, 90-day windows, 180-day insurance windows) are counted as calendar days.",
       "pds": "The PDS gives these as a number of 'days' without saying calendar or business days.",
-      "check": "Confirm if a deadline is close." },
-    { "id": "div293-estimate", "title": "Division 293 estimate",
+      "check": "Confirm if a deadline is close."
+    },
+    {
+      "id": "div293-estimate",
+      "title": "Division 293 estimate",
       "assumed": "Uses the member's income plus this year's concessional contributions (or the amount they're on track for).",
       "pds": "The ATO's Division 293 income also includes reportable fringe benefits and net investment losses, and the ATO works out the tax after the year ends.",
-      "check": "The ATO's assessment is the real figure." },
-    { "id": "listo-estimate", "title": "LISTO estimate",
+      "check": "The ATO's assessment is the real figure."
+    },
+    {
+      "id": "listo-estimate",
+      "title": "LISTO estimate",
       "assumed": "Uses the member's income as adjusted taxable income and this year's concessional contributions so far.",
       "pds": "The ATO assesses eligibility (including a 10% employment income test) and pays it after the year ends.",
-      "check": "The ATO decides the amount." },
-    { "id": "cocontrib-estimate", "title": "Co-contribution estimate",
+      "check": "The ATO decides the amount."
+    },
+    {
+      "id": "cocontrib-estimate",
+      "title": "Co-contribution estimate",
       "assumed": "Uses the member's income as 'total income' and this year's personal contributions so far.",
       "pds": "The ATO requires the member to be under 71 at the end of the financial year, and has other eligibility tests on its co-contribution page.",
-      "check": "The ATO decides the amount after the tax return is lodged." },
-    { "id": "inactive-definition", "title": "Measuring inactivity",
+      "check": "The ATO decides the amount after the tax return is lodged."
+    },
+    {
+      "id": "inactive-definition",
+      "title": "Measuring inactivity",
       "assumed": "Months without activity are counted from the last contribution date.",
       "pds": "Insurance stops after 16 consecutive months without a contribution or rollover. The inactive low-balance rule says an account is 'inactive for a period of 16 months' without listing what counts as activity.",
-      "check": "Check the account history for rollovers and other activity." },
-    { "id": "dasp-date", "title": "DASP six-month date",
+      "check": "Check the account history for rollovers and other activity."
+    },
+    {
+      "id": "dasp-date",
+      "title": "DASP six-month date",
       "assumed": "The visa has already expired or been cancelled by the six-month date. (Counting six months from departure is in the PDS.)",
       "pds": "The PDS says super not claimed within six months of departing Australia is transferred to the ATO; the visa must also have expired or been cancelled.",
-      "check": "If the visa ended after departure, check which date applies." },
-    { "id": "spouse-split", "title": "Spouse eligibility for a split",
+      "check": "If the visa ended after departure, check which date applies."
+    },
+    {
+      "id": "spouse-split",
+      "title": "Spouse eligibility for a split",
       "assumed": "Uses the spouse's age and whether they're recorded as retired; their preservation age comes from their date of birth.",
       "pds": "The spouse must be under preservation age, or between preservation age and 65 and not retired.",
-      "check": "Confirm the spouse's work status with the member." },
-    { "id": "carry-forward-relevance", "title": "When carry-forward is mentioned",
+      "check": "Confirm the spouse's work status with the member."
+    },
+    {
+      "id": "carry-forward-relevance",
+      "title": "When carry-forward is mentioned",
       "assumed": "Only raised for members who are working and either earn $100,000 or more or are making personal contributions.",
       "pds": "Carry-forward needs a total super balance under $500,000 at the previous 30 June; the unused amount is shown in ATO online services.",
-      "check": "The member checks their available amount in ATO online services." },
-    { "id": "checklist-order", "title": "Order of checklist steps",
+      "check": "The member checks their available amount in ATO online services."
+    },
+    {
+      "id": "checklist-order",
+      "title": "Order of checklist steps",
       "assumed": "Steps are in a suggested call order.",
       "pds": "The PDS only fixes some of the order: a notice of intent must come before a contribution split, rollover, withdrawal or pension start, and a split before a rollover.",
-      "check": "Reorder to suit the call." },
-    { "id": "account-path-labels", "title": "Online account menu names",
+      "check": "Reorder to suit the call."
+    },
+    {
+      "id": "account-path-labels",
+      "title": "Online account menu names",
       "assumed": "Menu names are read from the online account's link addresses.",
       "pds": "Only four account paths are stated in the PDS (Manage account, Personal details, Pension payments, Your Insurance).",
-      "check": "Confirm the exact labels while logged in." },
-    { "id": "adult-children-tax", "title": "Adult children and death benefit tax",
+      "check": "Confirm the exact labels while logged in."
+    },
+    {
+      "id": "adult-children-tax",
+      "title": "Adult children and death benefit tax",
       "assumed": "Adult children are usually not dependants for tax purposes.",
       "pds": "For tax, a child must be under 18, or be financially dependent or in an interdependency relationship at the date of death.",
-      "check": "Check the actual circumstances at the date of death." },
-    { "id": "example-figures", "title": "Example figures",
+      "check": "Check the actual circumstances at the date of death."
+    },
+    {
+      "id": "example-figures",
+      "title": "Example figures",
       "assumed": "With no member loaded, figures use an example balance of $500,000 at 5%.",
       "pds": "These match the PDS 'Gavin' example, not any member.",
-      "check": "Load a test member or use the drawdown calculator for real figures." },
-    { "id": "first-of-month", "title": "Pension start date in the month figure",
+      "check": "Load a test member or use the drawdown calculator for real figures."
+    },
+    {
+      "id": "first-of-month",
+      "title": "Pension start date in the month figure",
       "assumed": "The month figure assumes the pension starts on the 1st of the chosen month.",
       "pds": "A pension can start on any day; the minimum is pro-rated by days.",
-      "check": "Use the drawdown calculator for an exact start date." },
-    { "id": "tbc-debits", "title": "What changes the transfer balance account",
+      "check": "Use the drawdown calculator for an exact start date."
+    },
+    {
+      "id": "tbc-debits",
+      "title": "What changes the transfer balance account",
       "assumed": "A lump sum from a retirement pension (a commutation) reduces the amount counted against the cap. Regular pension payments, and investment growth or losses, don't change it.",
       "pds": "How super works (p17) says the transfer balance account tracks \"debits and credits\" but doesn't list them.",
-      "check": "Check the ATO's transfer balance account pages, or the member's transfer balance account in ATO online services." },
-    { "id": "split-cap", "title": "Split contributions and the concessional cap",
-      "assumed": "Contributions split to a spouse still count towards the member's own concessional cap, and not the spouse's.",
-      "pds": "How super works (p10 to 11) covers who can receive a split, the 85% limit and who owns it, but not how the caps treat it.",
-      "check": "Check the ATO's contributions splitting page." },
-    { "id": "bring-forward-trigger", "title": "When bring-forward starts",
+      "check": "Check the ATO's transfer balance account pages, or the member's transfer balance account in ATO online services."
+    },
+    {
+      "id": "bring-forward-trigger",
+      "title": "When bring-forward starts",
       "assumed": "Bring-forward starts automatically in the first year a member under 75 goes over the annual non-concessional cap.",
       "pds": "How super works (p13) gives the bring-forward amounts and periods; the ATO says the arrangement \"allows you to bring forward\" future years' caps.",
-      "check": "Check the ATO's non-concessional contributions cap page, and the member's bring-forward status in ATO online services." },
-    { "id": "component-sources", "title": "What makes up each tax component",
+      "check": "Check the ATO's non-concessional contributions cap page, and the member's bring-forward status in ATO online services."
+    },
+    {
+      "id": "component-sources",
+      "title": "What makes up each tax component",
       "assumed": "The tax-free component is mostly after-tax (non-concessional) contributions; the taxable component is employer, salary sacrifice and deducted personal contributions, plus earnings.",
       "pds": "The PDS (Flexi Pension p29, How super works p18) says a benefit has both components and how each is taxed, not what goes into each.",
-      "check": "The member's actual components are on their statement." },
-    { "id": "compassionate-examples", "title": "Examples of compassionate grounds",
+      "check": "The member's actual components are on their statement."
+    },
+    {
+      "id": "compassionate-examples",
+      "title": "Examples of compassionate grounds",
       "assumed": "Medical treatment, palliative care and mortgage arrears are among the grounds the ATO accepts.",
       "pds": "The PDS says compassionate grounds are applied for with the ATO, without listing them.",
-      "check": "Check the ATO's compassionate grounds page for the full list and the evidence needed." },
-    { "id": "multiple-jobs", "title": "Ending one job when there are others",
+      "check": "Check the ATO's compassionate grounds page for the full list and the evidence needed."
+    },
+    {
+      "id": "multiple-jobs",
+      "title": "Ending one job when there are others",
       "assumed": "Ending an employment arrangement on or after 60 releases the balance at that point even if the member keeps or starts another job.",
       "pds": "The PDS lists \"ceasing an employment arrangement on or after reaching age 60\" as a condition of release, without covering other jobs.",
-      "check": "Check the ATO's 'When you can access your super' page." },
-    { "id": "clock-start", "title": "When a timeframe starts",
+      "check": "Check the ATO's 'When you can access your super' page."
+    },
+    {
+      "id": "clock-start",
+      "title": "When a timeframe starts",
       "assumed": "The day the timeframe is counted from, where the PDS gives the length but not the starting point.",
       "pds": "The PDS gives these periods without saying exactly when they start.",
-      "check": "Confirm the starting point with the team that handles it before quoting a date." },
-    { "id": "nomination-scope", "title": "Which accounts a nomination covers",
+      "check": "Confirm the starting point with the team that handles it before quoting a date."
+    },
+    {
+      "id": "nomination-scope",
+      "title": "Which accounts a nomination covers",
       "assumed": "A nomination covers only the accounts it applies to: it isn't added to every UniSuper account automatically.",
       "pds": "The PDS says a binding nomination can apply to all UniSuper accounts or be made separately for each (Flexi Pension p18, How super works p20), and that non-binding nominations are made on each account's own form. It doesn't say what happens when a nomination doesn't state which accounts it covers.",
-      "check": "Check the member's nominations on each account, and the Binding death benefit nomination fact sheet." }
+      "check": "Check the member's nominations on each account, and the Binding death benefit nomination fact sheet."
+    },
+    {
+      "id": "rollover-limit",
+      "title": "How many rollovers out in 12 months",
+      "assumed": "The companion quotes How super works: up to eight transfers out in any 12-month period.",
+      "pds": "How super works (28 Sep 2026, p19) says eight; the Roll over your super to another fund form (24 Jul 2026) says four.",
+      "check": "Confirm the current limit with the team before telling a member how many rollovers they have left."
+    }
   ]
 }

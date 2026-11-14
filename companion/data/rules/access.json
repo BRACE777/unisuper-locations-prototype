@@ -78,6 +78,10 @@
         {
           "doc": "ato-access",
           "quote": "You reach your preservation age and choose to retire."
+        },
+        {
+          "doc": "form:super-withdraw-your-super",
+          "quote": "If you haven’t already reached it, your preservation age is 60. If you’re already over 60, you’ve reached your preservation age."
         }
       ]
     },
@@ -124,8 +128,25 @@
         {
           "doc": "ato-early",
           "quote": "When you can access super early due to severe financial hardship and how to apply."
+        },
+        {
+          "doc": "form:super-withdraw-your-super-due-to-financial-hardship",
+          "quote": "The minimum amount that can be withdrawn is $1,000, and the maximum amount is $10,000."
+        },
+        {
+          "doc": "form:super-withdraw-your-super-due-to-financial-hardship",
+          "quote": "You can only make one withdrawal (from any super fund) in a 12-month period."
+        },
+        {
+          "doc": "form:super-withdraw-your-super-due-to-financial-hardship",
+          "quote": "If you’ve been with UniSuper for less than three months you’re not eligible for severe financial hardship payments."
+        },
+        {
+          "doc": "form:super-withdraw-your-super-due-to-financial-hardship",
+          "quote": "Once we’ve received your application, we aim to complete your request within five working days."
         }
-      ]
+      ],
+      "detail": "From the form: $1,000 to $10,000, and one release (from any fund) in 12 months. Not available to members who joined less than three months ago; members who joined less than 12 months ago include statements covering the last 12 months, from other funds too. Under 60, taxed up to 22%. UniSuper aims to complete it within five working days of receiving everything."
     },
     {
       "id": "compassionate",
@@ -149,8 +170,17 @@
         {
           "doc": "ato-compassionate",
           "quote": "Eligibility criteria, required evidence and what to do before applying to access super on compassionate grounds."
+        },
+        {
+          "doc": "form:super-withdraw-your-super-on-compassionate-grounds",
+          "quote": "You need to apply and be approved by the ATO before completing this form"
+        },
+        {
+          "doc": "form:super-withdraw-your-super-on-compassionate-grounds",
+          "quote": "you can only apply for a payment on compassionate grounds if you’re a citizen or permanent resident of Australia or New Zealand."
         }
-      ]
+      ],
+      "detail": "The ATO must approve it first; the member then sends UniSuper the Compassionate grounds form for up to the approved amount. Only Australian or New Zealand citizens or permanent residents can apply."
     },
     {
       "id": "terminal",

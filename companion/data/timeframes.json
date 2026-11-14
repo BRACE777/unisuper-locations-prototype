@@ -1,5 +1,5 @@
 {
-  "note": "Timeframes members ask about. kind: 'pds' (stated in a UniSuper PDS document) or 'law' (a legal deadline the PDS quotes). Internal processing times are not in the PDS: put them in timeframes.local.json with kind 'internal'. 'calc' lets the date calculator offer the timeframe as a preset.",
+  "note": "Timeframes members ask about. kind: 'pds' (stated in a UniSuper PDS document), 'law' (a legal deadline the PDS quotes) or 'form' (stated in a UniSuper PDF form, quoted in 'ato'; supplementary). Internal processing times are not in the PDS: put them in timeframes.local.json with kind 'internal'. 'calc' lets the date calculator offer the timeframe as a preset.",
   "items": [
     {
       "id": "pension-lump-sum",
@@ -45,7 +45,8 @@
       "source": {
         "doc": "hsw",
         "quote": "We may postpone the processing of transactions (such as applications, switches, rollovers and withdrawals)"
-      }
+      },
+      "starts": "Neither the PDS nor the Super withdrawal form gives one"
     },
     {
       "id": "pension-pay-fortnightly",
@@ -608,11 +609,17 @@
       "timeframe": "Up to eight requests in any 12 months",
       "starts": "Rolling 12 months",
       "kind": "pds",
-      "say": "You can request a transfer out up to eight times in any 12-month period. A partial transfer must leave at least $6,000.",
+      "say": "You can request a transfer out up to eight times in any 12-month period ({{rollover-limit:the rollover form says four}}). A partial transfer must leave at least $6,000.",
       "source": {
         "doc": "hsw",
         "quote": "You may request a transfer up to eight times in each 12-month period."
-      }
+      },
+      "ato": [
+        {
+          "doc": "form:super-roll-over-to-another-fund",
+          "quote": "You can request a rollover up to four times in each 12-month period starting from your last portability rollover."
+        }
+      ]
     },
     {
       "id": "portability",
@@ -656,6 +663,154 @@
         "doc": "hsw",
         "quote": "the inbuilt terminal medical condition benefits is 12 months"
       }
+    },
+    {
+      "id": "hardship-processing",
+      "topic": "Access",
+      "task": "Financial hardship request completed",
+      "aliases": [
+        "how long hardship",
+        "how long does a hardship claim take",
+        "hardship processing time"
+      ],
+      "timeframe": "Aim: within 5 working days",
+      "starts": "When we receive the application and everything needed",
+      "kind": "form",
+      "calc": {
+        "type": "business_days",
+        "n": 5
+      },
+      "say": "Once we've received your application with everything we need, we aim to complete it within five working days. Missing documents will delay it.",
+      "ato": [
+        {
+          "doc": "form:super-withdraw-your-super-due-to-financial-hardship",
+          "quote": "Once we’ve received your application, we aim to complete your request within five working days."
+        }
+      ]
+    },
+    {
+      "id": "rollover-in",
+      "topic": "Account",
+      "task": "Rolling super in from another fund (combining)",
+      "aliases": [
+        "how long to roll in",
+        "how long to combine my super",
+        "how long rollover in",
+        "consolidate how long"
+      ],
+      "timeframe": "Generally about 5 business days",
+      "starts": "When we receive the form and request it from the other fund",
+      "kind": "form",
+      "calc": {
+        "type": "business_days",
+        "n": 5
+      },
+      "say": "Rollovers in generally take about five business days. It can take longer if details are wrong or the other fund needs more information, so it helps to follow up with them too.",
+      "ato": [
+        {
+          "doc": "form:super-combine-your-super",
+          "quote": "Rollovers generally take about five business days to be completed."
+        }
+      ]
+    },
+    {
+      "id": "rollover-out-time",
+      "topic": "Account",
+      "task": "Rolling super out to another fund",
+      "aliases": [
+        "how long rollover out",
+        "how long to roll over to another fund",
+        "how long does a rollover take"
+      ],
+      "timeframe": "May take up to 30 days",
+      "starts": "When we receive the request",
+      "kind": "form",
+      "calc": {
+        "type": "days",
+        "n": 30
+      },
+      "say": "A rollover to another fund may take up to 30 days.",
+      "ato": [
+        {
+          "doc": "form:super-roll-over-to-another-fund",
+          "quote": "It may take up to 30 days to rollover your benefit."
+        }
+      ]
+    },
+    {
+      "id": "tpa-processing",
+      "topic": "Account",
+      "task": "Third party authority processed",
+      "aliases": [
+        "how long third party authority",
+        "how long tpa"
+      ],
+      "timeframe": "Generally 1 to 3 business days",
+      "starts": "When we receive the form",
+      "kind": "form",
+      "calc": {
+        "type": "business_days",
+        "n": 3
+      },
+      "say": "A third party authority generally takes one to three business days to process. It lasts 24 months from when you sign it, unless you cancel it sooner.",
+      "ato": [
+        {
+          "doc": "form:super-third-party-authority-form",
+          "quote": "Your request will generally take one to three business days to be processed"
+        },
+        {
+          "doc": "form:super-third-party-authority-form",
+          "quote": "this authority will remain in effect for a period of 24 months from the date I sign this form unless revoked by me on an earlier date."
+        }
+      ]
+    },
+    {
+      "id": "investment-form",
+      "topic": "Investment",
+      "task": "Investment choice form must reach us",
+      "aliases": [
+        "investment choice form deadline"
+      ],
+      "timeframe": "Within 30 days of being signed",
+      "starts": "The date the form is signed",
+      "kind": "form",
+      "calc": {
+        "type": "days",
+        "n": 30
+      },
+      "say": "The investment choice form needs to reach us within 30 days of being signed, and it only changes the one account named on it.",
+      "ato": [
+        {
+          "doc": "form:super-manage-your-investment-choices",
+          "quote": "The form must be received by UniSuper within 30 days of being signed."
+        },
+        {
+          "doc": "form:super-manage-your-investment-choices",
+          "quote": "Applications made on this Investment choice form only apply to the account you nominate in Section 1."
+        }
+      ]
+    },
+    {
+      "id": "ilba-declaration",
+      "topic": "Account",
+      "task": "Keep-my-account-active declaration lasts",
+      "aliases": [
+        "keep my low balance account active"
+      ],
+      "timeframe": "16 months",
+      "starts": "When the declaration is made",
+      "kind": "form",
+      "calc": {
+        "type": "months",
+        "n": 16
+      },
+      "say": "The declaration to keep a low-balance account active is valid for 16 months.",
+      "ato": [
+        {
+          "doc": "form:super-keep-your-low-balance-account-active",
+          "quote": "I understand this written declaration is only valid for 16 months."
+        }
+      ]
     }
   ]
 }

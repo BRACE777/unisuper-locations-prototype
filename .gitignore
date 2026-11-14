@@ -11,3 +11,6 @@ companion/sources/
 companion/data/pages.json
 # Local-only notes (team shorthand, internal processing times)
 companion/data/*.local.json
+
+# Call companion: text extracted from the downloaded PDF forms
+companion/data/form-pages.json

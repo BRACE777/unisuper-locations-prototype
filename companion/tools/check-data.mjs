@@ -15,6 +15,12 @@ const atoDocs = new Set(read('ato-excerpts.json').pages.map((a) => a.id));
 atoDocs.forEach((id) => docs.add(id));
 const webDocs = new Set(read('web-excerpts.json').pages.map((w) => w.id));
 webDocs.forEach((id) => docs.add(id));
+// PDF forms: run tools/fetch-form-pdfs.mjs to download them and extract their text.
+const formFile = new URL('data/form-pages.json', root);
+const formDocs = new Set(existsSync(formFile) ? JSON.parse(readFileSync(formFile, 'utf8')).forms.map((f) => f.id) : []);
+formDocs.forEach((id) => docs.add(id));
+// Supplementary sources (ATO, UniSuper website, UniSuper forms) sit under the PDS, never in its place.
+const SUPP = /^(ato-|web-|form:)/;
 const problems = [];
 
 function walkQuotes(file, node, path = file) {
@@ -65,7 +71,11 @@ if (timeframes) {
   walkQuotes('timeframes.json', timeframes);
   uniqueIds('timeframes.json', timeframes.items);
   requireFields('timeframes.json', timeframes.items, ['task', 'timeframe', 'kind', 'say']);
-  for (const t of timeframes.items) if (t.kind !== 'internal' && !t.source) problems.push(`timeframes.json: "${t.id}" has no source`);
+  // kind 'form': the timeframe is stated in a UniSuper form (quoted in 'ato'), not the PDS.
+  for (const t of timeframes.items) {
+    if (t.kind === 'form') { if (!(t.ato ?? []).some((s) => s.doc.startsWith('form:'))) problems.push(`timeframes.json: "${t.id}" is kind 'form' but quotes no form`); }
+    else if (t.kind !== 'internal' && !t.source) problems.push(`timeframes.json: "${t.id}" has no source`);
+  }
 }
 
 const cards = loadRules(root);
@@ -77,8 +87,8 @@ for (const c of cards) for (const s of c.see) if (!cardIds.has(s)) problems.push
 const PRODUCTS = new Set(['super', 'dbd', 'rp', 'ttr', 'bis']);
 // The PDS is the primary source: a card's main sources must be PDS documents, ATO only in 'ato'.
 for (const c of cards) {
-  for (const s of c.sources ?? []) if (atoDocs.has(s.doc)) problems.push(`rules/${c.file}: "${c.id}" cites ATO as a primary source; move it to 'ato'`);
-  for (const s of c.ato ?? []) if (!atoDocs.has(s.doc)) problems.push(`rules/${c.file}: "${c.id}" has a non-ATO document in 'ato'`);
+  for (const s of c.sources ?? []) if (SUPP.test(s.doc)) problems.push(`rules/${c.file}: "${c.id}" cites ${s.doc} as a primary source; move it to 'ato'`);
+  for (const s of c.ato ?? []) if (!SUPP.test(s.doc)) problems.push(`rules/${c.file}: "${c.id}" has a PDS document in 'ato' (supplementary only)`);
 }
 for (const c of cards) for (const p of c.products) if (!PRODUCTS.has(p)) problems.push(`rules/${c.file}: "${c.id}" has unknown product "${p}"`);
 
@@ -117,10 +127,10 @@ if (explainers) {
     if (!ok) problems.push(`explainers.json: "${e.id}" links to something that doesn't exist: ${JSON.stringify(l)}`);
   }
   for (const e of explainers.items) for (const s of e.also ?? []) {
-    if (!/^(ato|web)-/.test(s.doc)) problems.push(`explainers.json: "${e.id}" has a PDS quote in 'also'; put it in 'source'`);
+    if (!SUPP.test(s.doc)) problems.push(`explainers.json: "${e.id}" has a PDS quote in 'also'; put it in 'source'`);
   }
   for (const e of explainers.items) for (const s of [].concat(e.source)) {
-    if (/^(ato|web)-/.test(s.doc)) problems.push(`explainers.json: "${e.id}" cites ${s.doc} as a primary source; move it to 'also'`);
+    if (SUPP.test(s.doc)) problems.push(`explainers.json: "${e.id}" cites ${s.doc} as a primary source; move it to 'also'`);
   }
 
   // Every dollar figure in an explainer must exist somewhere we have verified.

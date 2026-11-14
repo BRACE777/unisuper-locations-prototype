@@ -1030,8 +1030,8 @@
               ],
               [
                 "Concessional cap",
-                "{{split-cap:Still counts towards yours}}",
-                "{{split-cap:Doesn't count towards theirs}}"
+                "Still counts towards yours",
+                "Doesn't count towards theirs"
               ],
               [
                 "When it can be accessed",
@@ -1048,7 +1048,7 @@
         "Spouse: under 60 whether working or not; 60 to 64 only if not permanently retired and hasn't ceased an employment arrangement; never 65 or over.",
         "Order: the notice of intent must be acknowledged before the split request, or the deduction is lost.",
         "Ownership: once transferred, the split amount belongs to the spouse. It's part of their balance, it's preserved, and they can only access it when they meet a condition of release.",
-        "Caps: {{split-cap:the split amount still counts towards the member's own concessional cap, not the spouse's}}.",
+        "Caps: the split amount still counts towards the member's own concessional cap, not the spouse's.",
         {
           "example": "$20,000 of concessional contributions last year: up to $17,000 can move to the spouse this year."
         },
@@ -1089,6 +1089,12 @@
         "contribution splitting",
         "Contribution splitting",
         "contribution split"
+      ],
+      "also": [
+        {
+          "doc": "form:super-split-contributions-with-your-spouse",
+          "quote": "It doesn’t reduce the amount counted towards your concessional (before-tax) contributions cap."
+        }
       ]
     },
     {

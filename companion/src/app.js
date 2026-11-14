@@ -71,7 +71,7 @@
   function fmtDate(d) { return d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }); }
   function issued(id) {
     var d = DOCS[id];
-    if (!d) return '';
+    if (!d || !d.issued) return '';
     var p = d.issued.split('-');
     return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
   }
@@ -91,17 +91,20 @@
       '<q>' + esc(s.label || s.quote) + '</q></div>';
   }
   function sourcesHtml(list, ato) {
-    return '<footer class="sources"><span class="label">' + (list.length > 1 ? 'Sources' : 'Source') + ' · UniSuper PDS</span>' + list.map(sourceHtml).join('') +
+    // A card sourced only from a form or the website has no PDS line.
+    return '<footer class="sources">' + (list.length ? '<span class="label">' + (list.length > 1 ? 'Sources' : 'Source') + ' · UniSuper PDS</span>' : '') + list.map(sourceHtml).join('') +
       (ato && ato.length ? atoHtml(ato) : '') + '</footer>';
   }
   // Supplementary material (ATO pages, UniSuper's public website): shown under the PDS source, never instead of it.
   function atoHtml(list) {
-    return [['ato', 'ATO · supplementary'], ['web', 'UniSuper website · supplementary']].map(function (k) {
+    return [['form', 'UniSuper form · supplementary'], ['web', 'UniSuper website · supplementary'], ['ato', 'ATO · supplementary']].map(function (k) {
       var group = list.filter(function (s) { return (DOCS[s.doc] || {}).kind === k[0]; });
       return group.length ? '<div class="ato"><span class="label">' + k[1] + '</span>' + group.map(function (s) {
         var d = DOCS[s.doc];
-        return '<div class="src"><a href="' + esc(d.url) + '" target="_blank" rel="noopener"><span class="src-doc">' + esc(d.title) + '</span>' +
-          '<span class="src-meta">' + (d.updated ? 'updated ' + esc(d.updated) + ' · ' : '') + 'read ' + esc(isoText(d.retrieved)) + ' ↗</span></a>' +
+        var meta = d.kind === 'form' ? (d.issued ? 'issued ' + esc(isoText(d.issued)) : 'form') + (s.page ? ' · p.' + s.page : '')
+          : (d.updated ? 'updated ' + esc(d.updated) + ' · ' : '') + 'read ' + esc(isoText(d.retrieved));
+        return '<div class="src"><a href="' + esc(d.url + (d.kind === 'form' && s.page ? '#page=' + s.page : '')) + '" target="_blank" rel="noopener"><span class="src-doc">' + esc(d.title) + (d.kind === 'form' ? ' (form)' : '') + '</span>' +
+          '<span class="src-meta">' + meta + ' ↗</span></a>' +
           '<q>' + esc(s.quote) + '</q></div>';
       }).join('') + '</div>' : '';
     }).join('');
@@ -319,13 +322,14 @@
       .concat(f.phone ? ['Phone: ' + f.phone] : [])
       .concat(steps.length ? ['On the website: ' + steps.map(function (s) { return s.replace(/<[^>]+>/g, ''); }).join(', then ')] : [])
       .concat(f.requirements || []).join('\n');
-    var srcs = [f.pds, f.account_source].filter(Boolean);
+    var srcs = [f.pds, f.account_source].filter(function (s) { return s && !/^form:/.test(s.doc); });
+    var formSrcs = [f.account_source].filter(function (s) { return s && /^form:/.test(s.doc); }).concat(f.form_quotes || []);
     return '<article class="card" data-id="' + esc(f.id) + '">' + head(f.group + ' form', badges) +
       '<h3 class="card-title">' + esc(f.title) + '</h3>' +
       (f.summary ? '<p class="detail">' + annotate(esc(f.summary), seen) + '</p>' : '') + say +
       (steps.length ? '<ol class="steps">' + steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol>' : '') +
       account + (f.phone ? '<div class="row-line"><span class="label">Phone</span><span class="num">' + esc(f.phone) + '</span></div>' : '') + reqs +
-      (srcs.length ? sourcesHtml(srcs) : '') +
+      (srcs.length || formSrcs.length ? sourcesHtml(srcs, formSrcs) : '') +
       '<div class="actions">' +
       (f.online ? '<a class="btn solid" href="' + esc(f.online) + '" target="_blank" rel="noopener">' + esc(f.online_label || 'Complete online') + ' ↗</a>' : '') +
       (f.pdf ? '<a class="btn" href="' + esc(f.pdf) + '" target="_blank" rel="noopener">Open PDF ↗</a><button class="btn" data-copy="' + esc(f.pdf) + '">Copy PDF link</button>' : '') +
@@ -340,14 +344,14 @@
   function shortDate(d) { return d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }); }
   function timeframeCard(t) {
     var seen = {}, due = dueDate(t);
-    var kind = { pds: 'PDS', law: 'Law', internal: 'Internal' }[t.kind] || t.kind;
+    var kind = { pds: 'PDS', law: 'Law', internal: 'Internal', form: 'Form' }[t.kind] || t.kind;
     return '<article class="card" data-id="' + esc(t.id) + '">' + head((t.topic || 'Timeframe') + ' · timeframe', badge(kind, t.kind === 'internal' ? 'caution' : '')) +
       '<h3 class="card-title">' + esc(t.task) + '</h3>' +
       // A count in plain days is taken as calendar days (an assumption the PDS doesn't settle).
       '<div class="figure-line">' + (t.calc && t.calc.type === 'days' ? assumeSpan('calendar-days', esc(t.timeframe)) : esc(t.timeframe)) + '</div>' +
       (due ? '<div class="due-line"><span class="label">If the clock starts today</span><b>' + esc(shortDate(due)) + '</b></div>' : '') +
       (t.starts ? '<div class="meta">Clock starts: ' + rich(t.starts) + '</div>' : '') +
-      '<div class="say"><span class="label">Say</span><p>' + annotate(esc(t.say), seen) + '</p></div>' + (t.source ? sourcesHtml([t.source], t.ato) : '') +
+      '<div class="say"><span class="label">Say</span><p>' + annotate(esc(t.say), seen) + '</p></div>' + (t.source || (t.ato && t.ato.length) ? sourcesHtml(t.source ? [t.source] : [], t.ato) : '') +
       '<div class="actions"><button class="btn" data-main-copy data-copy="' + esc(plain(t.say)) + '">Copy wording</button>' +
       (t.calc ? '<button class="btn ghost" data-calc-preset="' + esc(t.id) + '">Work out the date →</button>' : '') + '</div></article>';
   }

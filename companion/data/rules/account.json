@@ -171,6 +171,17 @@
           "doc": "hsw",
           "quote": "If you're not transferring the entire amount out of your UniSuper account then you must leave at least $6,000 in your account."
         }
+      ],
+      "detail": "The rollover form says {{rollover-limit:up to four rollovers in any 12 months}}, against eight in How super works. It also says a rollover may take up to 30 days.",
+      "ato": [
+        {
+          "doc": "form:super-roll-over-to-another-fund",
+          "quote": "You can request a rollover up to four times in each 12-month period starting from your last portability rollover."
+        },
+        {
+          "doc": "form:super-roll-over-to-another-fund",
+          "quote": "It may take up to 30 days to rollover your benefit."
+        }
       ]
     },
     {

@@ -44,6 +44,7 @@ From the repository root:
 
 ```bash
 npm run companion:sources   # download the 7 PDFs, extract page text (once, and when a PDS changes)
+node companion/tools/fetch-form-pdfs.mjs   # download the 41 PDF forms and extract their text (once, and when forms change)
 npm run companion:build     # check all data, build companion.html and the workbook
 npm run companion:test      # search, dates and drawdown tests
 npm run companion:workbook-check   # recalculates the workbook in Excel and checks 21 scenarios
@@ -70,6 +71,7 @@ Needs Node 20+, `pdftotext` (Poppler), Python with `openpyxl`, and Excel for the
 | `web-excerpts.json` | UniSuper website wording (Retirement Bonus page), supplementary to the PDS | Hand, from a browser visit |
 | `forms-extra.json` | Directions, requirements and keywords added to each form | Hand |
 | `forms.json` | Generated from the public forms page plus `forms-extra.json` | `tools/fetch-forms.mjs` |
+| `form-pages.json` | Text of the 41 PDF forms, one entry per page, with each form's printed issue date. Git-ignored, like `pages.json` | `tools/fetch-form-pdfs.mjs` |
 | `holidays.json` | Grand Final eve holiday (set yearly by the Victorian Government) | Hand |
 | `sources.json` | The seven PDFs, issue dates and hashes | `tools/fetch-sources.mjs` |
 
@@ -120,6 +122,8 @@ The built page is committed in `site/` and published by the repository's GitHub 
 The UniSuper PDS is the primary source for every card. 24 rule cards and 3 timeframes also show an **ATO · supplementary** block with the relevant ATO page, its "last updated" date and the sentence that backs the rule up (for example the co-contribution age limit of 71, which the PDS doesn't mention). The build refuses a card that cites the ATO as its main source.
 
 ato.gov.au refuses automated downloads, so the ATO wording was copied from ordinary browser visits into `data/ato-excerpts.json` (15 pages, read 13 Nov 2026). Every ATO quote on a card is checked against that file. The same applies to UniSuper's public website: `data/web-excerpts.json` holds the Retirement Bonus page wording (rate, $14,700 lifetime cap, clawback), shown as "UniSuper website · supplementary" under the PDS source. To refresh: open each page listed there, compare, and update the excerpt, `updated` and `retrieved`.
+
+The 41 PDF forms are a third supplementary source. `tools/fetch-form-pdfs.mjs` downloads them into `sources/forms/` (git-ignored) and extracts their text into `data/form-pages.json`, so a card can quote a form by page, shown as "UniSuper form · supplementary" with the form's issue date. `check-data` finds each quote word for word, like a PDS quote. Timeframes stated only in a form (hardship processing, rollovers in and out, third party authority) have `kind: 'form'`. Form cards list what the form itself says under its requirements, with the form's own words as the source (`form_quotes` in `forms-extra.json`). Where a form and the PDS disagree (rollovers out: four a year on the form, eight in How super works), the card shows both and underlines it. Form text isn't shipped in the page; the "PDS text" search stays PDS-only.
 
 ## Credits and licences
 

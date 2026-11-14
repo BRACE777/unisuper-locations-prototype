@@ -391,8 +391,17 @@
         {
           "doc": "ato-offsets",
           "quote": "The tax offset amount reduces when your spouse's income is greater than $37,000. It phases out when your spouse’s income reaches $40,000."
+        },
+        {
+          "doc": "form:super-contribute-to-your-spouse-s-super",
+          "quote": "We can’t accept spouse contributions if your spouse is aged 75 or older."
+        },
+        {
+          "doc": "form:super-contribute-to-your-spouse-s-super",
+          "quote": "Spouse contributions are not eligible for the government co‑contribution."
         }
-      ]
+      ],
+      "detail": "Spouse contributions can't be accepted once the spouse is 75, and don't attract a government co-contribution."
     },
     {
       "id": "split-rules",
@@ -411,7 +420,7 @@
         "split super with spouse"
       ],
       "a": "Up to the lesser of 85% of concessional contributions or the concessional cap, to a spouse under 60, or 60 to 64 and not retired. Usually last year's contributions, by 30 June; once a year. Lodge any notice of intent first.",
-      "detail": "Can be done in the same year if the whole balance is leaving. May be refused if the balance would fall below $6,000. Non-concessional contributions, rollovers and co-contributions can't be split. Once transferred, the split money belongs to the spouse and is preserved in their account; {{split-cap:it still counts towards the member's own concessional cap}}.",
+      "detail": "Can be done in the same year if the whole balance is leaving. May be refused if the balance would fall below $6,000. Non-concessional contributions, rollovers and co-contributions can't be split. Once transferred, the split money belongs to the spouse and is preserved in their account; it still counts towards the member's own concessional cap.",
       "sources": [
         {
           "doc": "hsw",
@@ -434,6 +443,14 @@
         {
           "doc": "ato-split",
           "quote": "Note: You can only apply once to split contributions made to a particular super fund in a financial year."
+        },
+        {
+          "doc": "form:super-split-contributions-with-your-spouse",
+          "quote": "It doesn’t reduce the amount counted towards your concessional (before-tax) contributions cap."
+        },
+        {
+          "doc": "form:super-split-contributions-with-your-spouse",
+          "quote": "Contributions must be split before your transfer or withdrawal is processed."
         }
       ]
     },

@@ -278,6 +278,12 @@
         "nonbinding",
         "reversionary-what",
         "bdbn-how"
+      ],
+      "ato": [
+        {
+          "doc": "form:super-nominate-a-binding-beneficiary",
+          "quote": "If you have a super and income stream account and you have different binding death benefit nomination instructions for each one, you’ll need to complete two separate forms."
+        }
       ]
     },
     {

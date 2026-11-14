@@ -46,12 +46,14 @@ const bundle = {
   built: new Date().toISOString().slice(0, 10),
   sources: sources.documents.map(({ id, title, issued, url }) => ({ id, title, issued, url, kind: 'pds' }))
     .concat(read('data/ato-excerpts.json').pages.map(({ id, title, url, updated }) => ({ id, title, url, updated, kind: 'ato', retrieved: read('data/ato-excerpts.json').retrieved })))
-    .concat(read('data/web-excerpts.json').pages.map(({ id, title, url, retrieved }) => ({ id, title, url, kind: 'web', retrieved: retrieved || read('data/web-excerpts.json').retrieved }))),
+    .concat(read('data/web-excerpts.json').pages.map(({ id, title, url, retrieved }) => ({ id, title, url, kind: 'web', retrieved: retrieved || read('data/web-excerpts.json').retrieved })))
+    .concat((readOptional('data/form-pages.json') || { forms: [] }).forms.map(({ id, title, url, issued }) => ({ id, title, url, issued, kind: 'form' }))),
   rates, glossary, rules,
   forms: forms.forms, formsPage: forms.page, formsGenerated: forms.generated,
   timeframes: timeframes.items, explainers: explainers.items, holidays: holidays.extra,
   procedures: read('data/procedures.json').items, assumptions: read('data/assumptions.json').items, members: read('data/members.json').members,
-  pages: pages.map(({ doc, page, text }) => ({ doc, page, text: text.replace(/\r/g, '').replace(/[ \t]+/g, ' ') })),
+  // PDS text only: the page's full-text search is over the PDS. Form text is for checking quotes, not shipped.
+  pages: pages.filter(({ doc }) => !doc.startsWith('form:')).map(({ doc, page, text }) => ({ doc, page, text: text.replace(/\r/g, '').replace(/[ \t]+/g, ' ') })),
   local: { glossary: !!localGlossary, timeframes: !!localTimeframes },
 };
 addPages([bundle.rates, bundle.rules, bundle.forms, bundle.timeframes, bundle.explainers, bundle.procedures]);
@@ -78,4 +80,4 @@ mkdirSync(site, { recursive: true });
 writeFileSync(new URL('index.html', site), html);
 
 const kb = Math.round(Buffer.byteLength(html) / 1024);
-console.log(`Built dist/companion.html (${kb} KB): ${rules.length} rule cards, ${bundle.forms.length} forms, ${bundle.timeframes.length} timeframes, ${bundle.explainers.length} explainers, ${bundle.pages.filter((p) => p.page > 0).length} PDS pages, ${bundle.sources.filter((d) => d.kind === 'ato').length} ATO pages (supplementary).`);
+console.log(`Built dist/companion.html (${kb} KB): ${rules.length} rule cards, ${bundle.forms.length} forms, ${bundle.timeframes.length} timeframes, ${bundle.explainers.length} explainers, ${bundle.pages.filter((p) => p.page > 0).length} PDS pages, ${bundle.sources.filter((d) => d.kind === 'ato').length} ATO pages and ${bundle.sources.filter((d) => d.kind === 'form').length} PDF forms (supplementary).`);

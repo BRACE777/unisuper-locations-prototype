@@ -1,6 +1,6 @@
 // Finds a verbatim quote in the extracted PDS pages so every card can cite a page number.
 // Matching ignores case, whitespace, curly-vs-straight quotes and dash style, nothing else.
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 
 export function normalise(s) {
   return s
@@ -23,6 +23,9 @@ export function loadPages(root) {
   // UniSuper website excerpts work the same way.
   const web = JSON.parse(readFileSync(new URL('data/web-excerpts.json', root), 'utf8'));
   for (const w of web.pages) pages.push({ doc: w.id, page: 0, text: w.excerpts.join('\n') });
+  // The PDF forms (downloaded by tools/fetch-form-pdfs.mjs), cited by page like the PDS. Supplementary.
+  const formFile = new URL('data/form-pages.json', root);
+  if (existsSync(formFile)) pages.push(...JSON.parse(readFileSync(formFile, 'utf8')).pages);
   return pages.map((p) => ({ ...p, norm: normalise(p.text) }));
 }
 

@@ -4,18 +4,27 @@
     "super-withdraw-your-super-on-compassionate-grounds": {
       "keywords": "compassionate grounds early release medical treatment mortgage ato",
       "requirements": [
-        "Compassionate grounds are approved by the ATO, not UniSuper: the member applies to the ATO first."
+        "Compassionate grounds are approved by the ATO, not UniSuper: the member applies to the ATO first.",
+        "The ATO approves first; then this form, for up to the approved amount. Australian or NZ citizens and permanent residents only."
       ],
       "pds": {
         "doc": "hsw",
         "quote": "you must apply directly to the ATO"
-      }
+      },
+      "form_quotes": [
+        {
+          "doc": "form:super-withdraw-your-super-on-compassionate-grounds",
+          "quote": "you can only apply for a payment on compassionate grounds if you’re a citizen or permanent resident of Australia or New Zealand."
+        }
+      ]
     },
     "super-withdraw-your-super-due-to-financial-hardship": {
       "keywords": "hardship severe financial hardship early access centrelink income support",
       "requirements": [
         "Must be receiving eligible Commonwealth income support.",
-        "Applied for through the Trustee (UniSuper)."
+        "Applied for through the Trustee (UniSuper).",
+        "$1,000 to $10,000; one release (from any fund) in 12 months.",
+        "Not available if with UniSuper less than three months. Joined less than 12 months ago: include statements for the last 12 months, other funds too."
       ],
       "account_path": {
         "path": "Super withdrawal",
@@ -24,7 +33,17 @@
       "pds": {
         "doc": "hsw",
         "quote": "You must be receiving eligible government income support benefits to qualify."
-      }
+      },
+      "form_quotes": [
+        {
+          "doc": "form:super-withdraw-your-super-due-to-financial-hardship",
+          "quote": "The minimum amount that can be withdrawn is $1,000, and the maximum amount is $10,000."
+        },
+        {
+          "doc": "form:super-withdraw-your-super-due-to-financial-hardship",
+          "quote": "If you joined UniSuper less than 12 months ago, you must provide super statements covering the last 12 months with your application, including statements from your other super fund/s."
+        }
+      ]
     },
     "super-withdraw-your-super": {
       "keywords": "withdraw lump sum take money out cash retire condition of release",
@@ -34,7 +53,19 @@
       },
       "requirements": [
         "A condition of release must be met.",
-        "Proof of identity may be requested."
+        "Proof of identity may be requested.",
+        "Balance under $6,000: full withdrawal only.",
+        "UniSuper may check with the employer that work has ended."
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:super-withdraw-your-super",
+          "quote": "If your account balance is less than $6,000, you can only request a full withdrawal."
+        },
+        {
+          "doc": "form:super-withdraw-your-super",
+          "quote": "UniSuper may need to verify your cessation of employment with the relevant employer."
+        }
       ]
     },
     "super-request-family-law-information": {
@@ -51,12 +82,19 @@
         "quote": "You can provide your TFN within the `Personal details' section of your online account."
       },
       "requirements": [
-        "Also used to make or update a non-binding nomination for super members."
+        "Also used to make or update a non-binding nomination for super members.",
+        "A name change needs certified ID plus a linking document."
       ],
       "pds": {
         "doc": "hsw",
         "quote": "To make or update a non-binding death benefit nomination, you must complete the Change of details form available at unisuper.com.au/forms."
-      }
+      },
+      "form_quotes": [
+        {
+          "doc": "form:super-change-your-personal-details",
+          "quote": "If you’re changing your name, you’re required to provide certified proof of identity (POI) documents, in addition to a linking document."
+        }
+      ]
     },
     "super-third-party-authority-form": {
       "keywords": "third party authority tpa adviser accountant family speak on behalf son daughter for me my",
@@ -68,6 +106,15 @@
         "let my adviser access my account",
         "let my financial adviser access my account",
         "someone to call on my behalf"
+      ],
+      "requirements": [
+        "Lasts 24 months unless cancelled. The person can't change details or make transactions."
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:super-third-party-authority-form",
+          "quote": "I understand that this authority will not allow the nominated person to change my personal details or carry out any transactions on my behalf."
+        }
       ]
     },
     "super-nominate-a-binding-beneficiary": {
@@ -80,17 +127,26 @@
         "Online: non-lapsing nominations only.",
         "Lapsing nominations: paper form only, signed in front of two witnesses aged 18 or over who aren't beneficiaries.",
         "Allocations must add up to exactly 100%.",
-        "Can't be signed by a power of attorney."
+        "Can't be signed by a power of attorney.",
+        "Different instructions for super and a pension need two separate forms."
       ],
       "pds": {
         "doc": "hsw",
         "quote": "Lapsing Binding death benefit nomination requests will need to be completed via the Binding death benefit nomination form"
-      }
+      },
+      "form_quotes": [
+        {
+          "doc": "form:super-nominate-a-binding-beneficiary",
+          "quote": "If you have a super and income stream account and you have different binding death benefit nomination instructions for each one, you’ll need to complete two separate forms."
+        }
+      ]
     },
     "super-make-an-after-tax-voluntary-contribution-by-cheque": {
       "keywords": "cheque after-tax personal contribution non-concessional voluntary",
       "requirements": [
-        "A TFN is needed before personal contributions can be accepted."
+        "A TFN is needed before personal contributions can be accepted.",
+        "No TFN, no after-tax contributions.",
+        "At 75: must arrive within 28 days after the end of the birthday month."
       ],
       "pds": {
         "doc": "hsw",
@@ -100,6 +156,16 @@
         "bpay contribution",
         "make a personal contribution",
         "pay into my super"
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:super-make-an-after-tax-voluntary-contribution-by-cheque",
+          "quote": "We cannot accept any after-tax (non-concessional) contributions from members who have not provided their TFN."
+        },
+        {
+          "doc": "form:super-make-an-after-tax-voluntary-contribution-by-cheque",
+          "quote": "Voluntary contributions can generally be accepted up to 28 days after the end of the month of your 75th birthday"
+        }
       ]
     },
     "super-change-default-member-contributions": {
@@ -108,7 +174,7 @@
     "super-notice-of-intent-to-claim-a-tax-deduction": {
       "keywords": "noi notice of intent tax deduction personal contribution claim vary s290",
       "account_path": {
-        "path": "Manage account, Notice of intent to claim a tax deduction",
+        "path": "Manage account > Manage your super > Notice of intent to claim a deduction for after-tax contributions",
         "verified": true
       },
       "account_source": {
@@ -118,10 +184,25 @@
       "requirements": [
         "Must be acknowledged before the tax return is lodged, or by the end of the next financial year, whichever is first.",
         "Must be lodged before the contributions are rolled over, withdrawn, split or used to start a pension."
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:super-notice-of-intent-to-claim-a-tax-deduction",
+          "quote": "Select Manage account > Manage your super > Notice of intent to claim a deduction for after-tax contributions."
+        }
       ]
     },
     "super-contribute-to-your-spouse-s-super": {
-      "keywords": "spouse contribution tax offset partner"
+      "keywords": "spouse contribution tax offset partner",
+      "requirements": [
+        "Not accepted once the spouse is 75; no government co-contribution."
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:super-contribute-to-your-spouse-s-super",
+          "quote": "We can’t accept spouse contributions if your spouse is aged 75 or older."
+        }
+      ]
     },
     "super-split-contributions-with-your-spouse": {
       "keywords": "contribution splitting spouse split concessional",
@@ -129,7 +210,14 @@
         "By 30 June of the year after the contributions.",
         "Spouse must be under 60, or 60 to 64 and not retired.",
         "Lodge any notice of intent first.",
-        "May be refused if the balance would fall below $6,000."
+        "May be refused if the balance would fall below $6,000.",
+        "Split before any transfer or withdrawal is processed; once a financial year."
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:super-split-contributions-with-your-spouse",
+          "quote": "Contributions can only be split once in any financial year."
+        }
       ]
     },
     "super-opt-into-the-defined-benefit-division": {
@@ -162,7 +250,14 @@
         "verified": false
       },
       "requirements": [
-        "Online switches before 2pm on a Melbourne business day are processed two business days later."
+        "Online switches before 2pm on a Melbourne business day are processed two business days later.",
+        "Changes one account only; must arrive within 30 days of signing."
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:super-manage-your-investment-choices",
+          "quote": "The form must be received by UniSuper within 30 days of being signed."
+        }
       ]
     },
     "super-combine-your-super": {
@@ -178,17 +273,40 @@
       },
       "requirements": [
         "Check the effect on insurance in the other fund before combining.",
-        "UniSuper can't accept transfers from UK pensions or KiwiSaver accounts."
+        "UniSuper can't accept transfers from UK pensions or KiwiSaver accounts.",
+        "One form per fund. Check insurance in the other fund first, and lodge any notice of intent with that fund before rolling over."
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:super-combine-your-super",
+          "quote": "If you’re rolling over more than one account, you’ll need to complete a form for each rollover."
+        }
       ]
     },
     "super-transfer-your-super-to-kiwisaver": {
-      "keywords": "kiwisaver new zealand moving trans-tasman"
+      "keywords": "kiwisaver new zealand moving trans-tasman",
+      "requirements": [
+        "Only after permanently emigrating to New Zealand; full balance only; one form per account."
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:super-transfer-your-super-to-kiwisaver",
+          "quote": "You must transfer your full balance—partial transfers are not available."
+        }
+      ]
     },
     "super-roll-over-to-another-fund": {
       "keywords": "rollover transfer out portability leave another fund",
       "requirements": [
         "Up to eight transfers in any 12 months.",
-        "A partial transfer must leave at least $6,000."
+        "A partial transfer must leave at least $6,000.",
+        "The form says up to four rollovers in 12 months; How super works says eight. Check before quoting. May take up to 30 days."
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:super-roll-over-to-another-fund",
+          "quote": "It may take up to 30 days to rollover your benefit."
+        }
       ]
     },
     "pension-withdraw-your-flexi-pension": {
@@ -200,7 +318,14 @@
       "requirements": [
         "Minimum $2,000.",
         "TTR pensions: only in limited circumstances.",
-        "Usually paid within five business days."
+        "Usually paid within five business days.",
+        "Minimum $2,000. If under $10,000 would be left, the rest is paid out."
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:pension-withdraw-your-flexi-pension",
+          "quote": "Flexi Pension accounts require a minimum balance of $10,000 to remain open."
+        }
       ]
     },
     "pension-change-your-personal-details-or-pension-payments": {
@@ -223,7 +348,16 @@
       "account_source": {
         "doc": "flexi",
         "quote": "You can change your bank account, income amount, payment frequency and other personal details online."
-      }
+      },
+      "requirements": [
+        "Certified ID must be attached; payments only to an account in the member's name; up to four accounts."
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:pension-change-your-bank-account-details",
+          "quote": "You’ll need to attach your certified ID to this form so we can update your bank account details."
+        }
+      ]
     },
     "pension-nominate-a-reversionary-beneficiary": {
       "keywords": "reversionary beneficiary pension continue spouse",
@@ -312,7 +446,14 @@
     "insurance-increase-your-cover-after-a-life-event": {
       "keywords": "life events marriage child mortgage salary increase",
       "requirements": [
-        "Under age 55."
+        "Under age 55.",
+        "Apply within 90 days, with evidence of the life event. A pre-existing condition exclusion applies for at least 24 months."
+      ],
+      "form_quotes": [
+        {
+          "doc": "form:insurance-increase-your-cover-after-a-life-event",
+          "quote": "If the Insurer accepts your Life Events cover application, a pre-existing condition exclusion will apply for a minimum of 24 months after your Life Events cover starts."
+        }
       ]
     },
     "insurance-transfer-your-cover": {
@@ -347,12 +488,19 @@
         "Minimum $25,000.",
         "Under 60: an ATO TFN declaration.",
         "Lodge any notice of intent first.",
-        "Online only for Retirement Phase, members over 60."
+        "Online only for Retirement Phase, members over 60.",
+        "Lodge any notice of intent, and get the acknowledgement, before applying."
       ],
       "pds": {
         "doc": "flexi",
         "quote": "Only available for UniSuper Accumulation 1, Accumulation 2 and Personal Account members over age 60."
-      }
+      },
+      "form_quotes": [
+        {
+          "doc": "form:pension-apply-retirement-ttr",
+          "quote": "You must lodge a notice of intent to claim or vary a deduction for personal super contributions and receive an acknowledgement from your super fund before you apply."
+        }
+      ]
     },
     {
       "id": "pension-apply-bis",
