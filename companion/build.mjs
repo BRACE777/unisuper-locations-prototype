@@ -46,7 +46,7 @@ const bundle = {
   built: new Date().toISOString().slice(0, 10),
   sources: sources.documents.map(({ id, title, issued, url }) => ({ id, title, issued, url, kind: 'pds' }))
     .concat(read('data/ato-excerpts.json').pages.map(({ id, title, url, updated }) => ({ id, title, url, updated, kind: 'ato', retrieved: read('data/ato-excerpts.json').retrieved })))
-    .concat(read('data/web-excerpts.json').pages.map(({ id, title, url }) => ({ id, title, url, kind: 'web', retrieved: read('data/web-excerpts.json').retrieved }))),
+    .concat(read('data/web-excerpts.json').pages.map(({ id, title, url, retrieved }) => ({ id, title, url, kind: 'web', retrieved: retrieved || read('data/web-excerpts.json').retrieved }))),
   rates, glossary, rules,
   forms: forms.forms, formsPage: forms.page, formsGenerated: forms.generated,
   timeframes: timeframes.items, explainers: explainers.items, holidays: holidays.extra,

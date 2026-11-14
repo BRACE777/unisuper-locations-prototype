@@ -16,6 +16,16 @@
         "There's no limit to how many times you can receive a Retirement Bonus. For example, you could receive another if you open a new Flexi Pension later. However, the total you can receive across all your accounts is capped at $14,700.",
         "If you withdraw 50% or more of your Flexi Pension starting balance within 12 months of opening the account, we reserve the right to deduct the Retirement Bonus from your Flexi Pension."
       ]
+    },
+    {
+      "id": "web-pension-withdrawal",
+      "title": "Making a Flexi Pension withdrawal",
+      "url": "https://www.unisuper.com.au/retirement/manage-your-pension/making-a-withdrawal",
+      "retrieved": "2026-11-14",
+      "excerpts": [
+        "An online withdrawal will be paid into your nominated bank account usually within 5 business days.",
+        "Although most withdrawals will be paid into your nominated bank account with 5 business days, it may take an additional 2 business days for the payment to clear."
+      ]
     }
   ]
 }

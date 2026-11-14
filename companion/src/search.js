@@ -235,8 +235,8 @@ var CompanionSearch = (function () {
         { text: f.summary || '', weight: 1 }, { text: (f.requirements || []).join(' '), weight: 0.6 }] }));
     });
     (data.timeframes || []).forEach(function (t) {
-      docs.push(indexItem({ type: 'timeframe', id: t.id, aliases: [t.task], item: t, fields: [
-        { text: t.task, weight: 3 }, { text: t.timeframe + ' how long days', weight: 1.5 }, { text: t.topic, weight: 1 },
+      docs.push(indexItem({ type: 'timeframe', id: t.id, aliases: [t.task].concat(t.aliases || []), item: t, fields: [
+        { text: t.task, weight: 3 }, { text: (t.aliases || []).join(' '), weight: 3 }, { text: t.timeframe + ' how long days', weight: 1.5 }, { text: t.topic, weight: 1 },
         { text: t.say, weight: 0.8 }, { text: t.starts || '', weight: 0.5 }] }));
     });
     // Explainer levels mix plain steps with option, table, example and note blocks: index all the words.

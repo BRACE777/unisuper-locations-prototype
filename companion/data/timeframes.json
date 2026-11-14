@@ -12,10 +12,39 @@
         "type": "business_days",
         "n": 5
       },
-      "say": "Withdrawals from a Flexi Pension are usually paid into your nominated bank account within five business days of us receiving your request.",
+      "say": "Withdrawals from a Flexi Pension are usually paid into your nominated bank account within five business days of us receiving your request. It can take up to two more business days for the payment to clear.",
       "source": {
         "doc": "flexi",
         "quote": "Withdrawals are paid into your nominated bank account, usually within five business days of receiving your request."
+      },
+      "aliases": [
+        "how long pension withdrawal",
+        "pension lump sum how long",
+        "how long flexi pension withdrawal"
+      ],
+      "ato": [
+        {
+          "doc": "web-pension-withdrawal",
+          "quote": "Although most withdrawals will be paid into your nominated bank account with 5 business days, it may take an additional 2 business days for the payment to clear."
+        }
+      ]
+    },
+    {
+      "id": "super-withdrawal",
+      "topic": "Access",
+      "task": "How long a super (accumulation) withdrawal takes",
+      "aliases": [
+        "how long super withdrawal",
+        "how long accumulation withdrawal",
+        "how long is a withdrawal for accumulation accounts",
+        "when will my super withdrawal be paid"
+      ],
+      "timeframe": "No timeframe published for super",
+      "kind": "pds",
+      "say": "There isn't a published timeframe for paying a withdrawal from a super account, so I can't give you an exact date. (The five business days you may have seen is for Flexi Pension withdrawals.)",
+      "source": {
+        "doc": "hsw",
+        "quote": "We may postpone the processing of transactions (such as applications, switches, rollovers and withdrawals)"
       }
     },
     {

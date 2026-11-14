@@ -421,6 +421,26 @@
       "q": "bpay contribution",
       "expect": "super-make-an-after-tax-voluntary-contribution-by-cheque",
       "type": "form"
+    },
+    {
+      "q": "how long is a withdrawal for accumulation accounts",
+      "expect": "super-withdrawal",
+      "type": "timeframe"
+    },
+    {
+      "q": "how long super withdrawal",
+      "expect": "super-withdrawal",
+      "type": "timeframe"
+    },
+    {
+      "q": "how long withdrawal",
+      "expect": "super-withdrawal",
+      "type": "timeframe"
+    },
+    {
+      "q": "how long pension withdrawal",
+      "expect": "pension-lump-sum",
+      "type": "timeframe"
     }
   ],
   "hidden": [
