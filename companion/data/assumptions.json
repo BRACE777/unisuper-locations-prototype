@@ -112,6 +112,10 @@
     { "id": "clock-start", "title": "When a timeframe starts",
       "assumed": "The day the timeframe is counted from, where the PDS gives the length but not the starting point.",
       "pds": "The PDS gives these periods without saying exactly when they start.",
-      "check": "Confirm the starting point with the team that handles it before quoting a date." }
+      "check": "Confirm the starting point with the team that handles it before quoting a date." },
+    { "id": "nomination-scope", "title": "Which accounts a nomination covers",
+      "assumed": "A nomination covers only the accounts it applies to: it isn't added to every UniSuper account automatically.",
+      "pds": "The PDS says a binding nomination can apply to all UniSuper accounts or be made separately for each (Flexi Pension p18, How super works p20), and that non-binding nominations are made on each account's own form. It doesn't say what happens when a nomination doesn't state which accounts it covers.",
+      "check": "Check the member's nominations on each account, and the Binding death benefit nomination fact sheet." }
   ]
 }

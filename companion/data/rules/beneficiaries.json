@@ -239,7 +239,7 @@
     {
       "id": "bdbn-multi-account",
       "products": [],
-      "q": "Does one binding nomination cover all of a member's accounts?",
+      "q": "Does one nomination cover all of a member's accounts?",
       "aliases": [
         "nomination multiple accounts",
         "pension and super nomination",
@@ -251,14 +251,33 @@
         "separate nomination for each account",
         "one nomination for all my accounts",
         "does my nomination cover my pension",
-        "nomination for pension and super"
+        "nomination for pension and super",
+        "does one beneficiary cover all my accounts",
+        "one binding nomination for all accounts"
       ],
-      "a": "It can: one nomination for all UniSuper accounts, or separate nominations for each.",
+      "a": "{{nomination-scope:Not automatically}}. A binding nomination can be made to apply to all UniSuper accounts, or separately for each, so check what it says. Non-binding nominations are made per account: Change of details for super; the Flexi Pension application, then the pension Change of details request, for a pension. Reversionary nominations are Flexi Pension only.",
       "sources": [
         {
           "doc": "flexi",
           "quote": "or submit a single valid binding death benefit nomination to apply to all your UniSuper accounts"
+        },
+        {
+          "doc": "hsw",
+          "quote": "you can make a separate binding nomination for each account"
+        },
+        {
+          "doc": "hsw",
+          "quote": "To make or update a non-binding death benefit nomination, you must complete the Change of details form"
+        },
+        {
+          "doc": "flexi",
+          "quote": "To make a non-binding death benefit nomination, complete the relevant section of the Flexi Pension application"
         }
+      ],
+      "see": [
+        "nonbinding",
+        "reversionary-what",
+        "bdbn-how"
       ]
     },
     {
