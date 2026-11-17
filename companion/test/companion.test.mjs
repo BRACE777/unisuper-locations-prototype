@@ -551,7 +551,7 @@ test('search: the member\'s product and age move their cards up', () => {
 });
 
 test('search: withdrawals lead with the right account type', () => {
-  const top = (q, o = {}) => engine.search(q, o).results.slice(0, 2).map((r) => r.id);
+  const top = (q, o = {}) => Array.from(engine.search(q, o).results.slice(0, 2), (r) => r.id);
   for (const q of ['withdrawal', 'withdraw', 'withdrawals']) {
     // Nothing chosen: the super (accumulation) withdrawal form and checklist lead.
     assert.deepEqual(top(q), ['super-withdraw-your-super', 'super-withdrawal'], `"${q}" with nothing chosen`);
