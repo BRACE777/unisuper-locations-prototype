@@ -672,3 +672,12 @@ details.pages > summary::-webkit-details-marker { display: none; }
 /* "Ranked for TTR · age 62": why the results are in this order */
 .ranked-for { margin: -2px 0 10px; font-size: 12px; color: var(--ink-2); }
 .ranked-for .label { color: var(--info); margin-right: 4px; }
+
+/* Date calculator: search for the situation */
+.dt-find { position: relative; }
+.dt-find input { width: 100%; }
+.dt-matches { display: grid; gap: 4px; margin-top: 6px; }
+.dt-matches:empty { display: none; }
+.dt-match { display: flex; flex-direction: column; gap: 2px; text-align: left; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--paper); color: var(--ink-1); font: inherit; font-size: 13px; cursor: pointer; }
+.dt-match span { font-size: 12px; color: var(--ink-3); }
+.dt-match:hover, .dt-match:focus-visible { border-color: var(--info); outline: none; box-shadow: 0 0 0 2px var(--info-wash); }

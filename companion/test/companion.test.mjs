@@ -563,3 +563,14 @@ test('search: withdrawals lead with the right account type', () => {
   assert.equal(top('can i add money to my pension')[0], 'pension-no-additions');
   assert.equal(engine.tokens('withdrawal').join(), engine.tokens('withdraw').join(), 'withdraw and withdrawal are the same word');
 });
+
+test('date calculator: the situation search finds timeframes it can count', () => {
+  const app = loadApp();
+  const first = (q) => (vm.runInContext(`api.dtMatchesHtml(${JSON.stringify(q)})`, app).match(/data-dt-pick="([^"]+)"/) || [])[1];
+  assert.equal(first('hardship'), 'hardship-processing');
+  assert.equal(first('roll in'), 'rollover-in');
+  const cooling = [...vm.runInContext(`api.dtMatchesHtml('cooling off')`, app).matchAll(/data-dt-pick="([^"]+)"/g)].map((m) => m[1]).slice(0, 2);
+  assert.ok(cooling.includes('pension-cooling-off') && cooling.includes('acc-cooling-off'), 'both cooling-off periods');
+  assert.equal(first('how long for a lump sum'), 'pension-lump-sum');
+  assert.equal(vm.runInContext(`api.dtMatchesHtml('')`, app), '', 'nothing typed, nothing listed');
+});

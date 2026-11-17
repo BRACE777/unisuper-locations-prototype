@@ -12,8 +12,8 @@
   DATA.timeframes.forEach(function (t) { TIMEFRAMES[t.id] = t; });
 
   var PRODUCTS = [
-    { id: '', label: 'All products' }, { id: 'super', label: 'Super (Acc 1, Acc 2, PA)', short: 'Super' }, { id: 'dbd', label: 'DBD' },
-    { id: 'rp', label: 'Retirement Phase' }, { id: 'ttr', label: 'TTR' }, { id: 'bis', label: 'BIS' }
+    { id: '', label: 'All products' }, { id: 'super', label: 'Accumulation (Acc 1, Acc 2, PA)', short: 'Accumulation' }, { id: 'dbd', label: 'DBD' },
+    { id: 'rp', label: 'Flexi Pension', short: 'Flexi Pension' }, { id: 'ttr', label: 'TTR' }, { id: 'bis', label: 'BIS' }
   ];
   var TABS = [
     { id: 'all', label: 'Search', types: null }, { id: 'rule', label: 'Rules', types: ['rule'] },
@@ -626,7 +626,7 @@
   // What the results rail lists right now: search results, or everything of the browsed type.
   // Who the results are ranked for: the Product menu (loading a member sets it to their pension), or with
   // "All products", every account type the loaded member has; and the age.
-  var PRODUCT_NAME = { super: 'Super', dbd: 'DBD', rp: 'Retirement Phase', ttr: 'TTR', bis: 'BIS' };
+  var PRODUCT_NAME = { super: 'Accumulation', dbd: 'DBD', rp: 'Flexi Pension', ttr: 'TTR', bis: 'BIS' };
   function searchContext() {
     var products = state.product ? [state.product]
       : state.member ? state.member.accounts.map(function (a) { return CompanionMembers.PRODUCT[a.type]; }).filter(function (p, i, a) { return p && a.indexOf(p) === i; }) : [];
@@ -1506,6 +1506,8 @@
       '<div class="dates-grid"><div class="form-grid">' +
       field('dt-from', 'From', textInput('dt-from', dt.from, 'today, 23/12/2026 or 23 Dec') +
         '<div class="presets"><button type="button" class="btn sm" data-from="today">Today</button></div>') +
+      '<label for="dt-find">Situation</label><div class="cell"><div class="dt-find"><input id="dt-find" type="search" autocomplete="off" placeholder="What’s it for? e.g. hardship, roll in, cooling off" aria-controls="dt-matches">' +
+        '<div class="dt-matches" id="dt-matches" role="listbox" aria-label="Matching timeframes"></div></div></div>' +
       '<label for="dt-preset">Timeframe</label><div class="cell"><select id="dt-preset"><option value="">Custom</option>' + presets.map(function (t) {
         return '<option value="' + esc(t.id) + '"' + (state.calcPreset === t.id ? ' selected' : '') + '>' + esc(t.task) + ' (' + t.calc.n + ' ' + t.calc.type.replace('_', ' ') + ')</option>';
       }).join('') + '</select></div>' +
@@ -1513,11 +1515,28 @@
       '<span class="label">Unit</span><div class="cell">' + seg('unit', UNITS, dt.unit) + '</div>' +
       '</div><div class="results" id="dt-out"></div></div></section>';
   }
+  function dtMatchesHtml(text) {
+    if (!String(text).trim()) return '';
+    var hits = engine.search(text, { types: ['timeframe'], limit: 40 }).results.filter(function (r) { return r.item.calc; }).slice(0, 6);
+    if (!hits.length) return '<p class="meta">No timeframe with a set length matches. Pick from the list, or enter your own below.</p>';
+    return hits.map(function (r) {
+      var t = r.item;
+      return '<button type="button" class="dt-match" role="option" data-dt-pick="' + esc(t.id) + '"><b>' + esc(t.task) + '</b><span>' + esc(t.timeframe) + '</span></button>';
+    }).join('');
+  }
   function bindDates() {
     if (!$('dt-from')) return;
     $('dt-from').addEventListener('input', function () { state.dt.from = this.value; echoDate('dt-from', this.value); runDates(); });
     $('dt-n').addEventListener('input', function () { state.dt.n = this.value; state.calcPreset = null; $('dt-preset').value = ''; runDates(); });
     $('dt-preset').addEventListener('change', function () { state.calcPreset = this.value || null; applyPreset(); runDates(); });
+    // Situation search: the main search engine over the timeframes that have a length to count.
+    $('dt-find').addEventListener('input', function () { $('dt-matches').innerHTML = dtMatchesHtml(this.value); });
+    $('dt-find').addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      var first = $('dt-matches').querySelector('[data-dt-pick]');
+      if (first) first.click();
+    });
     if (state.calcPreset) applyPreset();
     echoDate('dt-from', state.dt.from);
     runDates();
@@ -1883,6 +1902,12 @@
       if (which === 'july') d = new Date(now.getMonth() >= 6 ? now.getFullYear() + 1 : now.getFullYear(), 6, 1);
       state.dd.start = dmy(d); state.dd.touched.start = true; $('dd-start').value = state.dd.start; echoDrawdown(); runDrawdown(); return;
     }
+    if (t.hasAttribute('data-dt-pick')) {
+      state.calcPreset = t.getAttribute('data-dt-pick'); applyPreset(); runDates();
+      $('dt-find').value = ''; $('dt-matches').innerHTML = '';
+      toast('Set to: ' + TIMEFRAMES[state.calcPreset].task);
+      return;
+    }
     if (t.hasAttribute('data-from')) { state.dt.from = dmy(CompanionParse.today()); $('dt-from').value = state.dt.from; echoDate('dt-from', state.dt.from); runDates(); return; }
     if (t.hasAttribute('data-clear-calc')) {
       resetCalc();
@@ -1962,7 +1987,7 @@
   updateFoot();
 
   // The tests render every card through these (see test/companion.test.mjs); unused in the page.
-  if (window.__companionTest) window.__companionTest.api = { RENDER: RENDER, procedureView: procedureView, datesToolHtml: datesToolHtml, startHtml: startHtml, sideHtml: sideHtml, state: state, setMember: setMember, scrub: scrub, internalHtml: internalHtml, SIMPLE: SIMPLE, marks: marks, latch: latch, SLIDE: SLIDE, toPos: toPos, toValue: toValue, sliderHtml: sliderHtml };
+  if (window.__companionTest) window.__companionTest.api = { RENDER: RENDER, procedureView: procedureView, datesToolHtml: datesToolHtml, startHtml: startHtml, sideHtml: sideHtml, state: state, setMember: setMember, scrub: scrub, internalHtml: internalHtml, SIMPLE: SIMPLE, marks: marks, latch: latch, SLIDE: SLIDE, toPos: toPos, toValue: toValue, sliderHtml: sliderHtml, dtMatchesHtml: dtMatchesHtml };
 
   if (!TABS.some(function (t) { return t.id === state.tab; })) state.tab = 'all';
   renderProducts();
