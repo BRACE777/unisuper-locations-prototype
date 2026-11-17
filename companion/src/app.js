@@ -1059,13 +1059,13 @@
       field('dd-member', 'Age or date of birth', textInput('dd-member', state.memberText, '67 or 14/5/1959')) +
       field('dd-start', 'Pension start date', textInput('dd-start', dd.start, '1/10/2026 or 1 Oct') +
         '<div class="presets"><button type="button" class="btn sm" data-start="today">Today</button><button type="button" class="btn sm" data-start="next-month">1st of next month</button><button type="button" class="btn sm" data-start="july">Next 1 July</button></div>') +
-      field('dd-bal', 'Opening balance', textInput('dd-bal', dd.bal, '500000, $500,000 or 500k', 'decimal')) +
+      field('dd-bal', 'Opening balance', textInput('dd-bal', dd.bal, '500000, $500,000 or 500k', 'decimal') + sliderHtml('dd.bal', 'dd-bal', dd.bal, true)) +
       '<span class="label">Type</span><div class="cell">' + seg('type', DD_TYPES, dd.type) + '</div>' +
       '<span class="label">Frequency</span><div class="cell">' + seg('freq', DD_FREQS, dd.freq) + '</div>' +
       '<label for="dd-anchor" class="anchor-row"' + (fortnightly ? '' : ' hidden') + '>Any fortnightly payment date</label><div class="cell anchor-row"' + (fortnightly ? '' : ' hidden') + '>' +
         textInput('dd-anchor', dd.anchor, 'optional, e.g. 13/11/2026') +
         '<span class="field-help">Fortnightly payments go out every second Friday. One past payment date from the account history tells the calculator which Fridays, so it can count exactly. ' + assumeSpan('fortnightly', 'Leave it blank to estimate one payment every 14 days') + '.</span></div>' +
-      field('dd-chosen', 'Chosen annual amount', textInput('dd-chosen', dd.chosen, 'optional', 'decimal')) +
+      field('dd-chosen', 'Chosen annual amount', textInput('dd-chosen', dd.chosen, 'optional', 'decimal') + sliderHtml('dd.chosen', 'dd-chosen', dd.chosen, true)) +
       field('dd-n', 'Payments left', textInput('dd-n', dd.n, 'optional: overrides the count', 'numeric')) +
       '</div><div class="actions"><button type="button" class="btn ghost" data-clear-calc>Clear calculator</button></div></section>' +
       '<section class="card results-card"><span class="label">Result</span><div class="results" id="dd-out"></div></section></div>';
@@ -1075,6 +1075,8 @@
     ['start', 'bal', 'anchor', 'chosen', 'n'].forEach(function (k) {
       $('dd-' + k).addEventListener('input', function () { state.dd[k] = this.value; state.dd.touched[k] = true; echoDrawdown(); runDrawdown(); });
     });
+    bindSlider('dd-bal', true);
+    bindSlider('dd-chosen', true);
     setMember(state.memberText, 'render');
     echoDrawdown();
     runDrawdown();
@@ -1085,7 +1087,6 @@
   // Drawdown and dates are the original two; the rest are worked from rates.json by calcs.js.
   var CALCS = [
     { id: 'drawdown', group: 'Pension', title: 'Minimum and maximum pension payments' },
-    { id: 'rb', group: 'Pension', title: 'Retirement Bonus' },
     { id: 'caps', group: 'Contributions', title: 'Contribution caps' },
     { id: 'topups', group: 'Contributions', title: 'Co-contribution and LISTO' },
     { id: 'spouse', group: 'Contributions', title: 'Spouse contribution tax offset' },
@@ -1099,9 +1100,8 @@
   var CALC_FOR = {
     rule: { 'cc-cap': 'caps', 'cc-excess': 'caps', 'carry-forward': 'caps', 'ncc-cap': 'caps', 'ncc-excess': 'caps', 'bring-forward': 'caps', 'salary-sacrifice': 'caps', 'sg-rate': 'caps',
       'co-contribution': 'topups', listo: 'topups', 'spouse-offset': 'spouse', div293: 'div293',
-      'rb-what': 'rb', 'rb-eligibility': 'rb', 'rb-caps': 'rb', 'rb-clawback': 'rb',
       'unit-value': 'cover', 'cover-types': 'cover', 'fixed-cover': 'cover', 'default-cover': 'cover' },
-    explainer: { 'carry-forward': 'caps', 'bring-forward': 'caps', 'concessional-vs-non': 'caps', 'retirement-bonus': 'rb', 'unitised-cover': 'cover' }
+    explainer: { 'carry-forward': 'caps', 'bring-forward': 'caps', 'concessional-vs-non': 'caps', 'unitised-cover': 'cover' }
   };
   function calcFor(type, id) { return (CALC_FOR[type] || {})[id] || null; }
   function calcLink(cls, id) { return '<button class="' + cls + '" data-goto-calc="' + id + '">Calculator: ' + esc(CALC_BY_ID[id].title) + ' →</button>'; }
@@ -1206,25 +1206,6 @@
       },
       summary: function (v, r) { return 'Income ' + money(P.parseMoney(v.income)) + ' plus before-tax contributions ' + money(P.parseMoney(v.cc)) + ': Division 293 about ' + money(r.tax) + '.'; }
     },
-    rb: {
-      intro: 'The bonus added when money moves into a Retirement Phase Flexi Pension from 1 October 2026: 0.7% of the amount from eligible investment options.',
-      fields: [{ k: 'eligible', label: 'Moving from eligible options', ph: 'e.g. 600000' }, { k: 'excluded', label: 'Moving from Cash, Australian Bond or Australian Income', ph: 'optional' }, { k: 'previous', label: 'Retirement Bonuses already received', ph: 'optional' }],
-      prefill: function () { return {}; },
-      compute: function (v) { return CompanionCalcs.retirementBonus(v, DATA.rates); },
-      sources: ['rb_rate', 'rb_cap', 'rb_membership'],
-      out: function (v, r) {
-        return '<div class="calc-block"><span class="label">Retirement Bonus</span><div class="headline">' + money(r.bonus) + '<span>0.7% of ' + money(r.eligible) + (r.capped ? ', limited by the ' + money(r.cap) + ' lifetime cap' : '') + '</span></div>' +
-          '<div class="ch-host" id="ch-rb"></div><div class="ch-host" id="ch-rb-cap"></div>' +
-          '<ul class="warns"><li>Needs money in a UniSuper super or TTR account for 12 continuous months before the transfer; the bonus is added when the pension starts.</li>' +
-          '<li>Withdrawing 50% or more of the starting balance within 12 months may mean it\'s taken back.</li></ul></div>';
-      },
-      charts: function (v, r) {
-        CompanionCharts.meter($('ch-rb'), { fmt: money, label: 'What moves, and what counts', parts: [{ value: r.eligible, label: 'Counts for the bonus', cls: 'ch-p1' }, { value: r.excluded, label: 'Excluded options', cls: 'ch-muted' }], max: 0 });
-        CompanionCharts.meter($('ch-rb-cap'), { fmt: money, label: 'Bonuses against the lifetime cap', parts: [{ value: r.previous, label: 'Bonuses already received', cls: 'ch-muted' }, { value: r.bonus, label: 'This bonus', cls: 'ch-p1' }],
-          max: r.cap, marks: [{ value: r.cap, label: money(r.cap) + ' lifetime cap' }] });
-      },
-      summary: function (v, r) { return 'Retirement Bonus about ' + money(r.bonus) + ' on ' + money(r.eligible) + ' from eligible options' + (r.capped ? ' (limited by the ' + money(r.cap) + ' lifetime cap)' : '') + '.'; }
-    },
     cover: {
       intro: 'Unitised Death and TPD cover: what the member\'s units are worth at each age. The cover per unit peaks at 38, then falls.',
       fields: [{ k: 'age', label: 'Age', kind: 'age' }, { k: 'units', label: 'Units of Death/TPD cover', ph: 'default cover is 10 units', kind: 'number' }],
@@ -1272,13 +1253,79 @@
     Object.keys(v).forEach(function (k) { out['_' + k] = v[k]; });
     return out;
   }
+
+  // ----- sliders -----
+  // Every number box has a slider under it. A slider moves in round steps and latches onto the figures
+  // that matter (caps, thresholds, peaks) when it comes within 1.5% of the range (or 1.5 steps).
+  function rv(id) { var x = DATA.rates.rates.filter(function (e) { return e.id === id; })[0]; return x ? x.value : null; }
+  function bfLimits() { return DATA.rates.tables.bring_forward.rows.map(function (x) { return x.tsb_below; }).filter(Boolean); }
+  function bfCaps() { return DATA.rates.tables.bring_forward.rows.map(function (x) { return x.cap; }).filter(Boolean); }
+  var SLIDE = {
+    'caps.salary': function () { return { min: 0, max: 300000, step: 1000, snaps: [] }; },
+    'caps.salarySacrifice': function () { return { min: 0, max: 40000, step: 500, snaps: [rv('cc_cap')] }; },
+    'caps.personal': function () { return { min: 0, max: 40000, step: 500, snaps: [rv('cc_cap')] }; },
+    'caps.tsb': function () { return { min: 0, max: 3000000, step: 10000, snaps: [rv('carry_forward_tsb')].concat(bfLimits()) }; },
+    'caps.carryForward': function () { return { min: 0, max: rv('cc_cap') * rv('carry_forward_years'), step: 500, snaps: [rv('cc_cap')] }; },
+    'caps.age': function () { return { min: 14, max: 100, step: 1, snaps: [60, 65, 75], ticksOnly: true }; },
+    'caps.ncc': function () { return { min: 0, max: 400000, step: 1000, snaps: bfCaps() }; },
+    'topups.income': function () { return { min: 0, max: 100000, step: 500, snaps: [rv('listo_income'), rv('cocontrib_lower'), rv('cocontrib_upper')] }; },
+    'topups.ncc': function () { return { min: 0, max: 5000, step: 50, snaps: [rv('cocontrib_max') / rv('cocontrib_rate')] }; },
+    'topups.cc': function () { return { min: 0, max: 15000, step: 100, snaps: [Math.round(rv('listo_max') / 0.15 / 100) * 100] }; },
+    'spouse.spouseIncome': function () { return { min: 0, max: 60000, step: 100, snaps: [rv('spouse_offset_income'), rv('spouse_offset_cutout')] }; },
+    'spouse.contribution': function () { return { min: 0, max: 10000, step: 100, snaps: [rv('spouse_offset_max') / 0.18] }; },
+    'div293.income': function () { return { min: 0, max: 500000, step: 1000, snaps: [rv('div293_threshold')] }; },
+    'div293.cc': function () { return { min: 0, max: 60000, step: 500, snaps: [rv('cc_cap')] }; },
+    'cover.age': function () { var rows = DATA.rates.tables.unit_cover.rows; return { min: rows[0].age, max: rows[rows.length - 1].age, step: 1, snaps: [25, 38, 60, 70], ticksOnly: true }; },
+    'cover.units': function () { return { min: 1, max: 40, step: 1, snaps: [10], ticksOnly: true }; },
+    'dd.chosen': function () {
+      var r = state.ddLast, top = r ? (r.max != null ? r.max : Math.max(r.fullMin * 4, 20000)) : 100000;
+      return { min: 0, max: Math.round(top / 10) * 10, step: 10, snaps: r ? [r.proMin, r.fullMin, r.max] : [] };
+    },
+    'dd.bal': function () { return { min: 0, max: 3000000, step: 5000, snaps: [rv('pension_min_start'), 250000, 500000, 1000000, rv('tbc_general')] }; }
+  };
+  function latch(cfg, v) {
+    var x = Math.round((v - cfg.min) / cfg.step) * cfg.step + cfg.min, tol = Math.max((cfg.max - cfg.min) * 0.015, cfg.step * 1.5);
+    // Whole years and units are already exact: their key figures are tick marks, not latches.
+    if (!cfg.ticksOnly) (cfg.snaps || []).forEach(function (s) { if (s != null && Math.abs(v - s) <= tol && Math.abs(v - s) <= Math.abs(v - x) + tol) x = s; });
+    return Math.max(cfg.min, Math.min(cfg.max, x));
+  }
+  function sliderHtml(key, inputId, value, money) {
+    var mk = SLIDE[key];
+    if (!mk) return '';
+    var cfg = mk(), n = money ? P.parseMoney(value) : parseInt(value, 10);
+    var v = n == null || isNaN(n) ? cfg.min : Math.max(cfg.min, Math.min(cfg.max, n));
+    return '<input type="range" class="slider" id="sl-' + inputId + '" data-slide="' + key + '" data-for="' + inputId + '" min="' + cfg.min + '" max="' + cfg.max + '" step="any" value="' + v + '" list="dl-' + inputId + '" aria-label="Slide to set">' +
+      '<datalist id="dl-' + inputId + '">' + (cfg.snaps || []).filter(function (x) { return x != null; }).map(function (x) { return '<option value="' + x + '"></option>'; }).join('') + '</datalist>';
+  }
+  // Keeps a slider and its box together: sliding writes a rounded value into the box (and fires its
+  // input handler); typing moves the slider.
+  function bindSlider(inputId, money) {
+    var sl = $('sl-' + inputId), box = $(inputId);
+    if (!sl || !box) return;
+    // The settings are read each time: the chosen-amount slider's range follows the calculation.
+    var cfg = function () { return SLIDE[sl.getAttribute('data-slide')](); };
+    sl.addEventListener('input', function () {
+      var v = latch(cfg(), +sl.value);
+      sl.value = v;
+      box.value = money ? Math.round(v).toLocaleString('en-AU') : String(v);
+      box.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    box.addEventListener('input', function () {
+      if (document.activeElement === sl) return;
+      var n = money ? P.parseMoney(box.value) : parseInt(box.value, 10);
+      var c = cfg();
+      if (n != null && !isNaN(n)) sl.value = Math.max(c.min, Math.min(c.max, n));
+    });
+  }
+
   function renderSimple(body, id) {
     var def = SIMPLE[id], v = simpleValues(id);
     body.innerHTML = '<div class="calc-layout"><section class="card"><span class="label">' + esc(CALC_BY_ID[id].group) + '</span><h3>' + esc(CALC_BY_ID[id].title) + '</h3>' +
       '<p class="detail">' + esc(def.intro) + '</p><div class="form-grid">' +
       def.fields.map(function (f) {
         if (f.kind === 'rate') return '<span class="label">' + esc(f.label) + '</span><div class="cell">' + seg('cf-' + f.k, DATA.rates.tables.employer_rates.rows.map(function (x) { return [String(x), Math.round(x * 100) + '%']; }), v[f.k]) + '</div>';
-        return field('cf-' + f.k, esc(f.label), textInput('cf-' + f.k, v[f.k] || '', f.ph || (f.kind === 'age' ? 'e.g. 45' : ''), f.kind === 'age' || f.kind === 'number' ? 'numeric' : 'decimal'));
+        var isMoney = f.kind !== 'age' && f.kind !== 'number';
+        return field('cf-' + f.k, esc(f.label), textInput('cf-' + f.k, v[f.k] || '', f.ph || (f.kind === 'age' ? 'e.g. 45' : ''), isMoney ? 'decimal' : 'numeric') + sliderHtml(id + '.' + f.k, 'cf-' + f.k, v[f.k] || '', isMoney));
       }).join('') +
       '</div><div class="actions"><button type="button" class="btn ghost" data-clear-simple="' + id + '">Clear</button></div>' + calcSources(def.sources) + '</section>' +
       '<section class="card results-card"><span class="label">Result</span><div class="results" id="cf-out"></div></section></div>';
@@ -1290,15 +1337,25 @@
         runSimple(id);
       });
       if (f.kind !== 'age' && f.kind !== 'number') echoMoney('cf-' + f.k, v[f.k] || '');
+      bindSlider('cf-' + f.k, f.kind !== 'age' && f.kind !== 'number');
     });
     runSimple(id);
+  }
+  // Re-renders a results area but keeps its chart elements, so each chart animates to its new values.
+  function keepCharts(area, write) {
+    var kept = {};
+    area.querySelectorAll('.ch-host').forEach(function (h) { kept[h.id] = h; });
+    write();
+    area.querySelectorAll('.ch-host').forEach(function (h) { if (kept[h.id]) h.parentNode.replaceChild(kept[h.id], h); });
   }
   function runSimple(id) {
     var def = SIMPLE[id], pv = parsedValues(id), raw = state.cf[id];
     var vals = {};
     def.fields.forEach(function (f) { vals[f.k] = pv[f.k]; });
     var r = def.compute(vals);
-    $('cf-out').innerHTML = marks(def.out(raw, r)) + '<div class="actions"><button class="btn" data-main-copy data-copy="' + esc(CALC_BY_ID[id].title + ': ' + plain(def.summary(raw, r))) + '">Copy summary</button></div>';
+    keepCharts($('cf-out'), function () {
+      $('cf-out').innerHTML = marks(def.out(raw, r)) + '<div class="actions"><button class="btn" data-main-copy data-copy="' + esc(CALC_BY_ID[id].title + ': ' + plain(def.summary(raw, r))) + '">Copy summary</button></div>';
+    });
     def.charts(raw, r);
   }
 
@@ -1404,6 +1461,7 @@
       chosen: P.parseMoney(dd.chosen), paymentsOverride: dd.n.trim() ? parseInt(dd.n, 10) : null
     }, DATA.rates);
     var range = money(r.proMin) + (r.max != null ? ' to ' + money(r.max) : ' or more');
+    state.ddLast = r;
     // The inputs go into the copied note too, so it stands on its own in the call notes.
     var anchor = P.parseDate(dd.anchor, 'any'), chosen = P.parseMoney(dd.chosen);
     var inputs = (state.dob ? 'Born ' + P.fmt(CompanionDates.parse(state.dob)) : 'Age ' + state.age) + '. ' + dd.type + ' Flexi Pension starting ' + P.fmt(start) +
@@ -1414,7 +1472,7 @@
       (r.perMin != null ? ' ' + r.payments + ' ' + dd.freq.toLowerCase() + ' payments of at least ' + money(r.perMin) + '.' : '');
     // The calculator's caveats travel with the copied note, so an estimate isn't pasted as fact.
     if (r.warnings.length) summary += '\nNotes: ' + r.warnings.map(plain).join(' ');
-    out.innerHTML = '<div class="headline">' + esc(range) + '<span>allowed this financial year</span></div>' +
+    keepCharts(out, function () { out.innerHTML = '<div class="headline">' + esc(range) + '<span>allowed this financial year</span></div>' + '<div class="ch-host" id="ch-dd"></div>' +
       row(state.dob ? 'Age at start' : '{{age-only:Age at start}}', r.age) + row('Minimum percentage', pct(r.pct) + ' (' + esc(r.band) + ')') +
       row('Preservation age', r.preservationAge != null ? r.preservationAge + (r.preservationReached ? ' (reached)' : ' (not reached yet)') : 'Reached (60 or over)') +
       row('{{day-count:Days left / days in year}}', r.daysLeft + ' / ' + r.daysYear) + row('Full-year minimum', money(r.fullMin)) +
@@ -1425,7 +1483,19 @@
       (r.perChosen != null ? row('{{payment-rounding:Each payment at the chosen amount}}', money(r.perChosen)) : '') +
       (r.pctNext != null ? row('Minimum from next 1 July (age ' + r.ageNext + ')', pct(r.pctNext)) : '') +
       (r.warnings.length ? '<ul class="warns">' + r.warnings.map(function (w) { return '<li>' + rich(w) + '</li>'; }).join('') + '</ul>' : '') +
-      '<div class="actions"><button class="btn" data-copy="' + esc(summary) + '">Copy summary</button></div>';
+      '<div class="actions"><button class="btn" data-copy="' + esc(summary) + '">Copy summary</button></div>'; });
+    // The year's range: the pro-rata minimum, then up to the TTR maximum (if any), with the chosen amount marked.
+    var chosenAmt = P.parseMoney(dd.chosen) || 0, top = r.max != null ? r.max : Math.max(r.proMin * 2.5, chosenAmt * 1.1);
+    CompanionCharts.meter($('ch-dd'), { fmt: money, label: 'This year\'s range of payments', max: top,
+      parts: [{ value: r.proMin, label: 'Pro-rata minimum', cls: 'ch-p1' }, { value: r.max != null ? Math.max(0, r.max - r.proMin) : 0, label: 'Up to the TTR maximum', cls: 'ch-p3' }],
+      marks: chosenAmt ? [{ value: chosenAmt, label: 'Chosen ' + money(chosenAmt) }] : [] });
+    // The chosen-amount slider follows this year's range.
+    var sl = $('sl-dd-chosen');
+    if (sl) {
+      var cfg = SLIDE['dd.chosen']();
+      sl.max = cfg.max;
+      $('dl-dd-chosen').innerHTML = cfg.snaps.filter(function (x) { return x != null; }).map(function (x) { return '<option value="' + x + '"></option>'; }).join('');
+    }
   }
 
   // The Friday before the AFL Grand Final is set each year by the Victorian Government, so it's only
@@ -1766,7 +1836,7 @@
   updateFoot();
 
   // The tests render every card through these (see test/companion.test.mjs); unused in the page.
-  if (window.__companionTest) window.__companionTest.api = { RENDER: RENDER, procedureView: procedureView, datesToolHtml: datesToolHtml, startHtml: startHtml, sideHtml: sideHtml, state: state, setMember: setMember, scrub: scrub, internalHtml: internalHtml, SIMPLE: SIMPLE, marks: marks };
+  if (window.__companionTest) window.__companionTest.api = { RENDER: RENDER, procedureView: procedureView, datesToolHtml: datesToolHtml, startHtml: startHtml, sideHtml: sideHtml, state: state, setMember: setMember, scrub: scrub, internalHtml: internalHtml, SIMPLE: SIMPLE, marks: marks, latch: latch, SLIDE: SLIDE };
 
   if (!TABS.some(function (t) { return t.id === state.tab; })) state.tab = 'all';
   renderProducts();

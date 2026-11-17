@@ -427,7 +427,7 @@ test('missed searches: member numbers, TFNs and emails are blanked before saving
   assert.equal(scrub('ttr max 10%'), 'ttr max 10%');
 });
 
-test('calculators: caps, top-ups, spouse offset, Division 293, Retirement Bonus and cover by age', () => {
+test('calculators: caps, top-ups, spouse offset, Division 293 and cover by age', () => {
   const r = data.rates;
   const c = C.caps({ salary: 100000, employerRate: 0.12, salarySacrifice: 10000, tsb: 800000, age: 50, ncc: 0 }, r);
   assert.equal(c.cc, 22000); assert.equal(c.ccLeft, 10500);
@@ -456,9 +456,6 @@ test('calculators: caps, top-ups, spouse offset, Division 293, Retirement Bonus 
   assert.equal(C.div293({ income: 300000, cc: 30000 }, r).tax, 4500);
   assert.equal(C.div293({ income: 200000, cc: 30000 }, r).applies, false);
 
-  assert.equal(C.retirementBonus({ eligible: 600000, excluded: 150000 }, r).bonus, 4200, 'the website example');
-  const capped = C.retirementBonus({ eligible: 600000, previous: 12000 }, r);
-  assert.equal(capped.bonus, 2700); assert.equal(capped.capped, true);
 
   assert.equal(C.cover({ age: 35, units: 10 }, r).cover, 266000, 'the PDS example');
   assert.equal(C.cover({ age: 55, units: 10 }, r).cover, 86000);
@@ -471,7 +468,7 @@ test('calculators: every calculator renders its result with sample values', () =
   const samples = {
     caps: { salary: '95000', employerRate: '0.17', salarySacrifice: '8000', personal: '', tsb: '450000', carryForward: '12000', age: '52', ncc: '20000' },
     topups: { income: '52000', ncc: '1000', cc: '4500' }, spouse: { spouseIncome: '38500', contribution: '3000' },
-    div293: { income: '240000', cc: '30000' }, rb: { eligible: '600000', excluded: '150000', previous: '' }, cover: { age: '35', units: '10' },
+    div293: { income: '240000', cc: '30000' }, cover: { age: '35', units: '10' },
   };
   for (const [id, raw] of Object.entries(samples)) {
     app.raw = raw; app.id = id;
@@ -480,5 +477,27 @@ test('calculators: every calculator renders its result with sample values', () =
       const r = d.compute(v); return api.marks(d.out(raw, r)) + d.summary(raw, r); })()`, app, { timeout: 2000 });
     assert.ok(html.length > 100, `${id} rendered nothing`);
     assert.doesNotMatch(html, /\{\{[a-z0-9-]+:|NaN|undefined/, `${id} shows a raw marker, NaN or undefined`);
+  }
+});
+
+test('sliders: round steps, and latching onto caps and thresholds', () => {
+  const app = loadApp();
+  const latch = (key, v) => vm.runInContext(`api.latch(api.SLIDE[${JSON.stringify(key)}](), ${v})`, app);
+  assert.equal(latch('caps.salary', 95400), 95000, 'salary in $1,000 steps');
+  assert.equal(latch('caps.tsb', 1851000), 1840000, 'latches onto the $1.84m bring-forward threshold');
+  assert.equal(latch('caps.tsb', 1500000), 1500000);
+  assert.equal(latch('caps.salarySacrifice', 32100), 32500, 'latches onto the concessional cap');
+  assert.equal(latch('topups.income', 49100), 49293, 'latches onto the co-contribution lower threshold');
+  assert.equal(latch('topups.income', 45200), 45000);
+  assert.equal(latch('div293.income', 247000), 250000);
+  assert.equal(latch('cover.age', 37), 37, 'whole years stay exact (38 is a tick mark)');
+  assert.equal(latch('cover.units', 10), 10);
+  assert.equal(latch('caps.salary', -500), 0, 'stays in range');
+  // No two latch points closer than the latch distance, so every one can be reached.
+  for (const key of vm.runInContext('Object.keys(api.SLIDE)', app)) {
+    const cfg = vm.runInContext(`api.SLIDE[${JSON.stringify(key)}]()`, app);
+    if (cfg.ticksOnly) continue;
+    const snaps = (cfg.snaps || []).filter((x) => x != null).sort((a, b) => a - b);
+    for (let i = 1; i < snaps.length; i++) assert.ok(snaps[i] - snaps[i - 1] > 2 * Math.max((cfg.max - cfg.min) * 0.015, cfg.step * 1.5) || key === 'dd.chosen', `${key}: ${snaps[i - 1]} and ${snaps[i]} too close`);
   }
 });

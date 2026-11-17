@@ -1,5 +1,5 @@
 // Calculators beyond drawdown: contribution caps, government top-ups, the spouse contribution offset,
-// Division 293, the Retirement Bonus and insurance cover by age. Plain script (no modules) so it can be
+// Division 293 and insurance cover by age. Plain script (no modules) so it can be
 // inlined into the page and loaded by the tests through node:vm. Exposes `CompanionCalcs`.
 // Every figure comes from rates.json (each with its PDS, form or website quote); anything the sources
 // don't spell out is named in `assumed`, which the page shows with a red underline.
@@ -81,13 +81,6 @@ var CompanionCalcs = (function () {
     return { total: total, threshold: r.div293_threshold, over: over, taxed: taxed, tax: Math.round(taxed * 0.15), applies: over > 0 && cc > 0, assumed: ['div293-estimate'] };
   }
 
-  // Retirement Bonus: 0.7% of what moves from eligible options, up to $14,700 across all bonuses.
-  function retirementBonus(input, rates) {
-    var r = R(rates), eligible = num(input.eligible), excluded = num(input.excluded), previous = num(input.previous);
-    var room = Math.max(0, r.rb_cap - previous), raw = eligible * r.rb_rate;
-    return { eligible: eligible, excluded: excluded, rate: r.rb_rate, raw: Math.round(raw), bonus: Math.round(Math.min(raw, room)), capped: raw > room, cap: r.rb_cap, previous: previous, room: room };
-  }
-
   // Unitised Death/TPD cover by age (Insurance in your super, premiums and unitised cover amounts).
   function cover(input, rates) {
     var rows = rates.tables.unit_cover.rows, units = num(input.units) || 0, age = input.age == null || input.age === '' ? null : num(input.age);
@@ -100,5 +93,5 @@ var CompanionCalcs = (function () {
     };
   }
 
-  return { caps: caps, topups: topups, spouseOffset: spouseOffset, div293: div293, retirementBonus: retirementBonus, cover: cover };
+  return { caps: caps, topups: topups, spouseOffset: spouseOffset, div293: div293, cover: cover };
 })();

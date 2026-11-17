@@ -1,16 +1,19 @@
 // Small charts for the calculators: a line (with a crosshair and tooltip on hover) and a meter
 // (a horizontal bar of amounts against a limit). Plain script; exposes `CompanionCharts`.
-// Colours come from the page's tokens (styles.css), so light and dark modes both work.
-// Single series throughout: the line is one measure, the meter's parts are labelled in a legend.
+// Calling a chart again on the same element updates it in place and animates from the old values to
+// the new ones, so moving a slider glides the line, the marker and the bars. Instant when the system
+// asks for reduced motion. Colours come from the page's tokens (styles.css): light and dark both work.
 var CompanionCharts = (function () {
   'use strict';
-  var NS = 'http://www.w3.org/2000/svg';
+  var NS = 'http://www.w3.org/2000/svg', DURATION = 280;
+  var reduced = !!(typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   function el(tag, attrs, parent) {
     var e = document.createElementNS(NS, tag);
     for (var k in attrs) e.setAttribute(k, attrs[k]);
     if (parent) parent.appendChild(e);
     return e;
   }
+  function set(e, attrs) { for (var k in attrs) e.setAttribute(k, attrs[k]); }
   function text(parent, x, y, s, cls, anchor) {
     var t = el('text', { x: x, y: y, class: cls || 'ch-text', 'text-anchor': anchor || 'start' }, parent);
     t.textContent = s;
@@ -21,94 +24,167 @@ var CompanionCharts = (function () {
     var p = Math.pow(10, Math.floor(Math.log10(v))), n = v / p;
     return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
   }
-
-  // opts: { points: [[x, y]], fx, fy (formatters), xTicks: [x], marker: { x, y }, band: [x0, x1, label],
-  //         label: accessible description, yMax }
-  function line(host, opts) {
-    host.innerHTML = '';
-    host.classList.add('chart');
-    var W = 560, H = 210, L = 56, Rt = 14, T = 14, B = 34, pw = W - L - Rt, ph = H - T - B;
-    var pts = opts.points, x0 = pts[0][0], x1 = pts[pts.length - 1][0];
-    var yMax = opts.yMax || niceMax(Math.max.apply(null, pts.map(function (p) { return p[1]; })) * 1.08);
-    var sx = function (x) { return L + (x - x0) / (x1 - x0) * pw; }, sy = function (y) { return T + ph - y / yMax * ph; };
-    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': opts.label || '' }, host);
-    if (opts.band) {
-      el('rect', { x: sx(opts.band[0]), y: T, width: sx(opts.band[1]) - sx(opts.band[0]), height: ph, class: 'ch-band' }, svg);
-      if (opts.band[2]) text(svg, (sx(opts.band[0]) + sx(opts.band[1])) / 2, T + 12, opts.band[2], 'ch-text ch-band-label', 'middle');
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function ease(t) { return 1 - Math.pow(1 - t, 3); }
+  // Runs draw(t) from 0 to 1 over DURATION, cancelling any animation already running on this chart.
+  function animate(c, draw) {
+    if (c.raf) cancelAnimationFrame(c.raf);
+    clearTimeout(c.done);
+    if (reduced || typeof requestAnimationFrame === 'undefined') { draw(1); return; }
+    var t0 = null;
+    function frame(now) {
+      if (t0 == null) t0 = now;
+      var t = Math.min(1, (now - t0) / DURATION);
+      draw(ease(t));
+      c.raf = t < 1 ? requestAnimationFrame(frame) : 0;
     }
-    [0, 0.5, 1].forEach(function (f) {
-      var y = sy(yMax * f);
-      el('line', { x1: L, x2: W - Rt, y1: y, y2: y, class: f ? 'ch-grid' : 'ch-axis' }, svg);
-      text(svg, L - 8, y + 4, opts.fy(yMax * f), 'ch-text', 'end');
-    });
-    (opts.xTicks || [x0, x1]).forEach(function (x) { text(svg, sx(x), H - 12, opts.fx(x), 'ch-text', 'middle'); });
-    var d = pts.map(function (p, i) { return (i ? 'L' : 'M') + sx(p[0]).toFixed(1) + ' ' + sy(p[1]).toFixed(1); }).join(' ');
-    el('path', { d: d + ' L' + sx(x1) + ' ' + sy(0) + ' L' + sx(x0) + ' ' + sy(0) + ' Z', class: 'ch-area' }, svg);
-    el('path', { d: d, class: 'ch-line' }, svg);
-    if (opts.marker) {
-      var mx = sx(Math.max(x0, Math.min(x1, opts.marker.x))), my = sy(opts.marker.y);
-      el('line', { x1: mx, x2: mx, y1: T, y2: T + ph, class: 'ch-marker-line' }, svg);
-      el('circle', { cx: mx, cy: my, r: 5, class: 'ch-dot' }, svg);
-    }
-    // Hover: crosshair and tooltip at the nearest point.
-    var cross = el('line', { y1: T, y2: T + ph, class: 'ch-cross', visibility: 'hidden' }, svg);
-    var dot = el('circle', { r: 4.5, class: 'ch-dot ch-hover', visibility: 'hidden' }, svg);
-    var tip = document.createElement('div'); tip.className = 'ch-tip'; tip.hidden = true; host.appendChild(tip);
-    var hit = el('rect', { x: L, y: T, width: pw, height: ph, class: 'ch-hit' }, svg);
-    function show(evt) {
-      var r = svg.getBoundingClientRect(), x = (evt.clientX - r.left) / r.width * W;
-      var best = pts[0];
-      pts.forEach(function (p) { if (Math.abs(sx(p[0]) - x) < Math.abs(sx(best[0]) - x)) best = p; });
-      var px = sx(best[0]), py = sy(best[1]);
-      cross.setAttribute('x1', px); cross.setAttribute('x2', px); cross.setAttribute('visibility', 'visible');
-      dot.setAttribute('cx', px); dot.setAttribute('cy', py); dot.setAttribute('visibility', 'visible');
-      tip.innerHTML = '<b>' + opts.fy(best[1]) + '</b><span>' + opts.fx(best[0]) + '</span>';
-      tip.hidden = false;
-      var left = px / W * r.width;
-      tip.style.left = Math.max(0, Math.min(r.width - tip.offsetWidth, left - tip.offsetWidth / 2)) + 'px';
-      tip.style.top = Math.max(0, py / H * r.height - tip.offsetHeight - 10) + 'px';
-    }
-    function hide() { cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); tip.hidden = true; }
-    hit.addEventListener('pointermove', show);
-    hit.addEventListener('pointerleave', hide);
+    c.raf = requestAnimationFrame(frame);
+    // A background tab pauses animation frames: make sure the chart still lands on the new values.
+    c.done = setTimeout(function () { if (c.raf) { cancelAnimationFrame(c.raf); c.raf = 0; } draw(1); }, DURATION + 60);
   }
 
+  // ----- line -----
+  // opts: { points: [[x, y]], fx, fy (formatters), xTicks: [x], marker: { x, y }, band: [x0, x1, label], label, yMax }
+  var LW = 560, LH = 210, LL = 56, LR = 14, LT = 14, LB = 34, PW = LW - LL - LR, PH = LH - LT - LB;
+  function line(host, opts) {
+    var pts = opts.points, yMax = opts.yMax || niceMax(Math.max.apply(null, pts.map(function (p) { return p[1]; })) * 1.08);
+    var target = { ys: pts.map(function (p) { return p[1]; }), yMax: yMax, mx: opts.marker ? opts.marker.x : null, my: opts.marker ? opts.marker.y : null };
+    var c = host._chart;
+    if (!c || c.kind !== 'line' || c.xs.length !== pts.length || c.xs[0] !== pts[0][0] || c.xs[c.xs.length - 1] !== pts[pts.length - 1][0]) c = buildLine(host, opts, target);
+    c.opts = opts; c.target = target;
+    c.svg.setAttribute('aria-label', opts.label || '');
+    // Labels jump to the new values; the shapes glide.
+    c.yLabels.forEach(function (t, i) { t.textContent = opts.fy(yMax * [0, 0.5, 1][i]); });
+    var from = { ys: c.cur.ys.slice(), yMax: c.cur.yMax, mx: c.cur.mx, my: c.cur.my };
+    if (from.mx == null) { from.mx = target.mx; from.my = target.my; }
+    animate(c, function (t) {
+      c.cur = { ys: target.ys.map(function (y, i) { return lerp(from.ys[i], y, t); }), yMax: lerp(from.yMax, target.yMax, t),
+        mx: target.mx == null ? null : lerp(from.mx, target.mx, t), my: target.my == null ? null : lerp(from.my, target.my, t) };
+      drawLine(c);
+    });
+  }
+  function buildLine(host, opts, target) {
+    host.innerHTML = '';
+    host.classList.add('chart');
+    var pts = opts.points, xs = pts.map(function (p) { return p[0]; }), x0 = xs[0], x1 = xs[xs.length - 1];
+    var c = { kind: 'line', xs: xs, sx: function (x) { return LL + (x - x0) / (x1 - x0) * PW; }, raf: 0 };
+    var svg = c.svg = el('svg', { viewBox: '0 0 ' + LW + ' ' + LH, role: 'img' }, host);
+    if (opts.band) {
+      el('rect', { x: c.sx(opts.band[0]), y: LT, width: c.sx(opts.band[1]) - c.sx(opts.band[0]), height: PH, class: 'ch-band' }, svg);
+      if (opts.band[2]) text(svg, (c.sx(opts.band[0]) + c.sx(opts.band[1])) / 2, LT + 12, opts.band[2], 'ch-text ch-band-label', 'middle');
+    }
+    c.yLabels = [0, 0.5, 1].map(function (f) {
+      var y = LT + PH - f * PH;
+      el('line', { x1: LL, x2: LW - LR, y1: y, y2: y, class: f ? 'ch-grid' : 'ch-axis' }, svg);
+      return text(svg, LL - 8, y + 4, '', 'ch-text', 'end');
+    });
+    (opts.xTicks || [x0, x1]).forEach(function (x) { text(svg, c.sx(x), LH - 12, opts.fx(x), 'ch-text', 'middle'); });
+    c.area = el('path', { class: 'ch-area' }, svg);
+    c.path = el('path', { class: 'ch-line' }, svg);
+    c.mline = el('line', { y1: LT, y2: LT + PH, class: 'ch-marker-line' }, svg);
+    c.mdot = el('circle', { r: 5, class: 'ch-dot' }, svg);
+    var cross = el('line', { y1: LT, y2: LT + PH, class: 'ch-cross', visibility: 'hidden' }, svg);
+    var dot = el('circle', { r: 4.5, class: 'ch-dot ch-hover', visibility: 'hidden' }, svg);
+    var tip = document.createElement('div'); tip.className = 'ch-tip'; tip.hidden = true; host.appendChild(tip);
+    var hit = el('rect', { x: LL, y: LT, width: PW, height: PH, class: 'ch-hit' }, svg);
+    // Hover: crosshair and tooltip at the nearest point (always the latest values).
+    hit.addEventListener('pointermove', function (evt) {
+      var r = svg.getBoundingClientRect(), x = (evt.clientX - r.left) / r.width * LW, i = 0;
+      c.xs.forEach(function (px, j) { if (Math.abs(c.sx(px) - x) < Math.abs(c.sx(c.xs[i]) - x)) i = j; });
+      var px = c.sx(c.xs[i]), y = c.target.ys[i], py = LT + PH - y / c.target.yMax * PH;
+      set(cross, { x1: px, x2: px, visibility: 'visible' }); set(dot, { cx: px, cy: py, visibility: 'visible' });
+      tip.innerHTML = '<b>' + c.opts.fy(y) + '</b><span>' + c.opts.fx(c.xs[i]) + '</span>';
+      tip.hidden = false;
+      tip.style.left = Math.max(0, Math.min(r.width - tip.offsetWidth, px / LW * r.width - tip.offsetWidth / 2)) + 'px';
+      tip.style.top = Math.max(0, py / LH * r.height - tip.offsetHeight - 10) + 'px';
+    });
+    hit.addEventListener('pointerleave', function () { cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); tip.hidden = true; });
+    c.cur = { ys: target.ys.slice(), yMax: target.yMax, mx: target.mx, my: target.my };
+    host._chart = c;
+    return c;
+  }
+  function drawLine(c) {
+    var sy = function (y) { return LT + PH - y / c.cur.yMax * PH; };
+    var d = c.xs.map(function (x, i) { return (i ? 'L' : 'M') + c.sx(x).toFixed(1) + ' ' + sy(c.cur.ys[i]).toFixed(1); }).join(' ');
+    c.path.setAttribute('d', d);
+    c.area.setAttribute('d', d + ' L' + c.sx(c.xs[c.xs.length - 1]) + ' ' + sy(0) + ' L' + c.sx(c.xs[0]) + ' ' + sy(0) + ' Z');
+    var show = c.cur.mx != null;
+    c.mline.setAttribute('visibility', show ? 'visible' : 'hidden'); c.mdot.setAttribute('visibility', show ? 'visible' : 'hidden');
+    if (show) {
+      var mx = c.sx(Math.max(c.xs[0], Math.min(c.xs[c.xs.length - 1], c.cur.mx)));
+      set(c.mline, { x1: mx, x2: mx }); set(c.mdot, { cx: mx, cy: sy(c.cur.my) });
+    }
+  }
+
+  // ----- meter -----
   // opts: { parts: [{ value, label, cls }], max, marks: [{ value, label }], fmt, label }
+  var MW = 560, MH = 74, ML = 4, MR = 4, BH = 22, TOP = 22, MPW = MW - ML - MR;
   function meter(host, opts) {
+    var total = opts.parts.reduce(function (t, p) { return t + Math.max(0, p.value); }, 0);
+    var target = { vals: opts.parts.map(function (p) { return Math.max(0, p.value); }), scale: Math.max(opts.max || 0, total, 1) * 1.04,
+      marks: (opts.marks || []).map(function (m) { return m.value; }) };
+    var c = host._chart;
+    var sig = opts.parts.map(function (p) { return p.cls + p.label; }).join('|') + '#' + (opts.marks || []).map(function (m) { return m.label; }).join('|');
+    if (!c || c.kind !== 'meter' || c.parts.length !== opts.parts.length) c = buildMeter(host, opts, target);
+    if (c.sig !== sig) setMarks(c, opts.marks || [], target.marks);
+    c.sig = sig; c.opts = opts;
+    c.svg.setAttribute('aria-label', opts.label || '');
+    c.legend.innerHTML = opts.parts.filter(function (p) { return p.value > 0; }).map(function (p) {
+      return '<span><i class="ch-key ' + (p.cls || '') + '"></i>' + p.label + ' <b>' + opts.fmt(p.value) + '</b></span>';
+    }).join('');
+    var from = { vals: c.cur.vals.slice(), scale: c.cur.scale, marks: target.marks.map(function (v, i) { return c.cur.marks[i] != null ? c.cur.marks[i] : v; }) };
+    animate(c, function (t) {
+      c.cur = { vals: target.vals.map(function (v, i) { return lerp(from.vals[i], v, t); }), scale: lerp(from.scale, target.scale, t),
+        marks: target.marks.map(function (v, i) { return lerp(from.marks[i], v, t); }) };
+      drawMeter(c);
+    });
+  }
+  function buildMeter(host, opts, target) {
     host.innerHTML = '';
     host.classList.add('chart', 'meter');
-    var total = opts.parts.reduce(function (t, p) { return t + Math.max(0, p.value); }, 0);
-    var max = Math.max(opts.max || 0, total, 1) * 1.04;
-    var W = 560, H = 74, L = 4, Rt = 4, bh = 22, top = 22, pw = W - L - Rt;
-    var sx = function (v) { return L + v / max * pw; };
-    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': opts.label || '' }, host);
-    el('rect', { x: L, y: top, width: pw, height: bh, rx: 4, class: 'ch-track' }, svg);
-    var at = 0, tip = document.createElement('div');
-    tip.className = 'ch-tip'; tip.hidden = true; host.appendChild(tip);
-    opts.parts.forEach(function (p) {
-      if (p.value <= 0) return;
-      var x = sx(at), w = Math.max(1, sx(at + p.value) - x - 2);
-      var r = el('rect', { x: x, y: top, width: w, height: bh, rx: 4, class: 'ch-part ' + (p.cls || '') }, svg);
+    var c = { kind: 'meter', raf: 0, sig: null };
+    var svg = c.svg = el('svg', { viewBox: '0 0 ' + MW + ' ' + MH, role: 'img' }, host);
+    el('rect', { x: ML, y: TOP, width: MPW, height: BH, rx: 4, class: 'ch-track' }, svg);
+    var tip = document.createElement('div'); tip.className = 'ch-tip'; tip.hidden = true;
+    c.parts = opts.parts.map(function (p, i) {
+      var r = el('rect', { y: TOP, height: BH, rx: 4, class: 'ch-part ' + (p.cls || '') }, svg);
       r.addEventListener('pointermove', function (evt) {
-        var b = svg.getBoundingClientRect();
-        tip.innerHTML = '<b>' + opts.fmt(p.value) + '</b><span>' + p.label + '</span>'; tip.hidden = false;
+        var q = c.opts.parts[i], b = svg.getBoundingClientRect();
+        tip.innerHTML = '<b>' + c.opts.fmt(q.value) + '</b><span>' + q.label + '</span>'; tip.hidden = false;
         tip.style.left = Math.max(0, Math.min(b.width - tip.offsetWidth, evt.clientX - b.left - tip.offsetWidth / 2)) + 'px';
         tip.style.top = '-6px';
       });
       r.addEventListener('pointerleave', function () { tip.hidden = true; });
-      at += p.value;
+      return r;
     });
-    (opts.marks || []).forEach(function (m, i) {
-      var x = sx(m.value);
-      el('line', { x1: x, x2: x, y1: top - 6, y2: top + bh + 6, class: 'ch-limit' }, svg);
-      text(svg, x, i % 2 ? top + bh + 20 : top - 9, m.label, 'ch-text ch-limit-label', x > W * 0.8 ? 'end' : x < W * 0.2 ? 'start' : 'middle');
+    c.markGroup = el('g', {}, svg);
+    host.appendChild(tip);
+    c.legend = document.createElement('div'); c.legend.className = 'ch-legend'; host.appendChild(c.legend);
+    c.cur = { vals: target.vals.map(function () { return 0; }), scale: target.scale, marks: target.marks.slice() };
+    host._chart = c;
+    return c;
+  }
+  function setMarks(c, marks) {
+    c.markGroup.innerHTML = '';
+    c.marks = marks.map(function (m, i) {
+      return { line: el('line', { y1: TOP - 6, y2: TOP + BH + 6, class: 'ch-limit' }, c.markGroup),
+        label: text(c.markGroup, 0, i % 2 ? TOP + BH + 20 : TOP - 9, m.label, 'ch-text ch-limit-label') };
     });
-    var legend = document.createElement('div');
-    legend.className = 'ch-legend';
-    legend.innerHTML = opts.parts.filter(function (p) { return p.value > 0; }).map(function (p) {
-      return '<span><i class="ch-key ' + (p.cls || '') + '"></i>' + p.label + ' <b>' + opts.fmt(p.value) + '</b></span>';
-    }).join('');
-    host.appendChild(legend);
+  }
+  function drawMeter(c) {
+    var sx = function (v) { return ML + v / c.cur.scale * MPW; }, at = 0;
+    c.parts.forEach(function (r, i) {
+      var v = c.cur.vals[i];
+      if (v <= 0.5) { r.setAttribute('width', 0); return; }
+      var x = sx(at);
+      set(r, { x: x, width: Math.max(1, sx(at + v) - x - 2) });
+      at += v;
+    });
+    (c.marks || []).forEach(function (m, i) {
+      var x = sx(c.cur.marks[i]);
+      set(m.line, { x1: x, x2: x });
+      set(m.label, { x: x, 'text-anchor': x > MW * 0.8 ? 'end' : x < MW * 0.2 ? 'start' : 'middle' });
+    });
   }
 
   return { line: line, meter: meter };

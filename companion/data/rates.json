@@ -119,8 +119,6 @@
     }
   },
   "rates": [
-    { "id": "rb_rate", "label": "Retirement Bonus rate", "value": 0.007, "unit": "%", "doc": "web-rb", "quote": "Your Retirement Bonus is calculated as: the amount you transfer from eligible investment options × 0.7% bonus rate." },
-    { "id": "rb_cap", "label": "Retirement Bonus: most a member can receive in total", "value": 14700, "unit": "$", "doc": "web-rb", "quote": "the total you can receive across all your accounts is capped at $14,700." },
     { "id": "pension_min_start", "label": "Minimum to start a Flexi Pension", "value": 25000, "unit": "$", "doc": "flexi", "quote": "You need a minimum of $25,000 to start a Flexi Pension." },
     { "id": "pension_residual", "label": "Must stay in accumulation when starting a pension from part of a balance", "value": 6000, "unit": "$", "doc": "flexi", "quote": "you must leave at least $6,000 in your UniSuper accumulation account" },
     { "id": "pension_close_out", "label": "Balance at which a Flexi Pension is paid out", "value": 10000, "unit": "$", "doc": "flexi", "quote": "Your Flexi Pension will continue until the balance reduces to $10,000" },

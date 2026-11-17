@@ -661,3 +661,7 @@ details.pages > summary::-webkit-details-marker { display: none; }
 @media (max-width: 860px) { .calc-picker { gap: 8px; } .calc-group { width: 100%; } }
 /* An underlined (assumed) figure inside a headline keeps the headline's size. */
 .headline > span.assume { display: inline; font: inherit; letter-spacing: inherit; text-transform: none; color: inherit; margin: 0; }
+
+/* Sliders under the calculator boxes; the tick marks are the figures they latch onto */
+.slider { display: block; width: 100%; margin: 8px 0 2px; accent-color: var(--info); cursor: pointer; height: 22px; }
+.slider:focus-visible { outline: 2px solid var(--info); outline-offset: 2px; border-radius: 4px; }
