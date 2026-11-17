@@ -465,6 +465,20 @@ test('calculators: caps, top-ups, spouse offset, Division 293 and cover by age',
   assert.equal(C.cover({ age: 55, units: 10 }, r).cover, 86000);
   assert.equal(C.cover({ age: 38, units: 1 }, r).peak.age, 38);
   assert.equal(C.cover({ units: 10 }, r).curve.length, 61);
+
+  // Income Protection: the PDS examples (Angela $120,000 -> 19 units; Kent $90,000 -> 14 units).
+  assert.equal(C.ipCover({ salary: 120000 }, r).allowed, 19);
+  assert.equal(C.ipCover({ salary: 90000 }, r).allowed, 14);
+  assert.equal(C.ipCover({ salary: 400000 }, r).allowed, 23, 'never more than 23 units');
+  const ip = C.ipCover({ salary: 120000, age: 35, wait: '90', period: '2y', sex: 'm' }, r);
+  assert.equal(ip.units, 19); assert.equal(ip.weekly, 1900);
+  assert.equal(ip.rate, 3.21); assert.equal(ip.premium, 60.99);
+  assert.equal(Math.round(ip.benefit), 8233); assert.equal(ip.cash, 7300, '73% of $10,000 a month');
+  assert.equal(Math.round(ip.toSuper), 933);
+  assert.equal(C.ipCover({ salary: 120000, age: 50, wait: '30', period: '65', sex: 'f', units: 10 }, r).premium, 5404.9, 'to-65, 30-day, female, age 50: $540.49 a unit');
+  const late = C.ipCover({ salary: 120000, age: 64, wait: '90', period: '65', sex: 'm', units: 10 }, r);
+  assert.equal(late.converted, true); assert.equal(late.rate, 27.56, 'to-65 becomes two-year rates from 63');
+  assert.equal(C.ipCover({ age: 66, units: 1 }, r).curve.length, 53);
 });
 
 test('calculators: every calculator renders its result with sample values', () => {
@@ -472,12 +486,12 @@ test('calculators: every calculator renders its result with sample values', () =
   const samples = {
     caps: { salary: '95000', employerRate: '0.17', salarySacrifice: '8000', personal: '', tsb: '450000', carryForward: '12000', age: '52', ncc: '20000' },
     topups: { income: '52000', ncc: '1000', cc: '4500' }, spouse: { spouseIncome: '38500', contribution: '3000' },
-    div293: { income: '240000', cc: '30000' }, cover: { age: '35', units: '10' },
+    div293: { income: '240000', cc: '30000' }, cover: { age: '35', units: '10' }, ip: { salary: '120000', age: '35', units: '', wait: '90', period: '2y', sex: 'm' },
   };
   for (const [id, raw] of Object.entries(samples)) {
     app.raw = raw; app.id = id;
     const html = vm.runInContext(`(() => { const d = api.SIMPLE[id], v = {};
-      d.fields.forEach((f) => { const x = raw[f.k]; v[f.k] = f.kind === 'rate' ? +x : (f.kind === 'age' || f.kind === 'number') ? (x === '' ? '' : parseInt(x, 10)) : (x === '' ? null : +x); });
+      d.fields.forEach((f) => { const x = raw[f.k]; v[f.k] = f.kind === 'choice' ? x : f.kind === 'rate' ? +x : (f.kind === 'age' || f.kind === 'number') ? (x === '' ? '' : parseInt(x, 10)) : (x === '' ? null : +x); });
       const r = d.compute(v); return api.marks(d.out(raw, r)) + d.summary(raw, r); })()`, app, { timeout: 2000 });
     assert.ok(html.length > 100, `${id} rendered nothing`);
     assert.doesNotMatch(html, /\{\{[a-z0-9-]+:|NaN|undefined/, `${id} shows a raw marker, NaN or undefined`);

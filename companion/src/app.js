@@ -1092,6 +1092,7 @@
     { id: 'spouse', group: 'Contributions', title: 'Spouse contribution tax offset' },
     { id: 'div293', group: 'Contributions', title: 'Division 293 tax' },
     { id: 'cover', group: 'Insurance', title: 'Death and TPD cover by age' },
+    { id: 'ip', group: 'Insurance', title: 'Income Protection cover by age' },
     { id: 'dates', group: 'Dates', title: 'When is it due? Dates and business days' }
   ];
   var CALC_BY_ID = {};
@@ -1100,7 +1101,7 @@
   var CALC_FOR = {
     rule: { 'cc-cap': 'caps', 'cc-excess': 'caps', 'carry-forward': 'caps', 'ncc-cap': 'caps', 'ncc-excess': 'caps', 'bring-forward': 'caps', 'salary-sacrifice': 'caps', 'sg-rate': 'caps',
       'co-contribution': 'topups', listo: 'topups', 'spouse-offset': 'spouse', div293: 'div293',
-      'unit-value': 'cover', 'cover-types': 'cover', 'fixed-cover': 'cover', 'default-cover': 'cover' },
+      'unit-value': 'cover', 'cover-types': 'cover', 'fixed-cover': 'cover', 'default-cover': 'cover', 'ip-cover': 'ip' },
     explainer: { 'carry-forward': 'caps', 'bring-forward': 'caps', 'concessional-vs-non': 'caps', 'unitised-cover': 'cover' }
   };
   function calcFor(type, id) { return (CALC_FOR[type] || {})[id] || null; }
@@ -1208,6 +1209,41 @@
       },
       summary: function (v, r) { return 'Taxable income ' + money(P.parseMoney(v.income)) + ' plus pre-tax contributions ' + money(r.counted) + (r.excess ? ' (' + money(r.excess) + ' excess left out)' : '') + ': Division 293 about ' + money(r.tax) + '.'; }
     },
+    ip: {
+      intro: 'Income Protection is bought in units of $100 a week, up to the lesser of 23 units and 85% of salary. The cover doesn\'t change with age; the premium does. Cover stops at 67.',
+      fields: [
+        { k: 'salary', label: 'Salary', ph: 'e.g. 120000' }, { k: 'age', label: 'Age', kind: 'age' },
+        { k: 'units', label: 'Units of Income Protection', ph: 'blank: the most allowed', kind: 'number' },
+        { k: 'wait', label: 'Waiting period', kind: 'choice', options: [['90', '90 days'], ['60', '60 days'], ['30', '30 days']], dflt: '90' },
+        { k: 'period', label: 'Benefit period', kind: 'choice', options: [['2y', '2 years'], ['5y', '5 years'], ['65', 'To age 65']], dflt: '2y' },
+        { k: 'sex', label: 'Sex at birth (sets the premium)', kind: 'choice', options: [['m', 'Male'], ['f', 'Female']], dflt: 'm' }],
+      prefill: function (m) { var a = m.accounts.filter(function (x) { return x.insurance && x.insurance.ip_units; })[0]; return { salary: m.income, units: a ? a.insurance.ip_units : null }; },
+      compute: function (v) { return CompanionCalcs.ipCover(v, DATA.rates); },
+      sources: ['ip_unit_value', 'ip_max_units', 'ip_salary_pct', 'ip_cash_pct', 'ip_ceases', 'ip_to65_switch', 'ip_premiums'],
+      out: function (v, r) {
+        var periodName = { '2y': 'two-year', '5y': 'five-year', '65': 'to-age-65' }[r.period];
+        return '<div class="calc-block"><span class="label">Cover</span><div class="headline">' + tw('ipweek', r.weekly) + '<span>a week · ' + r.units + ' units · about ' + money(r.monthly) + ' a month</span></div>' +
+          (r.overAllowed ? '<p class="warn-line">More than this salary allows: ' + r.allowed + ' units is the most (85% of salary, at most 23 units).</p>' : '<p class="meta">This salary allows up to ' + r.allowed + ' units.</p>') +
+          (r.benefit != null ? '<div class="ch-host" id="ch-ipb"></div><p class="meta">At claim, the monthly benefit is the lesser of the units and 85% of pre-disability income: up to 73% of income is paid to the member and the rest, up to 12%, into super.</p>' : '<p class="meta">Add the salary to see what would be paid at claim.</p>') +
+          '</div><div class="calc-block"><span class="label">Premium</span><div class="headline">' + (r.premium != null ? tw('ipprem', r.premium) : '–') + '<span>a year' + (r.rate != null ? ' · ' + money(r.rate) + ' a unit · ' + r.wait + '-day wait, ' + periodName + ' benefit' : r.age == null ? ': add an age' : ': no cover at this age') + '</span></div>' +
+          '<div class="ch-host" id="ch-ipp"></div>' +
+          (r.converted ? '<p class="meta">From 63 a to-age-65 benefit period becomes two years, so the two-year rates apply.</p>' : '') +
+          '<p class="meta">Annual cost for ' + r.units + ' units by age. Shorter waits and longer benefit periods cost more. Personal Account members also multiply by their occupation rating factor.</p></div>';
+      },
+      charts: function (v, r) {
+        if (r.benefit != null) {
+          CompanionCharts.meter($('ch-ipb'), { fmt: money, label: 'Monthly benefit at claim against income', max: r.income,
+            parts: [{ value: r.cash, label: 'Paid to the member', cls: 'ch-p1' }, { value: r.toSuper, label: 'Into super', cls: 'ch-p2' }],
+            marks: [{ value: r.income * 0.85, label: '85% of income' }, { value: r.income, label: money(r.income) + ' a month' }] });
+        }
+        CompanionCharts.line($('ch-ipp'), { points: r.curve, fx: function (a) { return 'age ' + a; }, fy: money, label: 'Annual premium by age',
+          xTicks: [14, 30, 40, 50, 60, 66], marker: r.premium != null ? { x: r.age, y: r.premium } : null });
+      },
+      summary: function (v, r) {
+        return r.units + ' units of Income Protection: ' + money(r.weekly) + ' a week (about ' + money(r.monthly) + ' a month)' +
+          (r.premium != null ? '; about ' + money(r.premium) + ' a year at age ' + r.age + ' (' + r.wait + '-day wait, ' + { '2y': '2-year', '5y': '5-year', '65': 'to-65' }[r.period] + ' benefit)' : '') + '.';
+      }
+    },
     cover: {
       intro: 'Unitised Death and TPD cover: what the member\'s units are worth at each age. The cover per unit peaks at 38, then falls.',
       fields: [{ k: 'age', label: 'Age', kind: 'age' }, { k: 'units', label: 'Units of Death/TPD cover', ph: 'default cover is 10 units', kind: 'number' }],
@@ -1242,14 +1278,15 @@
       Object.keys(pre).forEach(function (k) { if ((v[k] == null || v[k] === '') && pre[k] != null && pre[k] !== 0) v[k] = String(Math.round(pre[k])); });
     }
     if (id === 'caps' && !v.employerRate) v.employerRate = String(DATA.rates.tables.employer_rates.rows[0]);
+    def.fields.forEach(function (f) { if (f.kind === 'choice' && !v[f.k]) v[f.k] = f.dflt; });
     return v;
   }
   function parsedValues(id) {
     var v = simpleValues(id), out = {};
     SIMPLE[id].fields.forEach(function (f) {
       var raw = v[f.k];
-      out[f.k] = f.kind === 'rate' ? +raw : f.kind === 'age' || f.kind === 'number' ? (raw === '' || raw == null ? '' : parseInt(raw, 10)) : moneyOrNull(raw);
-      if (out[f.k] != null && out[f.k] !== '' && isNaN(out[f.k])) out[f.k] = null;
+      out[f.k] = f.kind === 'choice' ? raw : f.kind === 'rate' ? +raw : f.kind === 'age' || f.kind === 'number' ? (raw === '' || raw == null ? '' : parseInt(raw, 10)) : moneyOrNull(raw);
+      if (f.kind !== 'choice' && out[f.k] != null && out[f.k] !== '' && isNaN(out[f.k])) out[f.k] = null;
     });
     // Keep the typed text for the summaries and charts.
     Object.keys(v).forEach(function (k) { out['_' + k] = v[k]; });
@@ -1283,6 +1320,9 @@
       var r = state.ddLast, top = r ? (r.max != null ? r.max : Math.max(r.fullMin * 4, 20000)) : 100000;
       return { min: 0, max: Math.round(top / 10) * 10, step: 10, snaps: r ? [r.proMin, r.fullMin, r.max] : [] };
     },
+    'ip.salary': function () { return { min: 0, max: 300000, step: 1000, snaps: [Math.ceil(rv('ip_max_units') * rv('ip_unit_value') * 52 / rv('ip_salary_pct') / 1000) * 1000] }; },
+    'ip.age': function () { var rows = DATA.rates.tables.ip_premiums.periods['2y']; return { min: rows[0][0], max: rows[rows.length - 1][0], step: 1, snaps: [39, 44, 54, rv('ip_to65_switch')], ticksOnly: true }; },
+    'ip.units': function () { return { min: 1, max: rv('ip_max_units'), step: 1, snaps: [], ticksOnly: true }; },
     'dd.bal': function () { return { min: 0, max: 3000000, step: 5000, snaps: [rv('pension_min_start'), 250000, 500000, 1000000, rv('tbc_general')] }; }
   };
   // Incomes up to $3 million on a stretched scale: the first 60% of the slider covers $0 to $300,000 in
@@ -1357,13 +1397,14 @@
       '<p class="detail">' + esc(def.intro) + '</p><div class="form-grid">' +
       def.fields.map(function (f) {
         if (f.kind === 'rate') return '<span class="label">' + esc(f.label) + '</span><div class="cell">' + seg('cf-' + f.k, DATA.rates.tables.employer_rates.rows.map(function (x) { return [String(x), Math.round(x * 100) + '%']; }), v[f.k]) + '</div>';
+        if (f.kind === 'choice') return '<span class="label">' + esc(f.label) + '</span><div class="cell">' + seg('cf-' + f.k, f.options, v[f.k]) + '</div>';
         var isMoney = f.kind !== 'age' && f.kind !== 'number';
         return field('cf-' + f.k, esc(f.label), textInput('cf-' + f.k, v[f.k] || '', f.ph || (f.kind === 'age' ? 'e.g. 45' : ''), isMoney ? 'decimal' : 'numeric') + sliderHtml(id + '.' + f.k, 'cf-' + f.k, v[f.k] || '', isMoney));
       }).join('') +
       '</div><div class="actions"><button type="button" class="btn ghost" data-clear-simple="' + id + '">Clear</button></div>' + calcSources(def.sources) + '</section>' +
       '<section class="card results-card"><span class="label">Result</span><div class="results" id="cf-out"></div></section></div>';
     def.fields.forEach(function (f) {
-      if (f.kind === 'rate') return;
+      if (f.kind === 'rate' || f.kind === 'choice') return;
       $('cf-' + f.k).addEventListener('input', function () {
         state.cf[id][f.k] = this.value;
         if (f.kind !== 'age' && f.kind !== 'number') echoMoney('cf-' + f.k, this.value);

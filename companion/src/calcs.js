@@ -98,5 +98,40 @@ var CompanionCalcs = (function () {
     };
   }
 
-  return { caps: caps, topups: topups, spouseOffset: spouseOffset, div293: div293, cover: cover };
+  // Income Protection (Insurance in your super): units of $100 a week, up to the lesser of 23 units and
+  // 85% of salary; at claim, up to 73% of pre-disability income as cash and up to 12% into super; the
+  // annual premium per unit by age, sex at birth, waiting period and benefit period. A to-age-65 benefit
+  // period becomes two years from 63, so the two-year rates apply from then. Cover stops at 67.
+  // in: salary, age, units (blank = the most allowed), wait ('90' | '60' | '30'), period ('2y' | '5y' | '65'), sex ('m' | 'f')
+  var IP_COL = { '90m': 1, '90f': 2, '60m': 3, '60f': 4, '30m': 5, '30f': 6 };
+  function ipRate(table, period, age, wait, sex, switchAge) {
+    var p = period === '65' && age >= switchAge ? '2y' : period;
+    var row = table.periods[p].filter(function (x) { return x[0] === age; })[0];
+    return row ? row[IP_COL[wait + sex]] : null;
+  }
+  function ipCover(input, rates) {
+    var r = R(rates), t = rates.tables.ip_premiums, salary = num(input.salary);
+    var wait = input.wait || '90', period = input.period || '2y', sex = input.sex || 'm';
+    var age = input.age == null || input.age === '' ? null : num(input.age);
+    var allowed = salary > 0 ? Math.min(r.ip_max_units, Math.floor(salary * r.ip_salary_pct / 52 / r.ip_unit_value)) : r.ip_max_units;
+    var units = input.units == null || input.units === '' ? allowed : num(input.units);
+    var monthly = units * r.ip_unit_value * 52 / 12;
+    var out = { units: units, allowed: allowed, overAllowed: units > allowed, weekly: units * r.ip_unit_value, monthly: monthly,
+      wait: wait, period: period, sex: sex, age: age, ceases: r.ip_ceases, switchAge: r.ip_to65_switch, maxUnits: r.ip_max_units };
+    if (salary > 0) {
+      var income = salary / 12;
+      out.benefit = Math.min(monthly, income * r.ip_salary_pct);
+      out.cash = Math.min(out.benefit, income * r.ip_cash_pct);
+      out.toSuper = Math.min(out.benefit - out.cash, income * r.ip_super_pct);
+      out.income = income;
+    }
+    var rate = age == null ? null : ipRate(t, period, age, wait, sex, r.ip_to65_switch);
+    out.rate = rate;
+    out.premium = rate == null ? null : Math.round(rate * units * 100) / 100;
+    out.converted = period === '65' && age != null && age >= r.ip_to65_switch;
+    out.curve = t.periods['2y'].map(function (row) { var a = row[0], x = ipRate(t, period, a, wait, sex, r.ip_to65_switch); return [a, (x || 0) * (units || 1)]; });
+    return out;
+  }
+
+  return { caps: caps, topups: topups, spouseOffset: spouseOffset, div293: div293, cover: cover, ipCover: ipCover };
 })();
