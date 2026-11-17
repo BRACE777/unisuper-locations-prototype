@@ -106,7 +106,7 @@
     },
     {
       "id": "acc-cooling-off",
-      "topic": "Super",
+      "topic": "Account",
       "task": "Cooling-off for an Accumulation 1 account we opened for you",
       "timeframe": "14 days",
       "starts": "The sooner of the welcome email or the end of the fifth business day after opening",
@@ -766,7 +766,7 @@
     },
     {
       "id": "investment-form",
-      "topic": "Investment",
+      "topic": "Investments",
       "task": "Investment choice form must reach us",
       "aliases": [
         "investment choice form deadline"

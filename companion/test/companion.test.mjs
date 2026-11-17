@@ -572,5 +572,9 @@ test('date calculator: the situation search finds timeframes it can count', () =
   const cooling = [...vm.runInContext(`api.dtMatchesHtml('cooling off')`, app).matchAll(/data-dt-pick="([^"]+)"/g)].map((m) => m[1]).slice(0, 2);
   assert.ok(cooling.includes('pension-cooling-off') && cooling.includes('acc-cooling-off'), 'both cooling-off periods');
   assert.equal(first('how long for a lump sum'), 'pension-lump-sum');
-  assert.equal(vm.runInContext(`api.dtMatchesHtml('')`, app), '', 'nothing typed, nothing listed');
+  const everything = vm.runInContext(`api.dtMatchesHtml('')`, app);
+  assert.equal((everything.match(/data-dt-pick=/g) || []).length, data.timeframes.filter((t) => t.calc).length, 'nothing typed: every countable timeframe, to scroll through');
+  const part = vm.runInContext(`api.dtMatchesHtml('withdr')`, app);
+  assert.match(part, /data-dt-pick="pension-lump-sum"/, 'a part-word still matches');
+  assert.ok((part.match(/data-dt-pick=/g) || []).length > 1, 'a part-word finds more than one');
 });

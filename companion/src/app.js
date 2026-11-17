@@ -1507,37 +1507,68 @@
       field('dt-from', 'From', textInput('dt-from', dt.from, 'today, 23/12/2026 or 23 Dec') +
         '<div class="presets"><button type="button" class="btn sm" data-from="today">Today</button></div>') +
       '<label for="dt-find">Situation</label><div class="cell"><div class="dt-find"><input id="dt-find" type="search" autocomplete="off" placeholder="What’s it for? e.g. hardship, roll in, cooling off" aria-controls="dt-matches">' +
-        '<div class="dt-matches" id="dt-matches" role="listbox" aria-label="Matching timeframes"></div></div></div>' +
-      '<label for="dt-preset">Timeframe</label><div class="cell"><select id="dt-preset"><option value="">Custom</option>' + presets.map(function (t) {
-        return '<option value="' + esc(t.id) + '"' + (state.calcPreset === t.id ? ' selected' : '') + '>' + esc(t.task) + ' (' + t.calc.n + ' ' + t.calc.type.replace('_', ' ') + ')</option>';
-      }).join('') + '</select></div>' +
+        '<div class="dt-matches" id="dt-matches" role="listbox" aria-label="Timeframes">' + dtMatchesHtml('') + '</div></div>' +
+        // The scrolling list above does the picking; this keeps the chosen timeframe for the rest of the calculator.
+        '<select id="dt-preset" hidden aria-hidden="true"><option value="">Custom</option>' + presets.map(function (t) {
+          return '<option value="' + esc(t.id) + '"' + (state.calcPreset === t.id ? ' selected' : '') + '>' + esc(t.task) + '</option>';
+        }).join('') + '</select></div>' +
       field('dt-n', 'Amount', textInput('dt-n', dt.n, '5', 'numeric')) +
       '<span class="label">Unit</span><div class="cell">' + seg('unit', UNITS, dt.unit) + '</div>' +
       '</div><div class="results" id="dt-out"></div></div></section>';
   }
+  // Every timeframe the calculator can count, in a scrolling list. Nothing typed: all of them, by topic.
+  // Typed: the main search's matches first, then any whose wording has words starting with what's typed
+  // (so a part-word like "withdr" still finds them).
   function dtMatchesHtml(text) {
-    if (!String(text).trim()) return '';
-    var hits = engine.search(text, { types: ['timeframe'], limit: 40 }).results.filter(function (r) { return r.item.calc; }).slice(0, 6);
-    if (!hits.length) return '<p class="meta">No timeframe with a set length matches. Pick from the list, or enter your own below.</p>';
-    return hits.map(function (r) {
-      var t = r.item;
-      return '<button type="button" class="dt-match" role="option" data-dt-pick="' + esc(t.id) + '"><b>' + esc(t.task) + '</b><span>' + esc(t.timeframe) + '</span></button>';
-    }).join('');
+    var all = DATA.timeframes.filter(function (t) { return t.calc; }), q = String(text || '').trim();
+    var row = function (t) {
+      var on = state.calcPreset === t.id;
+      return '<button type="button" class="dt-match' + (on ? ' is-on' : '') + '" role="option" aria-selected="' + on + '" data-dt-pick="' + esc(t.id) + '"><b>' + esc(t.task) + '</b><span>' + esc(t.timeframe) + '</span></button>';
+    };
+    if (!q) {
+      return groupBy(all, 'topic').map(function (g) { return '<span class="label dt-group">' + esc(g[0]) + '</span>' + g[1].map(row).join(''); }).join('');
+    }
+    var ids = engine.search(q, { types: ['timeframe'], limit: 60 }).results.filter(function (r) { return r.item.calc; }).map(function (r) { return r.id; });
+    var parts = fold(q).split(/[^a-z0-9]+/).filter(Boolean);
+    all.forEach(function (t) {
+      if (ids.indexOf(t.id) >= 0) return;
+      var words = fold([t.task, t.timeframe, t.say, t.topic, t.starts, (t.aliases || []).join(' ')].join(' ')).split(/[^a-z0-9]+/);
+      if (parts.every(function (p) { return words.some(function (w) { return w.indexOf(p) === 0; }); })) ids.push(t.id);
+    });
+    if (!ids.length) return '<p class="meta">Nothing with a set length matches “' + esc(q) + '”. Clear the search to see them all, or enter your own amount below.</p>';
+    return '<span class="label dt-group">' + ids.length + ' match' + (ids.length === 1 ? '' : 'es') + '</span>' + ids.map(function (id) { return row(TIMEFRAMES[id]); }).join('');
+  }
+  function fold(s) { return String(s || '').toLowerCase().replace(/[’‘]/g, "'"); }
+  function refreshDtList(scroll) {
+    var list = $('dt-matches');
+    if (!list) return;
+    list.innerHTML = dtMatchesHtml($('dt-find').value);
+    var on = list.querySelector('.is-on');
+    if (scroll && on) list.scrollTop = on.offsetTop - list.offsetTop - 8;
+  }
+  function moveDtActive(step) {
+    var opts = Array.prototype.slice.call($('dt-matches').querySelectorAll('[data-dt-pick]'));
+    if (!opts.length) return;
+    var i = opts.findIndex(function (o) { return o.classList.contains('is-active'); });
+    opts.forEach(function (o) { o.classList.remove('is-active'); });
+    var next = opts[Math.max(0, Math.min(opts.length - 1, i + step))];
+    next.classList.add('is-active'); next.scrollIntoView({ block: 'nearest' });
   }
   function bindDates() {
     if (!$('dt-from')) return;
     $('dt-from').addEventListener('input', function () { state.dt.from = this.value; echoDate('dt-from', this.value); runDates(); });
-    $('dt-n').addEventListener('input', function () { state.dt.n = this.value; state.calcPreset = null; $('dt-preset').value = ''; runDates(); });
-    $('dt-preset').addEventListener('change', function () { state.calcPreset = this.value || null; applyPreset(); runDates(); });
-    // Situation search: the main search engine over the timeframes that have a length to count.
-    $('dt-find').addEventListener('input', function () { $('dt-matches').innerHTML = dtMatchesHtml(this.value); });
+    $('dt-n').addEventListener('input', function () { state.dt.n = this.value; state.calcPreset = null; $('dt-preset').value = ''; refreshDtList(); runDates(); });
+    // Situation search: narrows the scrolling list; ↑ ↓ move through it, Enter picks.
+    $('dt-find').addEventListener('input', function () { refreshDtList(); });
     $('dt-find').addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); moveDtActive(e.key === 'ArrowDown' ? 1 : -1); return; }
       if (e.key !== 'Enter') return;
       e.preventDefault();
-      var first = $('dt-matches').querySelector('[data-dt-pick]');
-      if (first) first.click();
+      var pick = $('dt-matches').querySelector('.is-active') || $('dt-matches').querySelector('[data-dt-pick]');
+      if (pick) pick.click();
     });
     if (state.calcPreset) applyPreset();
+    refreshDtList(true);
     echoDate('dt-from', state.dt.from);
     runDates();
   }
@@ -1893,7 +1924,7 @@
     if (t.hasAttribute('data-seg')) {
       setSeg(t.getAttribute('data-seg'), t.getAttribute('data-val'));
       if (t.getAttribute('data-seg') !== 'unit') state.dd.touched[t.getAttribute('data-seg')] = true;
-      if (t.getAttribute('data-seg') === 'unit') runDates(); else runDrawdown();
+      if (t.getAttribute('data-seg') === 'unit') { refreshDtList(); runDates(); } else runDrawdown();
       return;
     }
     if (t.hasAttribute('data-start')) {
@@ -1904,7 +1935,7 @@
     }
     if (t.hasAttribute('data-dt-pick')) {
       state.calcPreset = t.getAttribute('data-dt-pick'); applyPreset(); runDates();
-      $('dt-find').value = ''; $('dt-matches').innerHTML = '';
+      $('dt-find').value = ''; refreshDtList(true);
       toast('Set to: ' + TIMEFRAMES[state.calcPreset].task);
       return;
     }
