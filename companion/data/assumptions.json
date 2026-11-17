@@ -207,7 +207,7 @@
     { "id": "employer-estimate", "title": "Employer contributions from salary",
       "assumed": "Employer contributions are worked out as salary times the employer rate.",
       "pds": "The PDS gives the 12% minimum (How super works). Employers may pay on ordinary time earnings only, or pay more (UniSuper employers commonly pay 14% or 17%).",
-      "check": "Use the actual employer contributions from the member's account where possible." },
+      "check": "Use the actual employer contributions from the member's account where possible. On high salaries this overstates them: employers only have to pay the superannuation guarantee on earnings up to the ATO's maximum contribution base (not in the PDS)." },
     { "id": "bring-forward-status", "title": "No bring-forward period already running",
       "assumed": "The after-tax limit assumes the member isn't already part-way through a bring-forward period from the last two years.",
       "pds": "How super works (p13) gives the bring-forward amounts by total super balance, but a period started in an earlier year changes what is left.",

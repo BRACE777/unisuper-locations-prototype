@@ -1073,7 +1073,7 @@
     $('dd-quick').addEventListener('input', quickEntry);
     $('dd-member').addEventListener('input', function () { setMember(this.value, 'dd-member'); runDrawdown(); });
     ['start', 'bal', 'anchor', 'chosen', 'n'].forEach(function (k) {
-      $('dd-' + k).addEventListener('input', function () { state.dd[k] = this.value; state.dd.touched[k] = true; echoDrawdown(); runDrawdown(); });
+      $('dd-' + k).addEventListener('input', function () { state.dd[k] = this.value; state.dd.touched[k] = true; echoDrawdown(); scheduleRun(runDrawdown); });
     });
     bindSlider('dd-bal', true);
     bindSlider('dd-chosen', true);
@@ -1127,12 +1127,12 @@
       compute: function (v) { return CompanionCalcs.caps(v, DATA.rates); },
       sources: ['cc_cap', 'ncc_cap', 'carry_forward_tsb', 'bring_forward', 'sg_rate', 'employer_rates'],
       out: function (v, r) {
-        return '<div class="calc-block"><span class="label">Before-tax (concessional)</span><div class="headline">' + money(r.cc) + '<span>of ' + money(r.ccAvailable) + (r.carry ? ' (cap plus carry-forward)' : ' cap') + '</span></div>' +
+        return '<div class="calc-block"><span class="label">Before-tax (concessional)</span><div class="headline">' + tw('cc', r.cc) + '<span>of ' + money(r.ccAvailable) + (r.carry ? ' (cap plus carry-forward)' : ' cap') + '</span></div>' +
           '<div class="ch-host" id="ch-cc"></div>' +
           (r.ccOver ? '<p class="warn-line">' + money(r.ccOver) + ' over: excess concessional contributions are taxed at the member\'s marginal rate, less a 15% offset.</p>' : '<p class="meta">' + money(r.ccLeft) + ' of room left this year.</p>') +
           (v.salary ? row('{{employer-estimate:Employer contributions (salary × rate)}}', money(r.employer)) : '') +
           (v.carryForward ? row(r.carryAllowed ? '{{carry-forward-relevance:Carry-forward available}}' : 'Carry-forward', r.carryAllowed ? money(r.carry) : 'Not available: total super balance $500,000 or more') : '') +
-          '</div><div class="calc-block"><span class="label">After-tax (non-concessional)</span><div class="headline">' + money(r.ncc) + '<span>of ' + money(r.nccAvailable) + ' available this year</span></div>' +
+          '</div><div class="calc-block"><span class="label">After-tax (non-concessional)</span><div class="headline">' + tw('ncc', r.ncc) + '<span>of ' + money(r.nccAvailable) + ' available this year</span></div>' +
           '<div class="ch-host" id="ch-ncc"></div>' +
           (!r.under75 ? '<p class="meta">75 or over: no bring-forward, and voluntary contributions stop 28 days after the end of the month of the 75th birthday.</p>' :
             r.tsbKnown ? row('Bring-forward from this balance', esc(r.period || '')) + (r.nccAvailable > DATA.rates.rates.filter(function (x) { return x.id === 'ncc_cap'; })[0].value ? '<p class="meta">{{bring-forward-status:Assumes no bring-forward period is already running}}.</p>' : '') :
@@ -1157,10 +1157,10 @@
       compute: function (v) { return CompanionCalcs.topups(v, DATA.rates); },
       sources: ['cocontrib_lower', 'cocontrib_upper', 'cocontrib_max', 'cocontrib_rate', 'listo_income', 'listo_max'],
       out: function (v, r) {
-        return '<div class="calc-block"><span class="label">Government co-contribution</span><div class="headline">{{cocontrib-estimate:' + money(r.co) + '}}<span>50 cents per dollar, up to ' + money(r.max) + '</span></div>' +
+        return '<div class="calc-block"><span class="label">Government co-contribution</span><div class="headline">{{cocontrib-estimate:' + tw('co', r.co) + '}}<span>50 cents per dollar, up to ' + money(r.max) + '</span></div>' +
           '<div class="ch-host" id="ch-co"></div>' +
           '<p class="meta">The most it can be, by income, for ' + (P.parseMoney(v.ncc) ? money(P.parseMoney(v.ncc)) : '$1,000 or more') + ' of after-tax contributions. It phases out between ' + money(r.lower) + ' and ' + money(r.upper) + '. Under 71, and other ATO tests apply.</p></div>' +
-          '<div class="calc-block"><span class="label">LISTO</span><div class="headline">{{listo-estimate:' + money(r.listo) + '}}<span>15% of before-tax contributions, up to ' + money(r.listoMax) + ', income up to ' + money(r.listoIncome) + '</span></div></div>';
+          '<div class="calc-block"><span class="label">LISTO</span><div class="headline">{{listo-estimate:' + tw('listo', r.listo) + '}}<span>15% of before-tax contributions, up to ' + money(r.listoMax) + ', income up to ' + money(r.listoIncome) + '</span></div></div>';
       },
       charts: function (v, r) {
         var inc = P.parseMoney(v.income);
@@ -1176,7 +1176,7 @@
       compute: function (v) { return CompanionCalcs.spouseOffset(v, DATA.rates); },
       sources: ['spouse_offset_max', 'spouse_offset_income', 'spouse_offset_cutout'],
       out: function (v, r) {
-        return '<div class="calc-block"><span class="label">Tax offset</span><div class="headline">' + money(r.offset) + '<span>up to ' + money(r.max) + '</span></div>' +
+        return '<div class="calc-block"><span class="label">Tax offset</span><div class="headline">' + tw('offset', r.offset) + '<span>up to ' + money(r.max) + '</span></div>' +
           '<div class="ch-host" id="ch-spouse"></div>' +
           '<p class="meta">{{offset-taper:Between ' + money(r.from) + ' and ' + money(r.to) + ' of spouse income the offset reduces}}. Not available if the spouse\'s total super balance is $2.1 million or more, or they\'re over their after-tax cap. The contribution can\'t be accepted once the spouse is 75.</p></div>';
       },
@@ -1188,23 +1188,25 @@
       summary: function (v, r) { return 'Spouse income ' + money(P.parseMoney(v.spouseIncome)) + ', contribution ' + money(P.parseMoney(v.contribution)) + ': offset about ' + money(r.offset) + '.'; }
     },
     div293: {
-      intro: 'An extra 15% on before-tax contributions when income plus those contributions goes over $250,000.',
-      fields: [{ k: 'income', label: 'Income for Division 293', ph: 'taxable income plus fringe benefits, e.g. 240000' }, { k: 'cc', label: 'Before-tax contributions', ph: 'e.g. 30000' }],
+      intro: 'An extra 15% on pre-tax (concessional) contributions when income plus those contributions is over $250,000. Contributions over the cap are left out: they\'re taxed as excess instead.',
+      fields: [{ k: 'income', label: 'Taxable income (after salary sacrifice), plus fringe benefits', ph: 'e.g. 240000' },
+        { k: 'cc', label: 'Pre-tax contributions: employer, salary sacrifice, claimed personal', ph: 'e.g. 30000' }],
       prefill: function (m) { return { income: m.income, cc: Math.max((m.fy && m.fy.concessional) || 0, m.expected_concessional || 0) || null }; },
       compute: function (v) { return CompanionCalcs.div293(v, DATA.rates); },
       sources: ['div293_threshold'],
       out: function (v, r) {
-        return '<div class="calc-block"><span class="label">Division 293 tax</span><div class="headline">{{div293-estimate:' + money(r.tax) + '}}<span>' + (r.applies ? '15% of ' + money(r.taxed) : 'under ' + money(r.threshold)) + '</span></div>' +
+        return '<div class="calc-block"><span class="label">Division 293 tax</span><div class="headline">{{div293-estimate:' + tw('d293', r.tax) + '}}<span>' + (r.applies ? '15% of ' + money(r.taxed) + ' of pre-tax contributions' : 'income plus pre-tax contributions under ' + money(r.threshold)) + '</span></div>' +
           '<div class="ch-host" id="ch-293"></div>' +
-          '<p class="meta">Taxed on the lesser of the before-tax contributions and the amount over ' + money(r.threshold) + '. The ATO assesses it; it can be paid personally or released from super.</p></div>';
+          (r.excess > 0 ? '<p class="warn-line">' + money(r.excess) + ' is over the ' + money(r.counted) + ' concessional cap: it\'s excess, taxed at the member\'s marginal rate instead, and left out of Division 293.</p>' : '') +
+          '<p class="meta">Division 293 income is broadly taxable income, reportable fringe benefits and net investment losses, so salary sacrifice isn\'t counted twice. Taxed on the lesser of the pre-tax contributions and the amount over ' + money(r.threshold) + '. The ATO assesses it; it can be paid personally or released from super. Different rules apply to DBD members.</p></div>';
       },
       charts: function (v, r) {
         var inc = P.parseMoney(v.income) || 0, cc = P.parseMoney(v.cc) || 0;
         CompanionCharts.meter($('ch-293'), { fmt: money, label: 'Income and contributions against the threshold', max: r.threshold,
-          parts: [{ value: inc, label: 'Income', cls: 'ch-muted' }, { value: cc - r.taxed, label: 'Contributions, not taxed extra', cls: 'ch-p2' }, { value: r.taxed, label: 'Taxed an extra 15%', cls: 'ch-p1' }],
+          parts: [{ value: inc, label: 'Income', cls: 'ch-muted' }, { value: r.counted - r.taxed, label: 'Pre-tax contributions, not taxed extra', cls: 'ch-p2' }, { value: r.taxed, label: 'Taxed an extra 15%', cls: 'ch-p1' }],
           marks: [{ value: r.threshold, label: money(r.threshold) }] });
       },
-      summary: function (v, r) { return 'Income ' + money(P.parseMoney(v.income)) + ' plus before-tax contributions ' + money(P.parseMoney(v.cc)) + ': Division 293 about ' + money(r.tax) + '.'; }
+      summary: function (v, r) { return 'Taxable income ' + money(P.parseMoney(v.income)) + ' plus pre-tax contributions ' + money(r.counted) + (r.excess ? ' (' + money(r.excess) + ' excess left out)' : '') + ': Division 293 about ' + money(r.tax) + '.'; }
     },
     cover: {
       intro: 'Unitised Death and TPD cover: what the member\'s units are worth at each age. The cover per unit peaks at 38, then falls.',
@@ -1214,7 +1216,7 @@
       sources: ['unit_cover'],
       out: function (v, r) {
         var later = r.age != null ? DATA.rates.tables.unit_cover.rows.filter(function (x) { return x.age === Math.min(r.maxAge, r.age + 10); })[0] : null;
-        return '<div class="calc-block"><span class="label">Cover now</span><div class="headline">' + (r.cover != null ? money(r.cover) : '–') + '<span>' + r.units + ' units' + (r.age != null ? ' at age ' + r.age : ': add an age') + '</span></div>' +
+        return '<div class="calc-block"><span class="label">Cover now</span><div class="headline">' + (r.cover != null ? tw('cover', r.cover) : '–') + '<span>' + r.units + ' units' + (r.age != null ? ' at age ' + r.age : ': add an age') + '</span></div>' +
           '<div class="ch-host" id="ch-cover"></div>' +
           (later && later.age !== r.age ? row('At ' + later.age, money(later.cover * r.units)) : '') + row('Peak, at ' + r.peak.age, money(r.peak.cover * r.units)) +
           (r.premium ? row('Death premium, illustrative', money(r.premium.male) + ' a year (male) · ' + money(r.premium.female) + ' (female)') : '') +
@@ -1261,7 +1263,7 @@
   function bfLimits() { return DATA.rates.tables.bring_forward.rows.map(function (x) { return x.tsb_below; }).filter(Boolean); }
   function bfCaps() { return DATA.rates.tables.bring_forward.rows.map(function (x) { return x.cap; }).filter(Boolean); }
   var SLIDE = {
-    'caps.salary': function () { return { min: 0, max: 300000, step: 1000, snaps: [] }; },
+    'caps.salary': function () { return { min: 0, max: 3000000, knots: INCOME_KNOTS, snaps: [] }; },
     'caps.salarySacrifice': function () { return { min: 0, max: 40000, step: 500, snaps: [rv('cc_cap')] }; },
     'caps.personal': function () { return { min: 0, max: 40000, step: 500, snaps: [rv('cc_cap')] }; },
     'caps.tsb': function () { return { min: 0, max: 3000000, step: 10000, snaps: [rv('carry_forward_tsb')].concat(bfLimits()) }; },
@@ -1273,8 +1275,8 @@
     'topups.cc': function () { return { min: 0, max: 15000, step: 100, snaps: [Math.round(rv('listo_max') / 0.15 / 100) * 100] }; },
     'spouse.spouseIncome': function () { return { min: 0, max: 60000, step: 100, snaps: [rv('spouse_offset_income'), rv('spouse_offset_cutout')] }; },
     'spouse.contribution': function () { return { min: 0, max: 10000, step: 100, snaps: [rv('spouse_offset_max') / 0.18] }; },
-    'div293.income': function () { return { min: 0, max: 500000, step: 1000, snaps: [rv('div293_threshold')] }; },
-    'div293.cc': function () { return { min: 0, max: 60000, step: 500, snaps: [rv('cc_cap')] }; },
+    'div293.income': function () { return { min: 0, max: 3000000, knots: INCOME_KNOTS, snaps: [rv('div293_threshold')] }; },
+    'div293.cc': function () { return { min: 0, max: 100000, step: 500, snaps: [rv('cc_cap')] }; },
     'cover.age': function () { var rows = DATA.rates.tables.unit_cover.rows; return { min: rows[0].age, max: rows[rows.length - 1].age, step: 1, snaps: [25, 38, 60, 70], ticksOnly: true }; },
     'cover.units': function () { return { min: 1, max: 40, step: 1, snaps: [10], ticksOnly: true }; },
     'dd.chosen': function () {
@@ -1283,38 +1285,69 @@
     },
     'dd.bal': function () { return { min: 0, max: 3000000, step: 5000, snaps: [rv('pension_min_start'), 250000, 500000, 1000000, rv('tbc_general')] }; }
   };
+  // Incomes up to $3 million on a stretched scale: the first 60% of the slider covers $0 to $300,000 in
+  // $1,000 steps, so everyday figures stay precise; then $5,000 steps to $1 million, $10,000 steps above.
+  var INCOME_KNOTS = [[0, 0, 1000], [0.6, 300000, 5000], [0.85, 1000000, 10000], [1, 3000000, 10000]];
+  // Slider position (0 to 1) <-> value, for a stretched scale; a plain scale is a straight line.
+  function toValue(cfg, pos) {
+    if (!cfg.knots) return cfg.min + pos * (cfg.max - cfg.min);
+    for (var i = 1; i < cfg.knots.length; i++) {
+      var a = cfg.knots[i - 1], b = cfg.knots[i];
+      if (pos <= b[0]) return a[1] + (pos - a[0]) / (b[0] - a[0]) * (b[1] - a[1]);
+    }
+    return cfg.max;
+  }
+  function toPos(cfg, v) {
+    if (!cfg.knots) return (v - cfg.min) / (cfg.max - cfg.min);
+    for (var i = 1; i < cfg.knots.length; i++) {
+      var a = cfg.knots[i - 1], b = cfg.knots[i];
+      if (v <= b[1]) return a[0] + (v - a[1]) / (b[1] - a[1]) * (b[0] - a[0]);
+    }
+    return 1;
+  }
+  function stepAt(cfg, v) {
+    if (!cfg.knots) return cfg.step;
+    for (var i = cfg.knots.length - 1; i >= 0; i--) if (v >= cfg.knots[i][1]) return cfg.knots[i][2];
+    return cfg.knots[0][2];
+  }
+  // Rounds a value to the slider's step and latches onto a key figure within 1.5% of the slider's
+  // length (or 1.5 steps), measured along the slider so a stretched scale behaves the same.
   function latch(cfg, v) {
-    var x = Math.round((v - cfg.min) / cfg.step) * cfg.step + cfg.min, tol = Math.max((cfg.max - cfg.min) * 0.015, cfg.step * 1.5);
+    var step = stepAt(cfg, v), x = Math.round((v - cfg.min) / step) * step + cfg.min;
+    var tolPos = Math.max(0.015, cfg.knots ? 0 : 1.5 * cfg.step / (cfg.max - cfg.min)), at = toPos(cfg, v);
     // Whole years and units are already exact: their key figures are tick marks, not latches.
-    if (!cfg.ticksOnly) (cfg.snaps || []).forEach(function (s) { if (s != null && Math.abs(v - s) <= tol && Math.abs(v - s) <= Math.abs(v - x) + tol) x = s; });
+    if (!cfg.ticksOnly) (cfg.snaps || []).forEach(function (s) { if (s != null && Math.abs(at - toPos(cfg, s)) <= tolPos) x = s; });
     return Math.max(cfg.min, Math.min(cfg.max, x));
   }
-  function sliderHtml(key, inputId, value, money) {
+  function sliderHtml(key, inputId, value, isMoney) {
     var mk = SLIDE[key];
     if (!mk) return '';
-    var cfg = mk(), n = money ? P.parseMoney(value) : parseInt(value, 10);
+    var cfg = mk(), n = isMoney ? P.parseMoney(value) : parseInt(value, 10);
     var v = n == null || isNaN(n) ? cfg.min : Math.max(cfg.min, Math.min(cfg.max, n));
-    return '<input type="range" class="slider" id="sl-' + inputId + '" data-slide="' + key + '" data-for="' + inputId + '" min="' + cfg.min + '" max="' + cfg.max + '" step="any" value="' + v + '" list="dl-' + inputId + '" aria-label="Slide to set">' +
-      '<datalist id="dl-' + inputId + '">' + (cfg.snaps || []).filter(function (x) { return x != null; }).map(function (x) { return '<option value="' + x + '"></option>'; }).join('') + '</datalist>';
+    // The slider itself runs 0 to 1000 along its length; values are mapped (stretched where needed).
+    return '<input type="range" class="slider" id="sl-' + inputId + '" data-slide="' + key + '" data-for="' + inputId + '" min="0" max="1000" step="any" value="' + Math.round(toPos(cfg, v) * 1000) + '" list="dl-' + inputId + '" aria-label="Slide to set" aria-valuetext="' + (isMoney ? money(v) : v) + '">' +
+      '<datalist id="dl-' + inputId + '">' + ticks(cfg) + '</datalist>';
   }
+  function ticks(cfg) { return (cfg.snaps || []).filter(function (x) { return x != null; }).map(function (x) { return '<option value="' + Math.round(toPos(cfg, x) * 1000) + '"></option>'; }).join(''); }
   // Keeps a slider and its box together: sliding writes a rounded value into the box (and fires its
   // input handler); typing moves the slider.
-  function bindSlider(inputId, money) {
+  function bindSlider(inputId, isMoney) {
     var sl = $('sl-' + inputId), box = $(inputId);
     if (!sl || !box) return;
     // The settings are read each time: the chosen-amount slider's range follows the calculation.
     var cfg = function () { return SLIDE[sl.getAttribute('data-slide')](); };
     sl.addEventListener('input', function () {
-      var v = latch(cfg(), +sl.value);
-      sl.value = v;
-      box.value = money ? Math.round(v).toLocaleString('en-AU') : String(v);
+      var c = cfg(), v = latch(c, toValue(c, +sl.value / 1000));
+      sl.value = Math.round(toPos(c, v) * 1000);
+      sl.setAttribute('aria-valuetext', isMoney ? money(v) : String(v));
+      box.value = isMoney ? Math.round(v).toLocaleString('en-AU') : String(v);
       box.dispatchEvent(new Event('input', { bubbles: true }));
     });
     box.addEventListener('input', function () {
       if (document.activeElement === sl) return;
-      var n = money ? P.parseMoney(box.value) : parseInt(box.value, 10);
+      var n = isMoney ? P.parseMoney(box.value) : parseInt(box.value, 10);
       var c = cfg();
-      if (n != null && !isNaN(n)) sl.value = Math.max(c.min, Math.min(c.max, n));
+      if (n != null && !isNaN(n)) sl.value = Math.round(toPos(c, Math.max(c.min, Math.min(c.max, n))) * 1000);
     });
   }
 
@@ -1334,7 +1367,7 @@
       $('cf-' + f.k).addEventListener('input', function () {
         state.cf[id][f.k] = this.value;
         if (f.kind !== 'age' && f.kind !== 'number') echoMoney('cf-' + f.k, this.value);
-        runSimple(id);
+        scheduleRun(function () { runSimple(id); });
       });
       if (f.kind !== 'age' && f.kind !== 'number') echoMoney('cf-' + f.k, v[f.k] || '');
       bindSlider('cf-' + f.k, f.kind !== 'age' && f.kind !== 'number');
@@ -1348,6 +1381,37 @@
     write();
     area.querySelectorAll('.ch-host').forEach(function (h) { if (kept[h.id]) h.parentNode.replaceChild(kept[h.id], h); });
   }
+  // A headline figure that counts towards its new value instead of jumping.
+  function tw(key, v) { return '<b class="tw" data-tw="' + key + '" data-v="' + v + '">' + money(v) + '</b>'; }
+  var twShown = {}, twRaf = 0;
+  function countFigures(area) {
+    var els = Array.prototype.slice.call(area.querySelectorAll('[data-tw]'));
+    els.forEach(function (e) { var k = e.getAttribute('data-tw'); if (twShown[k] == null) twShown[k] = +e.getAttribute('data-v'); e.textContent = money(twShown[k]); });
+    if (twRaf || typeof requestAnimationFrame === 'undefined') return;
+    var last = null, reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var tick = function (now) {
+      var dt = last == null ? 16 : Math.min(64, now - last), k = reducedMotion ? 1 : 1 - Math.exp(-dt / 85), moving = false; last = now;
+      area.querySelectorAll('[data-tw]').forEach(function (e) {
+        var key = e.getAttribute('data-tw'), to = +e.getAttribute('data-v'), at = twShown[key] == null ? to : twShown[key];
+        at += (to - at) * k;
+        if (Math.abs(to - at) < 0.5) at = to; else moving = true;
+        twShown[key] = at; e.textContent = money(at);
+      });
+      twRaf = moving ? requestAnimationFrame(tick) : 0;
+    };
+    twRaf = requestAnimationFrame(tick);
+    // Background tab: land on the figures.
+    setTimeout(function () { if (twRaf) { cancelAnimationFrame(twRaf); twRaf = 0; area.querySelectorAll('[data-tw]').forEach(function (e) { twShown[e.getAttribute('data-tw')] = +e.getAttribute('data-v'); e.textContent = money(+e.getAttribute('data-v')); }); } }, 600);
+  }
+  // Slider moves arrive faster than the screen redraws: run the calculator at most once a frame.
+  var runPending = null;
+  function scheduleRun(fn) {
+    if (runPending) { runPending.fn = fn; return; }
+    var job = runPending = { fn: fn };
+    var go = function () { if (runPending !== job) return; runPending = null; job.fn(); };
+    if (typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(go);
+    setTimeout(go, 50);
+  }
   function runSimple(id) {
     var def = SIMPLE[id], pv = parsedValues(id), raw = state.cf[id];
     var vals = {};
@@ -1357,6 +1421,7 @@
       $('cf-out').innerHTML = marks(def.out(raw, r)) + '<div class="actions"><button class="btn" data-main-copy data-copy="' + esc(CALC_BY_ID[id].title + ': ' + plain(def.summary(raw, r))) + '">Copy summary</button></div>';
     });
     def.charts(raw, r);
+    countFigures($('cf-out'));
   }
 
   function renderCalculators() {
@@ -1493,8 +1558,9 @@
     var sl = $('sl-dd-chosen');
     if (sl) {
       var cfg = SLIDE['dd.chosen']();
-      sl.max = cfg.max;
-      $('dl-dd-chosen').innerHTML = cfg.snaps.filter(function (x) { return x != null; }).map(function (x) { return '<option value="' + x + '"></option>'; }).join('');
+      var chosenNow = P.parseMoney(dd.chosen);
+      if (document.activeElement !== sl) sl.value = Math.round(toPos(cfg, Math.max(cfg.min, Math.min(cfg.max, chosenNow || 0))) * 1000);
+      $('dl-dd-chosen').innerHTML = ticks(cfg);
     }
   }
 
@@ -1836,7 +1902,7 @@
   updateFoot();
 
   // The tests render every card through these (see test/companion.test.mjs); unused in the page.
-  if (window.__companionTest) window.__companionTest.api = { RENDER: RENDER, procedureView: procedureView, datesToolHtml: datesToolHtml, startHtml: startHtml, sideHtml: sideHtml, state: state, setMember: setMember, scrub: scrub, internalHtml: internalHtml, SIMPLE: SIMPLE, marks: marks, latch: latch, SLIDE: SLIDE };
+  if (window.__companionTest) window.__companionTest.api = { RENDER: RENDER, procedureView: procedureView, datesToolHtml: datesToolHtml, startHtml: startHtml, sideHtml: sideHtml, state: state, setMember: setMember, scrub: scrub, internalHtml: internalHtml, SIMPLE: SIMPLE, marks: marks, latch: latch, SLIDE: SLIDE, toPos: toPos, toValue: toValue, sliderHtml: sliderHtml };
 
   if (!TABS.some(function (t) { return t.id === state.tab; })) state.tab = 'all';
   renderProducts();

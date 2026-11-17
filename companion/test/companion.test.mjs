@@ -455,6 +455,10 @@ test('calculators: caps, top-ups, spouse offset, Division 293 and cover by age',
   assert.equal(C.div293({ income: 240000, cc: 30000 }, r).tax, 3000);
   assert.equal(C.div293({ income: 300000, cc: 30000 }, r).tax, 4500);
   assert.equal(C.div293({ income: 200000, cc: 30000 }, r).applies, false);
+  // Excess over the cap isn't a Division 293 contribution (How super works p12).
+  const high = C.div293({ income: 300000, cc: 60000 }, r);
+  assert.equal(high.counted, 32500); assert.equal(high.excess, 27500); assert.equal(high.tax, 4875);
+  assert.equal(C.div293({ income: 3000000, cc: 32500 }, r).tax, 4875, 'a $3 million income');
 
 
   assert.equal(C.cover({ age: 35, units: 10 }, r).cover, 266000, 'the PDS example');
@@ -493,11 +497,26 @@ test('sliders: round steps, and latching onto caps and thresholds', () => {
   assert.equal(latch('cover.age', 37), 37, 'whole years stay exact (38 is a tick mark)');
   assert.equal(latch('cover.units', 10), 10);
   assert.equal(latch('caps.salary', -500), 0, 'stays in range');
+  assert.equal(latch('caps.salary', 641200), 640000, '$5,000 steps between $300,000 and $1 million');
+  assert.equal(latch('caps.salary', 1234000), 1230000, '$10,000 steps above $1 million');
+  assert.equal(latch('caps.salary', 3000000), 3000000, 'reaches $3 million');
+  const pos = (key, v) => vm.runInContext(`api.toPos(api.SLIDE[${JSON.stringify(key)}](), ${v})`, app);
+  assert.equal(pos('caps.salary', 300000), 0.6, '$300,000 sits 60% along the stretched salary slider');
+  assert.equal(vm.runInContext(`api.toValue(api.SLIDE['caps.salary'](), 0.85)`, app), 1000000);
   // No two latch points closer than the latch distance, so every one can be reached.
   for (const key of vm.runInContext('Object.keys(api.SLIDE)', app)) {
     const cfg = vm.runInContext(`api.SLIDE[${JSON.stringify(key)}]()`, app);
     if (cfg.ticksOnly) continue;
     const snaps = (cfg.snaps || []).filter((x) => x != null).sort((a, b) => a - b);
-    for (let i = 1; i < snaps.length; i++) assert.ok(snaps[i] - snaps[i - 1] > 2 * Math.max((cfg.max - cfg.min) * 0.015, cfg.step * 1.5) || key === 'dd.chosen', `${key}: ${snaps[i - 1]} and ${snaps[i]} too close`);
+    for (let i = 1; i < snaps.length; i++) assert.ok(pos(key, snaps[i]) - pos(key, snaps[i - 1]) > 0.03 || key === 'dd.chosen', `${key}: ${snaps[i - 1]} and ${snaps[i]} too close`);
+  }
+});
+
+test('sliders: every slider draws, with its tick marks', () => {
+  const app = loadApp();
+  for (const key of vm.runInContext('Object.keys(api.SLIDE)', app)) {
+    const html = vm.runInContext(`api.sliderHtml(${JSON.stringify(key)}, 'x-' + ${JSON.stringify(key.replace('.', '-'))}, '12345', ${!/age|units/.test(key)})`, app, { timeout: 2000 });
+    assert.match(html, /type="range"/, `${key} drew no slider`);
+    assert.doesNotMatch(html, /NaN|undefined/, `${key}: ${html.slice(0, 120)}`);
   }
 });

@@ -5,7 +5,7 @@
 // asks for reduced motion. Colours come from the page's tokens (styles.css): light and dark both work.
 var CompanionCharts = (function () {
   'use strict';
-  var NS = 'http://www.w3.org/2000/svg', DURATION = 280;
+  var NS = 'http://www.w3.org/2000/svg', TAU = 85; // ms: how quickly a chart catches up with its target
   var reduced = !!(typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   function el(tag, attrs, parent) {
     var e = document.createElementNS(NS, tag);
@@ -24,23 +24,38 @@ var CompanionCharts = (function () {
     var p = Math.pow(10, Math.floor(Math.log10(v))), n = v / p;
     return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
   }
-  function lerp(a, b, t) { return a + (b - a) * t; }
-  function ease(t) { return 1 - Math.pow(1 - t, 3); }
-  // Runs draw(t) from 0 to 1 over DURATION, cancelling any animation already running on this chart.
-  function animate(c, draw) {
-    if (c.raf) cancelAnimationFrame(c.raf);
+  // Moves every number in `cur` towards the same number in `target`. Frame-rate independent
+  // exponential smoothing: a new target mid-move just changes where it's heading, so dragging a
+  // slider gives one continuous glide rather than a string of restarts.
+  function approach(cur, target, k) {
+    var moving = false;
+    Object.keys(target).forEach(function (key) {
+      var a = cur[key], b = target[key];
+      if (Array.isArray(b)) {
+        if (!Array.isArray(a) || a.length !== b.length) { cur[key] = b.slice(); return; }
+        for (var i = 0; i < b.length; i++) { a[i] += (b[i] - a[i]) * k; if (Math.abs(b[i] - a[i]) > Math.abs(b[i]) * 1e-3 + 0.05) moving = true; else a[i] = b[i]; }
+      } else if (b == null || a == null) { cur[key] = b; }
+      else { cur[key] = a + (b - a) * k; if (Math.abs(b - cur[key]) > Math.abs(b) * 1e-3 + 0.05) moving = true; else cur[key] = b; }
+    });
+    return moving;
+  }
+  function follow(c, draw) {
     clearTimeout(c.done);
-    if (reduced || typeof requestAnimationFrame === 'undefined') { draw(1); return; }
-    var t0 = null;
-    function frame(now) {
-      if (t0 == null) t0 = now;
-      var t = Math.min(1, (now - t0) / DURATION);
-      draw(ease(t));
-      c.raf = t < 1 ? requestAnimationFrame(frame) : 0;
+    if (reduced || typeof requestAnimationFrame === 'undefined') { approach(c.cur, c.target, 1); draw(); return; }
+    if (!c.raf) {
+      var last = null;
+      var frame = function (now) {
+        var dt = last == null ? 16 : Math.min(64, now - last); last = now; c.seen = Date.now();
+        var moving = approach(c.cur, c.target, 1 - Math.exp(-dt / TAU));
+        draw();
+        c.raf = moving ? requestAnimationFrame(frame) : 0;
+      };
+      c.raf = requestAnimationFrame(frame);
     }
-    c.raf = requestAnimationFrame(frame);
     // A background tab pauses animation frames: make sure the chart still lands on the new values.
-    c.done = setTimeout(function () { if (c.raf) { cancelAnimationFrame(c.raf); c.raf = 0; } draw(1); }, DURATION + 60);
+    c.done = setTimeout(function () {
+      if (c.raf && Date.now() - (c.seen || 0) > 150) { cancelAnimationFrame(c.raf); c.raf = 0; approach(c.cur, c.target, 1); draw(); }
+    }, 400);
   }
 
   // ----- line -----
@@ -55,13 +70,8 @@ var CompanionCharts = (function () {
     c.svg.setAttribute('aria-label', opts.label || '');
     // Labels jump to the new values; the shapes glide.
     c.yLabels.forEach(function (t, i) { t.textContent = opts.fy(yMax * [0, 0.5, 1][i]); });
-    var from = { ys: c.cur.ys.slice(), yMax: c.cur.yMax, mx: c.cur.mx, my: c.cur.my };
-    if (from.mx == null) { from.mx = target.mx; from.my = target.my; }
-    animate(c, function (t) {
-      c.cur = { ys: target.ys.map(function (y, i) { return lerp(from.ys[i], y, t); }), yMax: lerp(from.yMax, target.yMax, t),
-        mx: target.mx == null ? null : lerp(from.mx, target.mx, t), my: target.my == null ? null : lerp(from.my, target.my, t) };
-      drawLine(c);
-    });
+    if (c.cur.mx == null && target.mx != null) { c.cur.mx = target.mx; c.cur.my = target.my; }
+    follow(c, function () { drawLine(c); });
   }
   function buildLine(host, opts, target) {
     host.innerHTML = '';
@@ -101,6 +111,7 @@ var CompanionCharts = (function () {
     hit.addEventListener('pointerleave', function () { cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); tip.hidden = true; });
     c.cur = { ys: target.ys.slice(), yMax: target.yMax, mx: target.mx, my: target.my };
     host._chart = c;
+    drawLine(c);
     return c;
   }
   function drawLine(c) {
@@ -132,12 +143,9 @@ var CompanionCharts = (function () {
     c.legend.innerHTML = opts.parts.filter(function (p) { return p.value > 0; }).map(function (p) {
       return '<span><i class="ch-key ' + (p.cls || '') + '"></i>' + p.label + ' <b>' + opts.fmt(p.value) + '</b></span>';
     }).join('');
-    var from = { vals: c.cur.vals.slice(), scale: c.cur.scale, marks: target.marks.map(function (v, i) { return c.cur.marks[i] != null ? c.cur.marks[i] : v; }) };
-    animate(c, function (t) {
-      c.cur = { vals: target.vals.map(function (v, i) { return lerp(from.vals[i], v, t); }), scale: lerp(from.scale, target.scale, t),
-        marks: target.marks.map(function (v, i) { return lerp(from.marks[i], v, t); }) };
-      drawMeter(c);
-    });
+    if (c.cur.marks.length !== target.marks.length) c.cur.marks = target.marks.map(function (v, i) { return c.cur.marks[i] != null ? c.cur.marks[i] : v; });
+    c.target = target;
+    follow(c, function () { drawMeter(c); });
   }
   function buildMeter(host, opts, target) {
     host.innerHTML = '';

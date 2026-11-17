@@ -665,3 +665,6 @@ details.pages > summary::-webkit-details-marker { display: none; }
 /* Sliders under the calculator boxes; the tick marks are the figures they latch onto */
 .slider { display: block; width: 100%; margin: 8px 0 2px; accent-color: var(--info); cursor: pointer; height: 22px; }
 .slider:focus-visible { outline: 2px solid var(--info); outline-offset: 2px; border-radius: 4px; }
+
+/* Counting headline figures keep the headline weight */
+.headline b.tw { font-weight: inherit; color: inherit; }

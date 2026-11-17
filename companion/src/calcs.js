@@ -74,11 +74,16 @@ var CompanionCalcs = (function () {
     return out;
   }
 
-  // Division 293: an extra 15% on the lesser of concessional contributions and the amount over $250,000.
+  // Division 293: an extra 15% on pre-tax (concessional) contributions, on the lesser of those contributions
+  // and the amount by which income plus them goes over $250,000. "Division 293 super contributions equal your
+  // concessional contributions minus any excess concessional contributions" (How super works p12), so anything
+  // over the cap (taxed separately) is left out.
   function div293(input, rates) {
-    var r = R(rates), income = num(input.income), cc = num(input.cc), total = income + cc;
-    var over = Math.max(0, total - r.div293_threshold), taxed = Math.min(cc, over);
-    return { total: total, threshold: r.div293_threshold, over: over, taxed: taxed, tax: Math.round(taxed * 0.15), applies: over > 0 && cc > 0, assumed: ['div293-estimate'] };
+    var r = R(rates), income = num(input.income), cc = num(input.cc), cap = r.cc_cap + num(input.carryForward);
+    var counted = Math.min(cc, cap), excess = cc - counted, total = income + counted;
+    var over = Math.max(0, total - r.div293_threshold), taxed = Math.min(counted, over);
+    return { total: total, threshold: r.div293_threshold, counted: counted, excess: excess, over: over, taxed: taxed, tax: Math.round(taxed * 0.15),
+      applies: over > 0 && counted > 0, assumed: ['div293-estimate'] };
   }
 
   // Unitised Death/TPD cover by age (Insurance in your super, premiums and unitised cover amounts).
