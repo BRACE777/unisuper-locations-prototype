@@ -668,3 +668,7 @@ details.pages > summary::-webkit-details-marker { display: none; }
 
 /* Counting headline figures keep the headline weight */
 .headline b.tw { font-weight: inherit; color: inherit; }
+
+/* "Ranked for TTR · age 62": why the results are in this order */
+.ranked-for { margin: -2px 0 10px; font-size: 12px; color: var(--ink-2); }
+.ranked-for .label { color: var(--info); margin-right: 4px; }

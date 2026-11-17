@@ -128,6 +128,34 @@ var CompanionSearch = (function () {
     return { base: base, extra: extra, links: links, glossary: hits.filter(function (h) { return !h.phrase; }) };
   }
 
+  // ----- who the member is: product and age -----
+  // Which products a card is specifically about: a rule's own product list when it's narrow (one or two
+  // products), and for any card, what its title names (TTR, BIS, DBD, Retirement Phase, a pension, super).
+  var PRODUCT_WORDS = [['ttr', /\b(ttr|transition to retirement)\b/i], ['bis', /\b(bis|beneficiary income stream)\b/i], ['dbd', /\b(dbd|defined benefit)\b/i],
+    ['rp', /\bretirement phase\b/i]];
+  function productTags(entry) {
+    var item = entry.item || {}, title = String(item.q || item.title || item.task || ''), tags = {};
+    // A rule for one product only is the most specific; for two, a little less.
+    if (entry.products && entry.products.length && entry.products.length <= 2) entry.products.forEach(function (p) { tags[p] = entry.products.length === 1 ? 1.8 : 1.4; });
+    PRODUCT_WORDS.forEach(function (w) { if (w[1].test(title)) tags[w[0]] = Math.max(tags[w[0]] || 0, 1.6); });
+    if (!Object.keys(tags).length && /\bpension\b/i.test(title)) tags.pension = true;   // any of rp, ttr, bis
+    else if (!Object.keys(tags).length && /\b(super account|accumulation)\b/i.test(title)) tags.super = true;
+    return tags;
+  }
+  // How much the member's product(s) and age move a card up or down. Neutral when nothing is known.
+  function contextFactor(d, products, age) {
+    var f = 1, tags = d.tags || {}, keys = Object.keys(tags);
+    if (products && products.length && keys.length) {
+      var exact = products.reduce(function (m, p) { return Math.max(m, tags[p] && tags[p] !== true ? tags[p] : 0); }, 0);
+      var pensionish = tags.pension && products.some(function (p) { return p === 'rp' || p === 'ttr' || p === 'bis'; });
+      if (exact) f *= exact;
+      else if (pensionish) f *= 1.15;
+      else f *= 0.7;
+    }
+    if (age != null && d.ages) f *= age >= d.ages[0] && age <= d.ages[1] ? 1.35 : 0.7;
+    return f;
+  }
+
   // What kind of answer the question is after, judged from its wording. Matching items get a boost,
   // and the words that only say what kind of answer is wanted don't have to match.
   var INTENTS = [
@@ -171,7 +199,8 @@ var CompanionSearch = (function () {
       var w = tokens(a);
       for (var i = 1; i < w.length; i++) pairs[w[i - 1] + ' ' + w[i]] = true;
     });
-    return { type: entry.type, id: entry.id, tf: tf, keys: Object.keys(tf), aliasTokens: aliasTokens, aliasOneWord: aliasOneWord, exactOnly: {}, pairs: pairs, products: entry.products || [], item: entry.item };
+    return { type: entry.type, id: entry.id, tf: tf, keys: Object.keys(tf), aliasTokens: aliasTokens, aliasOneWord: aliasOneWord, exactOnly: {}, pairs: pairs, products: entry.products || [],
+      tags: productTags(entry), ages: entry.item && entry.item.ages, item: entry.item };
   }
 
   function scoreDoc(doc, base, extra, links, idf, countable) {
@@ -207,7 +236,8 @@ var CompanionSearch = (function () {
         if (al === joined) bonus = Math.max(bonus, 8);
         else if (doc.exactOnly[al]) continue;
         else if ((' ' + joined + ' ').indexOf(' ' + al + ' ') >= 0) bonus = Math.max(bonus, 4);
-        else if (al.indexOf(joined) === 0 && joined.length >= 3) bonus = Math.max(bonus, 3);
+        // An alias that starts with the query earns a little, unless the query is one common word ("super").
+        else if (al.indexOf(joined) === 0 && joined.length >= 3 && (joined.indexOf(' ') >= 0 || idf(joined) >= 0.9)) bonus = Math.max(bonus, 3);
       }
       score += bonus;
     }
@@ -362,6 +392,7 @@ var CompanionSearch = (function () {
       ex.corrections = corrected.fixes;
       if (!ex.base.length && !ex.extra.length) return { results: [], hidden: 0, glossary: ex.glossary, query: ex, corrections: corrected.fixes };
       var results = [], hidden = 0, intent = intentOf(corrected.text);
+      var timeish = /(when|deadline|due|date|days?|weeks?|months?|expire|expiry|lapse|period|window|cooling)/i.test(corrected.text);
       var countable = function (t) { return !intent || intent.drop.indexOf(t) < 0; };
       var counted = ex.base.filter(countable).length;
       for (var i = 0; i < docs.length; i++) {
@@ -369,15 +400,20 @@ var CompanionSearch = (function () {
         if (opts.types && opts.types.indexOf(d.type) < 0) continue;
         var s = scoreDoc(d, ex.base, ex.extra, ex.links, idf, countable);
         if (intent && d.type === intent.type) s.score *= intent.boost;
+        // Order, not membership: these move a card up or down but never drop it from the results.
+        // A timeframe only leads when the question is about time ("how long", "when", a deadline), and
+        // the member's product and age move their cards up.
+        var rank = s.score * (d.type === 'timeframe' && !timeish && !(intent && intent.type === 'timeframe') ? 0.75 : 1) *
+          contextFactor(d, opts.products || (opts.product ? [opts.product] : []), opts.age == null ? null : opts.age);
         if (s.score < 1.2 || (counted > 1 && s.coverage < 0.34)) continue;
         if (opts.product && d.type === 'rule' && d.products.length && d.products.indexOf(opts.product) < 0) { hidden++; continue; }
-        results.push({ type: d.type, id: d.id, score: s.score, item: d.item });
+        results.push({ type: d.type, id: d.id, score: s.score, rank: rank, item: d.item });
       }
       // Ties go to the shorter, more specific title.
       var titleLen = function (r) { var x = r.item; return String(x.q || x.task || x.title || '').length; };
-      results.sort(function (a, b) { return b.score - a.score || titleLen(a) - titleLen(b); });
+      results.sort(function (a, b) { return b.rank - a.rank || titleLen(a) - titleLen(b); });
       if (results.length) {
-        var top = results[0].score;
+        var top = results.reduce(function (m, r) { return Math.max(m, r.score); }, 0);
         results = results.filter(function (r) { return r.score >= top * 0.25; });
       }
       return { results: results.slice(0, opts.limit || 40), hidden: hidden, glossary: ex.glossary, query: ex, corrections: corrected.fixes, intent: intent ? intent.type : null };

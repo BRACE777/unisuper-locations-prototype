@@ -69,6 +69,10 @@
       "see": [
         "cover-early",
         "opt-out"
+      ],
+      "ages": [
+        14,
+        27
       ]
     },
     {
@@ -92,6 +96,10 @@
           "doc": "acc1",
           "quote": "You have 180 days from the date you first start employment with an eligible employer to apply for insurance cover without having to provide health evidence to the Insurer."
         }
+      ],
+      "ages": [
+        14,
+        24
       ]
     },
     {
@@ -172,7 +180,9 @@
       ],
       "q": "Can DBD members have Income Protection?",
       "aliases": [
-        "dbd income protection"
+        "dbd income protection",
+        "dbd insurance",
+        "insurance for dbd members"
       ],
       "a": "No, Income Protection isn't available to DBD members.",
       "sources": [

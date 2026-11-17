@@ -36,7 +36,11 @@
           "quote": "Your preservation age is not the same as your pension age."
         }
       ],
-      "detail": "Anyone under 60 today was born after 1 July 1964, so their preservation age is 60: retiring before 60 doesn't release their super."
+      "detail": "Anyone under 60 today was born after 1 July 1964, so their preservation age is 60: retiring before 60 doesn't release their super.",
+      "ages": [
+        14,
+        64
+      ]
     },
     {
       "id": "conditions-of-release",
@@ -146,7 +150,11 @@
           "quote": "Once we’ve received your application, we aim to complete your request within five working days."
         }
       ],
-      "detail": "From the form: $1,000 to $10,000, and one release (from any fund) in 12 months. Not available to members who joined less than three months ago; members who joined less than 12 months ago include statements covering the last 12 months, from other funds too. Under 60, taxed up to 22%. UniSuper aims to complete it within five working days of receiving everything."
+      "detail": "From the form: $1,000 to $10,000, and one release (from any fund) in 12 months. Not available to members who joined less than three months ago; members who joined less than 12 months ago include statements covering the last 12 months, from other funds too. Under 60, taxed up to 22%. UniSuper aims to complete it within five working days of receiving everything.",
+      "ages": [
+        14,
+        64
+      ]
     },
     {
       "id": "compassionate",
@@ -180,7 +188,11 @@
           "quote": "you can only apply for a payment on compassionate grounds if you’re a citizen or permanent resident of Australia or New Zealand."
         }
       ],
-      "detail": "The ATO must approve it first; the member then sends UniSuper the Compassionate grounds form for up to the approved amount. Only Australian or New Zealand citizens or permanent residents can apply."
+      "detail": "The ATO must approve it first; the member then sends UniSuper the Compassionate grounds form for up to the approved amount. Only Australian or New Zealand citizens or permanent residents can apply.",
+      "ages": [
+        14,
+        64
+      ]
     },
     {
       "id": "terminal",
@@ -317,6 +329,10 @@
           "doc": "hsw",
           "quote": "Even if you've stopped making contributions and have retired, you don't have to withdraw your super"
         }
+      ],
+      "ages": [
+        60,
+        100
       ]
     }
   ]

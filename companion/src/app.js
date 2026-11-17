@@ -624,10 +624,24 @@
   }
 
   // What the results rail lists right now: search results, or everything of the browsed type.
+  // Who the results are ranked for: the Product menu (loading a member sets it to their pension), or with
+  // "All products", every account type the loaded member has; and the age.
+  var PRODUCT_NAME = { super: 'Super', dbd: 'DBD', rp: 'Retirement Phase', ttr: 'TTR', bis: 'BIS' };
+  function searchContext() {
+    var products = state.product ? [state.product]
+      : state.member ? state.member.accounts.map(function (a) { return CompanionMembers.PRODUCT[a.type]; }).filter(function (p, i, a) { return p && a.indexOf(p) === i; }) : [];
+    return { products: products, age: currentAge() };
+  }
+  function contextNote() {
+    var c = searchContext(), bits = c.products.map(function (p) { return PRODUCT_NAME[p] || p; });
+    if (c.age != null) bits.push('age ' + c.age);
+    return bits.length ? '<div class="ranked-for" title="Cards for this member’s product and age are moved up; cards for other products and ages are moved down. Clear the member or product to see the general order."><span class="label">Ranked for</span> ' + esc(bits.join(' · ')) + '</div>' : '';
+  }
   function railModel() {
     var tab = TABS.filter(function (t) { return t.id === state.tab; })[0] || TABS[0];
     if (state.q.trim()) {
-      var res = engine.search(state.q, { product: state.showHidden ? '' : state.product, limit: 80 });
+      var ctx = searchContext();
+      var res = engine.search(state.q, { product: state.showHidden ? '' : state.product, products: ctx.products, age: ctx.age, limit: 80 });
       var counts = {};
       res.results.forEach(function (r) { counts[r.type] = (counts[r.type] || 0) + 1; });
       var list = res.results.filter(function (r) { return !tab.types || tab.types.indexOf(r.type) >= 0; })
@@ -653,6 +667,7 @@
         ['procedure', 'rule', 'form', 'timeframe', 'explainer'].filter(function (t) { return m.counts[t]; }).map(function (t) {
           return '<button class="tchip" data-tab="' + TYPE_TAB[t] + '" aria-pressed="' + (state.tab === TYPE_TAB[t]) + '">' + TYPE_LABEL[t] + ' <span>' + m.counts[t] + '</span></button>';
         }).join('') + '</div></div>';
+      html += contextNote();
       if (state.missOpen) {
         html += '<div class="miss-form"><label for="miss-wanted">What were you after? <span class="meta">(optional; no member details)</span></label>' +
           '<input id="miss-wanted" type="text" autocomplete="off" placeholder="e.g. the TPD claim form">' +
@@ -699,7 +714,8 @@
     });
     if (type === 'timeframe') explainersIn(x.task + ' ' + x.say).forEach(function (id) { add('explainer', id); });
     // Then whatever the search engine finds for the item's own title, up to a few of each type.
-    engine.search(titleOf(type, x), { product: state.product, limit: 40 }).results.forEach(function (r) {
+    var sc = searchContext();
+    engine.search(titleOf(type, x), { product: state.product, products: sc.products, age: sc.age, limit: 40 }).results.forEach(function (r) {
       if (out[r.type] && out[r.type].length < RELATED_CAPS[r.type]) add(r.type, r.item.id);
     });
     Object.keys(out).forEach(function (t) { out[t] = out[t].slice(0, RELATED_CAPS[t] + 1); });
@@ -1664,7 +1680,7 @@
     $('product').classList.toggle('set', !!state.product);
   }
   $('product').addEventListener('change', function () {
-    state.product = this.value; renderProducts(); render();
+    state.product = this.value; if (!state.pinned) state.sel = null; renderProducts(); render();
   });
 
   // ----- events -----
@@ -1704,6 +1720,8 @@
   syncTop();
   $('member').addEventListener('input', function () {
     setMember(this.value, 'member');
+    // The results re-rank for the new member: show the new top answer unless one was opened on purpose.
+    if (!state.pinned) state.sel = null;
     if (state.tab !== 'calc') render();
     else if (state.calc === 'drawdown') runDrawdown();
     else if (SIMPLE[state.calc]) renderCalculators();
@@ -1826,6 +1844,7 @@
     if (t.hasAttribute('data-load-member')) {
       setMember(t.getAttribute('data-load-member'), 'panel');
       $('member-panel').hidden = true; $('member-pick').setAttribute('aria-expanded', 'false');
+      if (!state.pinned) state.sel = null;
       render(); return;
     }
     if (t.hasAttribute('data-ms-toggle')) { state.stripOpen = !state.stripOpen; renderMemberStrip(); return; }

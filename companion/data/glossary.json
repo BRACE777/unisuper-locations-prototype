@@ -1735,6 +1735,26 @@
     {
       "phrase": "speak to you for me",
       "expands_to": "third party authority"
+    },
+    {
+      "phrase": "dont have insurance",
+      "expands_to": "default cover start eligible 25 6000"
+    },
+    {
+      "phrase": "dont have any insurance",
+      "expands_to": "default cover start eligible 25 6000"
+    },
+    {
+      "phrase": "why no insurance",
+      "expands_to": "default cover start eligible 25 6000"
+    },
+    {
+      "phrase": "dont i have insurance",
+      "expands_to": "default cover start eligible 25 6000"
+    },
+    {
+      "phrase": "i dont have insurance",
+      "expands_to": "default cover start eligible 25 6000"
     }
   ]
 }

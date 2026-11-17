@@ -52,6 +52,10 @@
       "see": [
         "conditions-of-release",
         "pension-min-start"
+      ],
+      "ages": [
+        58,
+        100
       ]
     },
     {
@@ -87,6 +91,10 @@
           "doc": "ato-access",
           "quote": "You reach your preservation age, continue working, and start a transition to retirement income stream."
         }
+      ],
+      "ages": [
+        60,
+        64
       ]
     },
     {
@@ -299,6 +307,10 @@
           "doc": "flexi",
           "quote": "If you're under age 60, you'll need to complete an ATO Tax file number declaration for each Flexi Pension you start."
         }
+      ],
+      "ages": [
+        14,
+        59
       ]
     },
     {
@@ -646,6 +658,10 @@
       "calc": "drawdown",
       "see": [
         "ttr-max-not-prorated"
+      ],
+      "ages": [
+        60,
+        64
       ]
     },
     {
@@ -690,6 +706,10 @@
       ],
       "see": [
         "ttr-convert"
+      ],
+      "ages": [
+        60,
+        64
       ]
     },
     {
@@ -712,6 +732,10 @@
       ],
       "see": [
         "tbc-ttr"
+      ],
+      "ages": [
+        60,
+        66
       ]
     },
     {
@@ -1023,6 +1047,10 @@
           "doc": "flexi",
           "quote": "does not apply to TTR income streams (until you reach age 65 or you inform us that you've met a specified condition of release)."
         }
+      ],
+      "ages": [
+        60,
+        66
       ]
     },
     {
@@ -1217,6 +1245,10 @@
           "doc": "flexi",
           "quote": "Any lump sum withdrawal you make must include taxable and tax-free components in the same proportions as your entire benefit."
         }
+      ],
+      "ages": [
+        14,
+        59
       ]
     },
     {
@@ -1244,6 +1276,10 @@
           "doc": "flexi",
           "quote": "We regularly produce Centrelink schedules and provide these directly to Centrelink as a service to our members."
         }
+      ],
+      "ages": [
+        64,
+        100
       ]
     },
     {
@@ -1315,6 +1351,10 @@
           "doc": "flexi",
           "quote": "we'll regard you as having elected to defer your DB component"
         }
+      ],
+      "ages": [
+        65,
+        100
       ]
     },
     {

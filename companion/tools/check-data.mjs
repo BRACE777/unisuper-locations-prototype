@@ -188,6 +188,10 @@ if (problems.length) {
   console.error(`${problems.length} problem(s):\n- ` + problems.join('\n- '));
   process.exit(1);
 }
+// Age ranges on cards ([from, to]) move them up for members in range and down for others.
+for (const c of cards) if (c.ages && !(Array.isArray(c.ages) && c.ages.length === 2 && c.ages[0] <= c.ages[1])) problems.push(`rules/${c.file}: "${c.id}" has bad ages ${JSON.stringify(c.ages)}`);
+for (const p of procedures?.items ?? []) if (p.ages && !(Array.isArray(p.ages) && p.ages.length === 2 && p.ages[0] <= p.ages[1])) problems.push(`procedures.json: "${p.id}" has bad ages`);
+
 // Internal notes (the committed example, and your local file if there is one): every 'on' target must exist.
 {
   const ids = {

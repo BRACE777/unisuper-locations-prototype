@@ -38,7 +38,7 @@
       ]
     },
     {
-      "id": "start-rp",
+      "id": "start-rp", "ages": [58, 100],
       "title": "Start a Retirement Phase Flexi Pension",
       "topic": "Pension",
       "aliases": ["start pension", "open pension", "retirement phase application", "start a pension steps"],
@@ -81,7 +81,7 @@
       ]
     },
     {
-      "id": "start-ttr",
+      "id": "start-ttr", "ages": [60, 64],
       "title": "Start a TTR Flexi Pension",
       "topic": "Pension",
       "aliases": ["start ttr", "transition to retirement application", "ttr steps"],
@@ -215,7 +215,7 @@
       "mistakes": ["Rolling out before a notice of intent or split is lodged."]
     },
     {
-      "id": "downsizer",
+      "id": "downsizer", "ages": [55, 100],
       "title": "Downsizer contribution",
       "topic": "Contributions",
       "aliases": ["downsizer", "sold my house", "home sale contribution"],
@@ -270,7 +270,7 @@
       "mistakes": ["Setting an amount below the minimum."]
     },
     {
-      "id": "hardship",
+      "id": "hardship", "ages": [14, 64],
       "title": "Early release: severe financial hardship",
       "topic": "Access",
       "aliases": ["hardship", "financial hardship release", "early access hardship"],

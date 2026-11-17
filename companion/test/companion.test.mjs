@@ -534,3 +534,18 @@ test('sliders: every slider draws, with its tick marks', () => {
     assert.doesNotMatch(html, /NaN|undefined/, `${key}: ${html.slice(0, 120)}`);
   }
 });
+
+test('search: the member\'s product and age move their cards up', () => {
+  const first = (q, o) => engine.search(q, o).results[0].id;
+  const top3 = (q, o) => engine.search(q, o).results.slice(0, 3).map((r) => r.id);
+  assert.equal(first('withdrawal', { product: 'ttr', products: ['ttr'] }), 'ttr-lump-sum', 'a TTR member asking about a withdrawal');
+  assert.equal(first('withdrawal', { product: 'rp', products: ['rp'] }), 'pension-lump-sum');
+  assert.equal(first('insurance', { product: 'dbd', products: ['dbd'] }), 'ip-dbd');
+  assert.ok(engine.search('contributions', { age: 70 }).results.slice(0, 4).some((r) => r.id === 'contrib-age'), 'age 70: which contributions are accepted');
+  assert.ok(!top3('contributions', { age: 30 }).includes('contrib-age'));
+  assert.ok(top3('can i get my super', { age: 55 }).includes('preservation-age'));
+  // Ranking changes the order, never what's found.
+  const plain = engine.search('withdrawal').results.map((r) => r.id).sort();
+  const ranked = engine.search('withdrawal', { products: ['ttr'], age: 62 }).results.map((r) => r.id).sort();
+  assert.deepEqual(ranked, plain);
+});
