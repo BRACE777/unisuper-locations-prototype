@@ -695,7 +695,8 @@
       "q": "Can a TTR member take a lump sum?",
       "aliases": [
         "ttr withdrawal",
-        "ttr lump sum"
+        "ttr lump sum",
+        "withdraw from my ttr"
       ],
       "a": "Only in very limited cases: unrestricted non-preserved money, a family law split, or an ATO release authority.",
       "sources": [
@@ -820,7 +821,9 @@
         "2000",
         "pension withdrawal",
         "lump sum pension",
-        "extra money pension"
+        "extra money pension",
+        "withdraw from my pension",
+        "withdraw money from my pension"
       ],
       "a": "Yes, at least $2,000 at any time if there's enough in the account. Usually paid within five business days.",
       "sources": [

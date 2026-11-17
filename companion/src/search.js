@@ -61,7 +61,11 @@ var CompanionSearch = (function () {
 
   // Light stemming so "aged"/"age", "retired"/"retire", "splitting"/"split", "fees"/"fee"
   // and "ceases"/"cease" all meet at the same root. Numbers and short acronyms are left alone.
+  // Words the suffix rules can't bring together: "withdraw" and "withdrawal" are the same request.
+  var LEMMA = { withdrawal: 'withdraw', withdrawals: 'withdraw', withdrawing: 'withdraw', withdrew: 'withdraw', withdrawn: 'withdraw',
+    renewal: 'renew', renewals: 'renew', arrival: 'arriv', approval: 'approv', removal: 'remov', refusal: 'refus', commutation: 'commut', nominee: 'nominat' };
   function stem(t) {
+    if (LEMMA[t]) return LEMMA[t];
     if (/\d/.test(t) || t.length < 3) return t;
     if (t.length > 4 && /ies$/.test(t)) t = t.slice(0, -3) + 'y';
     else if (t.length > 5 && /ing$/.test(t)) t = t.slice(0, -3);
@@ -135,24 +139,28 @@ var CompanionSearch = (function () {
     ['rp', /\bretirement phase\b/i]];
   function productTags(entry) {
     var item = entry.item || {}, title = String(item.q || item.title || item.task || ''), tags = {};
-    // A rule for one product only is the most specific; for two, a little less.
-    if (entry.products && entry.products.length && entry.products.length <= 2) entry.products.forEach(function (p) { tags[p] = entry.products.length === 1 ? 1.8 : 1.4; });
-    PRODUCT_WORDS.forEach(function (w) { if (w[1].test(title)) tags[w[0]] = Math.max(tags[w[0]] || 0, 1.6); });
+    // A rule for one or two products is specific to them.
+    if (entry.products && entry.products.length && entry.products.length <= 2) entry.products.forEach(function (p) { tags[p] = 1.5; });
+    PRODUCT_WORDS.forEach(function (w) { if (w[1].test(title)) tags[w[0]] = 1.5; });
     if (!Object.keys(tags).length && /\bpension\b/i.test(title)) tags.pension = true;   // any of rp, ttr, bis
-    else if (!Object.keys(tags).length && /\b(super account|accumulation)\b/i.test(title)) tags.super = true;
+    // A super (accumulation) card: "super account", "your super", "accumulation" in the title.
+    else if (!Object.keys(tags).length && /\b(super account|your super|accumulation)\b/i.test(title)) tags.super = 1.5;
     return tags;
   }
-  // How much the member's product(s) and age move a card up or down. Neutral when nothing is known.
-  function contextFactor(d, products, age) {
+  // How much the member's product(s) and age move a card up or down.
+  function contextFactor(d, products, age, named) {
     var f = 1, tags = d.tags || {}, keys = Object.keys(tags);
-    if (products && products.length && keys.length) {
+    // Nothing chosen, and the question doesn't name a product: most callers are accumulation members,
+    // so super answers lead, gently.
+    if ((!products || !products.length) && !named && keys.length) f *= tags.super ? 1.1 : keys.some(function (k) { return k !== 'super' && k !== 'dbd'; }) ? 0.92 : 1;
+    else if (products && products.length && keys.length) {
       var exact = products.reduce(function (m, p) { return Math.max(m, tags[p] && tags[p] !== true ? tags[p] : 0); }, 0);
       var pensionish = tags.pension && products.some(function (p) { return p === 'rp' || p === 'ttr' || p === 'bis'; });
       if (exact) f *= exact;
       else if (pensionish) f *= 1.15;
       else f *= 0.7;
     }
-    if (age != null && d.ages) f *= age >= d.ages[0] && age <= d.ages[1] ? 1.35 : 0.7;
+    if (age != null && d.ages) f *= age >= d.ages[0] && age <= d.ages[1] ? 1.5 : 0.7;
     return f;
   }
 
@@ -392,7 +400,9 @@ var CompanionSearch = (function () {
       ex.corrections = corrected.fixes;
       if (!ex.base.length && !ex.extra.length) return { results: [], hidden: 0, glossary: ex.glossary, query: ex, corrections: corrected.fixes };
       var results = [], hidden = 0, intent = intentOf(corrected.text);
-      var timeish = /(when|deadline|due|date|days?|weeks?|months?|expire|expiry|lapse|period|window|cooling)/i.test(corrected.text);
+      // Does the question itself name a product (TTR, pension, BIS, DBD, Retirement Phase)?
+      var named = /\b(ttr|transition to retirement|pensions?|bis|beneficiary income|dbd|defined benefit|retirement phase|annuity|income stream|bonus)\b/i.test(corrected.text);
+      var timeish = /\b(when|deadline|due|date|days?|weeks?|months?|expire|expiry|lapse|period|window|cooling)\b/i.test(corrected.text);
       var countable = function (t) { return !intent || intent.drop.indexOf(t) < 0; };
       var counted = ex.base.filter(countable).length;
       for (var i = 0; i < docs.length; i++) {
@@ -404,7 +414,7 @@ var CompanionSearch = (function () {
         // A timeframe only leads when the question is about time ("how long", "when", a deadline), and
         // the member's product and age move their cards up.
         var rank = s.score * (d.type === 'timeframe' && !timeish && !(intent && intent.type === 'timeframe') ? 0.75 : 1) *
-          contextFactor(d, opts.products || (opts.product ? [opts.product] : []), opts.age == null ? null : opts.age);
+          contextFactor(d, opts.products || (opts.product ? [opts.product] : []), opts.age == null ? null : opts.age, named);
         if (s.score < 1.2 || (counted > 1 && s.coverage < 0.34)) continue;
         if (opts.product && d.type === 'rule' && d.products.length && d.products.indexOf(opts.product) < 0) { hidden++; continue; }
         results.push({ type: d.type, id: d.id, score: s.score, rank: rank, item: d.item });

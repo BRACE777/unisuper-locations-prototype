@@ -155,6 +155,25 @@
       "mistakes": ["A witness who is also a beneficiary.", "Allocations that don't total 100%.", "Leaving the lapsing/non-lapsing box blank."]
     },
     {
+      "id": "super-withdrawal",
+      "title": "Withdraw from a super account",
+      "topic": "Access",
+      "aliases": ["super withdrawal", "withdraw super", "withdraw my super", "take money out of super", "cash out super", "lump sum from super", "accumulation withdrawal"],
+      "when": "A member wants to take some or all of their super out as a lump sum from an accumulation account (Accumulation 1, Accumulation 2, Personal Account, or a DBD accumulation component).",
+      "steps": [
+        {"do": "Check a condition of release is met for the amount: preserved money needs one (such as retiring at or after preservation age, ending a job on or after 60, or turning 65).", "rule": "conditions-of-release", "source": {"doc": "form:super-withdraw-your-super", "quote": "There are three benefit types for super—preserved, restricted non-preserved, and unrestricted non-preserved—each with different rules for withdrawal."}, "member": [{"cond": "preservation_not_reached", "text": "{name} is {age}: preservation age is {presAge}, so retiring alone doesn't release their super yet."}]},
+        {"do": "If it's on retirement, check they meet the definition: no longer employed and not intending to work 10 or more hours a week, or a job ended on or after 60. UniSuper may check with the employer.", "rule": "preservation-status", "source": {"doc": "form:super-withdraw-your-super", "quote": "UniSuper may need to verify your cessation of employment with the relevant employer."}},
+        {"do": "Partial withdrawal: at least $6,000 must stay in the account. Under $6,000, it can only be a full withdrawal.", "source": {"doc": "form:super-withdraw-your-super", "quote": "If your account balance is less than $6,000, you can only request a full withdrawal."}, "member": [{"cond": "balance_under_6000", "text": "{name}'s balance is under $6,000: full withdrawal only."}]},
+        {"do": "Claiming a deduction for personal contributions? The notice of intent must be lodged and acknowledged before the withdrawal.", "rule": "noi-deadline", "source": {"doc": "form:super-withdraw-your-super", "quote": "I must lodge a notice of intent to claim a tax deduction with UniSuper and UniSuper must acknowledge it in writing, before making a withdrawal."}},
+        {"do": "Explain insurance: a withdrawal can affect it, and it stops if the account closes or can't pay the premiums.", "source": {"doc": "form:super-withdraw-your-super", "quote": "Your insurance cover will cease if you don’t have sufficient funds to pay for insurance premiums, or if you close your account."}, "member": [{"cond": "has_insurance", "text": "{name} has insurance: a full withdrawal ends it."}]},
+        {"do": "Explain tax: under 60, tax comes off the taxable component before payment; without a TFN, at the highest rate plus the Medicare levy.", "rule": "lump-tax-60", "source": {"doc": "form:super-withdraw-your-super", "quote": "If you’re under 60, tax will be deducted from your withdrawal before payment is made."}, "member": [{"cond": "under_60", "text": "{name} is {age}: tax may apply to the taxable component."}]},
+        {"do": "Explain it comes from all investment options in proportion: the member can't choose.", "source": {"doc": "form:super-withdraw-your-super", "quote": "When you withdraw money from your super account, you cannot choose which investment options the money comes from."}},
+        {"do": "Apply online (fastest), or with the Super withdrawal form. Identity must be verified: online, with the ID details on the form, or certified copies.", "form": "super-withdraw-your-super", "source": {"doc": "form:super-withdraw-your-super", "quote": "The fastest and easiest way to withdraw money from your super is through your online account."}},
+        {"do": "Timing: there's no published payment time for super withdrawals (the five business days is for Flexi Pension). Don't promise a date."}
+      ],
+      "mistakes": ["Quoting the Flexi Pension's five business days for a super withdrawal.", "Treating retirement before 60 as a condition of release: preservation age is 60 for anyone under 60 now.", "Forgetting the notice of intent comes first if a deduction will be claimed."]
+    },
+    {
       "id": "pension-withdrawal",
       "title": "Lump sum from a Flexi Pension",
       "topic": "Pension",

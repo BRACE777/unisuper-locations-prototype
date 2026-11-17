@@ -549,3 +549,17 @@ test('search: the member\'s product and age move their cards up', () => {
   const ranked = engine.search('withdrawal', { products: ['ttr'], age: 62 }).results.map((r) => r.id).sort();
   assert.deepEqual(ranked, plain);
 });
+
+test('search: withdrawals lead with the right account type', () => {
+  const top = (q, o = {}) => engine.search(q, o).results.slice(0, 2).map((r) => r.id);
+  for (const q of ['withdrawal', 'withdraw', 'withdrawals']) {
+    // Nothing chosen: the super (accumulation) withdrawal form and checklist lead.
+    assert.deepEqual(top(q), ['super-withdraw-your-super', 'super-withdrawal'], `"${q}" with nothing chosen`);
+    assert.equal(top(q, { product: 'ttr', products: ['ttr'], age: 62 })[0], 'ttr-lump-sum', `"${q}" for a TTR member`);
+    assert.equal(top(q, { product: 'rp', products: ['rp'] })[0], 'pension-lump-sum', `"${q}" for a Retirement Phase member`);
+  }
+  // A question that names a product isn't nudged towards super.
+  assert.equal(top('ttr turning 65')[0], 'ttr-convert');
+  assert.equal(top('can i add money to my pension')[0], 'pension-no-additions');
+  assert.equal(engine.tokens('withdrawal').join(), engine.tokens('withdraw').join(), 'withdraw and withdrawal are the same word');
+});
