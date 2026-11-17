@@ -18,7 +18,7 @@
   var TABS = [
     { id: 'all', label: 'Search', types: null }, { id: 'rule', label: 'Rules', types: ['rule'] },
     { id: 'form', label: 'Forms', types: ['form'] }, { id: 'timeframe', label: 'Timeframes', types: ['timeframe'] },
-    { id: 'explainer', label: 'Explainers', types: ['explainer'] }, { id: 'calc', label: 'Drawdown calculator', types: [] }
+    { id: 'explainer', label: 'Explainers', types: ['explainer'] }, { id: 'calc', label: 'Calculators', types: [] }
   ];
   var TYPE_LABEL = { procedure: 'Checklists', rule: 'Rules', form: 'Forms', timeframe: 'Timeframes', explainer: 'Explainers' };
   TABS.splice(1, 0, { id: 'proc', label: 'Checklists', types: ['procedure'] });
@@ -36,7 +36,7 @@
 
   // Every launch starts on the quiet start screen; 'recent' is what was opened during this call.
   var state = { member: null, stripOpen: false, ticks: {}, q: '', product: '', tab: 'all', memberText: '', age: null, dob: null, showHidden: false, calcPreset: null,
-    sel: null, pinned: false, recent: [], railList: [], callTicks: {}, callStartHidden: false, missOpen: false };
+    sel: null, pinned: false, recent: [], railList: [], callTicks: {}, callStartHidden: false, missOpen: false, calc: 'drawdown', cf: {} };
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -282,7 +282,7 @@
       explainChips(explainersIn(c.q + ' ' + c.a + ' ' + (c.detail || ''))) +
       internalHtml('rule', c) + sourcesHtml(c.sources, c.ato) +
       '<div class="actions"><button class="btn" data-main-copy data-copy="' + esc(copy) + '">Copy answer and source</button>' +
-      (c.calc === 'drawdown' ? calcButton('btn ghost', calcTypeOf(c)) : '') + '</div>' + see + '</article>';
+      (c.calc === 'drawdown' ? calcButton('btn ghost', calcTypeOf(c)) : calcFor('rule', c.id) ? calcLink('btn ghost', calcFor('rule', c.id)) : '') + '</div>' + see + '</article>';
   }
   // The pension type a rule is about, so the calculator opens already set to it.
   function calcTypeOf(c) {
@@ -725,6 +725,8 @@
       if (!any) html += '<p class="meta">Nothing else linked to this one.</p>';
       if (state.sel.type === 'rule' && RULES[state.sel.id].calc === 'drawdown' || state.sel.type === 'explainer' && (EXPLAINERS[state.sel.id].links || []).some(function (l) { return l.calc; })) {
         html = calcButton('btn solid wide', state.sel.type === 'rule' ? calcTypeOf(RULES[state.sel.id]) : '') + html;
+      } else if (calcFor(state.sel.type, state.sel.id)) {
+        html = calcLink('btn solid wide', calcFor(state.sel.type, state.sel.id)) + html;
       }
     }
     var recent = state.recent.filter(function (r) { return !state.sel || key(r.type, r.id) !== key(state.sel.type, state.sel.id); });
@@ -828,8 +830,7 @@
         return '<button class="start-task" data-open-proc="' + id + '"><span class="hit-type t-procedure">Checklist</span><b>' + esc(PROCS[id].title) + '</b></button>';
       }).join('') + '</div></section>' +
       '<section class="start-block"><span class="label">Tools</span><div class="start-grid">' +
-      '<button class="start-task" data-goto-calc="drawdown"><span class="hit-type">Calculator</span><b>Minimum and maximum pension payments</b></button>' +
-      '<button class="start-task" data-open-dates><span class="hit-type">Calculator</span><b>When is it due? Dates and business days</b></button>' +
+      CALCS.map(function (c) { return '<button class="start-task" data-goto-calc="' + c.id + '"><span class="hit-type">Calculator · ' + esc(c.group) + '</span><b>' + esc(c.title) + '</b></button>'; }).join('') +
       '<button class="start-task" data-tab="explainer"><span class="hit-type t-explainer">Explainers</span><b>' + DATA.explainers.length + ' concepts, explained three ways</b></button>' +
       '</div></section></section>';
   }
@@ -1045,12 +1046,11 @@
     return '<input id="' + id + '" type="text" autocomplete="off" value="' + esc(value) + '" placeholder="' + esc(placeholder) + '"' + (mode ? ' inputmode="' + mode + '"' : '') + '>' + echoHtml(id);
   }
 
-  function renderCalculators() {
-    unmountFigures(); hidePop(true);
+  function renderDrawdown(body) {
     var dd = state.dd;
     if (!dd.start) dd.start = dmy(P.today());
     var fortnightly = dd.freq === 'Fortnightly';
-    main.innerHTML = '<div class="calc-layout">' +
+    body.innerHTML = '<div class="calc-layout">' +
       '<section class="card" id="calc-drawdown"><span class="label">Flexi Pension</span><h3>Minimum and maximum payments</h3>' +
       '<p class="detail">Same arithmetic as the Excel workbook. Type values the way you see them; each field shows what it understood.</p>' +
       '<div class="quick"><label for="dd-quick">Quick entry</label>' +
@@ -1078,6 +1078,244 @@
     setMember(state.memberText, 'render');
     echoDrawdown();
     runDrawdown();
+  }
+
+
+  // ----- calculators section -----
+  // Drawdown and dates are the original two; the rest are worked from rates.json by calcs.js.
+  var CALCS = [
+    { id: 'drawdown', group: 'Pension', title: 'Minimum and maximum pension payments' },
+    { id: 'rb', group: 'Pension', title: 'Retirement Bonus' },
+    { id: 'caps', group: 'Contributions', title: 'Contribution caps' },
+    { id: 'topups', group: 'Contributions', title: 'Co-contribution and LISTO' },
+    { id: 'spouse', group: 'Contributions', title: 'Spouse contribution tax offset' },
+    { id: 'div293', group: 'Contributions', title: 'Division 293 tax' },
+    { id: 'cover', group: 'Insurance', title: 'Death and TPD cover by age' },
+    { id: 'dates', group: 'Dates', title: 'When is it due? Dates and business days' }
+  ];
+  var CALC_BY_ID = {};
+  CALCS.forEach(function (c) { CALC_BY_ID[c.id] = c; });
+  // Which calculator goes with which card.
+  var CALC_FOR = {
+    rule: { 'cc-cap': 'caps', 'cc-excess': 'caps', 'carry-forward': 'caps', 'ncc-cap': 'caps', 'ncc-excess': 'caps', 'bring-forward': 'caps', 'salary-sacrifice': 'caps', 'sg-rate': 'caps',
+      'co-contribution': 'topups', listo: 'topups', 'spouse-offset': 'spouse', div293: 'div293',
+      'rb-what': 'rb', 'rb-eligibility': 'rb', 'rb-caps': 'rb', 'rb-clawback': 'rb',
+      'unit-value': 'cover', 'cover-types': 'cover', 'fixed-cover': 'cover', 'default-cover': 'cover' },
+    explainer: { 'carry-forward': 'caps', 'bring-forward': 'caps', 'concessional-vs-non': 'caps', 'retirement-bonus': 'rb', 'unitised-cover': 'cover' }
+  };
+  function calcFor(type, id) { return (CALC_FOR[type] || {})[id] || null; }
+  function calcLink(cls, id) { return '<button class="' + cls + '" data-goto-calc="' + id + '">Calculator: ' + esc(CALC_BY_ID[id].title) + ' →</button>'; }
+
+  function moneyOrNull(v) { var n = P.parseMoney(v); return n == null ? null : n; }
+  function rateEntry(id) { return DATA.rates.rates.filter(function (x) { return x.id === id; })[0] || DATA.rates.tables[id]; }
+  function calcSources(ids) {
+    var all = ids.map(rateEntry).filter(Boolean).map(function (x) { return { doc: x.doc, quote: x.quote, page: x.page }; });
+    var pds = all.filter(function (x) { return (DOCS[x.doc] || {}).kind === 'pds'; }), supp = all.filter(function (x) { return (DOCS[x.doc] || {}).kind !== 'pds'; });
+    return sourcesHtml(pds, supp);
+  }
+
+  // Simple calculators: fields in, a result, a chart and a copyable summary out.
+  var SIMPLE = {
+    caps: {
+      intro: 'This financial year\'s before-tax (concessional) and after-tax (non-concessional) contributions against the caps.',
+      fields: [
+        { k: 'salary', label: 'Salary', ph: 'e.g. 95000' }, { k: 'employerRate', label: 'Employer rate', kind: 'rate' },
+        { k: 'salarySacrifice', label: 'Salary sacrifice this year', ph: 'optional' }, { k: 'personal', label: 'Personal contributions to be claimed', ph: 'optional, with a notice of intent' },
+        { k: 'tsb', label: 'Total super balance last 30 June', ph: 'all funds, e.g. 450000' }, { k: 'carryForward', label: 'Unused cap carried forward', ph: 'optional, from ATO online services' },
+        { k: 'age', label: 'Age', kind: 'age' }, { k: 'ncc', label: 'After-tax contributions this year', ph: 'optional' }],
+      prefill: function (m, ctx) { return { tsb: ctx.tsb, ncc: m.fy && m.fy.non_concessional, salary: m.income }; },
+      compute: function (v) { return CompanionCalcs.caps(v, DATA.rates); },
+      sources: ['cc_cap', 'ncc_cap', 'carry_forward_tsb', 'bring_forward', 'sg_rate', 'employer_rates'],
+      out: function (v, r) {
+        return '<div class="calc-block"><span class="label">Before-tax (concessional)</span><div class="headline">' + money(r.cc) + '<span>of ' + money(r.ccAvailable) + (r.carry ? ' (cap plus carry-forward)' : ' cap') + '</span></div>' +
+          '<div class="ch-host" id="ch-cc"></div>' +
+          (r.ccOver ? '<p class="warn-line">' + money(r.ccOver) + ' over: excess concessional contributions are taxed at the member\'s marginal rate, less a 15% offset.</p>' : '<p class="meta">' + money(r.ccLeft) + ' of room left this year.</p>') +
+          (v.salary ? row('{{employer-estimate:Employer contributions (salary × rate)}}', money(r.employer)) : '') +
+          (v.carryForward ? row(r.carryAllowed ? '{{carry-forward-relevance:Carry-forward available}}' : 'Carry-forward', r.carryAllowed ? money(r.carry) : 'Not available: total super balance $500,000 or more') : '') +
+          '</div><div class="calc-block"><span class="label">After-tax (non-concessional)</span><div class="headline">' + money(r.ncc) + '<span>of ' + money(r.nccAvailable) + ' available this year</span></div>' +
+          '<div class="ch-host" id="ch-ncc"></div>' +
+          (!r.under75 ? '<p class="meta">75 or over: no bring-forward, and voluntary contributions stop 28 days after the end of the month of the 75th birthday.</p>' :
+            r.tsbKnown ? row('Bring-forward from this balance', esc(r.period || '')) + (r.nccAvailable > DATA.rates.rates.filter(function (x) { return x.id === 'ncc_cap'; })[0].value ? '<p class="meta">{{bring-forward-status:Assumes no bring-forward period is already running}}.</p>' : '') :
+            '<p class="meta">Add the total super balance to see the bring-forward limit.</p>') +
+          (r.nccOver ? '<p class="warn-line">' + money(r.nccOver) + ' over the after-tax limit.</p>' : '') + '</div>';
+      },
+      charts: function (v, r) {
+        CompanionCharts.meter($('ch-cc'), { fmt: money, label: 'Before-tax contributions against the cap',
+          parts: [{ value: r.employer, label: 'Employer', cls: 'ch-p1' }, { value: P.parseMoney(v.salarySacrifice) || 0, label: 'Salary sacrifice', cls: 'ch-p2' },
+            { value: P.parseMoney(v.personal) || 0, label: 'Personal, claimed', cls: 'ch-p3' }],
+          max: r.ccAvailable, marks: [{ value: r.ccCap, label: money(r.ccCap) + ' cap' }].concat(r.carry ? [{ value: r.ccAvailable, label: '+ carry-forward' }] : []) });
+        CompanionCharts.meter($('ch-ncc'), { fmt: money, label: 'After-tax contributions against the limit',
+          parts: [{ value: r.ncc, label: 'After-tax so far', cls: 'ch-p1' }], max: Math.max(r.nccAvailable, r.nccGeneral),
+          marks: [{ value: r.nccGeneral, label: money(r.nccGeneral) + ' a year' }].concat(r.nccAvailable > r.nccGeneral ? [{ value: r.nccAvailable, label: money(r.nccAvailable) + ' with bring-forward' }] : []) });
+      },
+      summary: function (v, r) { return 'Before-tax ' + money(r.cc) + ' of ' + money(r.ccAvailable) + (r.ccOver ? ' (' + money(r.ccOver) + ' over)' : ', ' + money(r.ccLeft) + ' left') + '. After-tax ' + money(r.ncc) + ' of ' + money(r.nccAvailable) + (r.period ? ' (' + r.period + ')' : '') + '.'; }
+    },
+    topups: {
+      intro: 'What the government may add: the co-contribution for after-tax contributions, and LISTO on before-tax contributions.',
+      fields: [{ k: 'income', label: 'Total income', ph: 'e.g. 52000' }, { k: 'ncc', label: 'After-tax contributions (not claimed)', ph: 'e.g. 1000' }, { k: 'cc', label: 'Before-tax contributions', ph: 'for LISTO, e.g. 4500' }],
+      prefill: function (m) { return { income: m.income, ncc: m.fy && m.fy.non_concessional, cc: m.fy && m.fy.concessional }; },
+      compute: function (v) { return CompanionCalcs.topups(v, DATA.rates); },
+      sources: ['cocontrib_lower', 'cocontrib_upper', 'cocontrib_max', 'cocontrib_rate', 'listo_income', 'listo_max'],
+      out: function (v, r) {
+        return '<div class="calc-block"><span class="label">Government co-contribution</span><div class="headline">{{cocontrib-estimate:' + money(r.co) + '}}<span>50 cents per dollar, up to ' + money(r.max) + '</span></div>' +
+          '<div class="ch-host" id="ch-co"></div>' +
+          '<p class="meta">The most it can be, by income, for ' + (P.parseMoney(v.ncc) ? money(P.parseMoney(v.ncc)) : '$1,000 or more') + ' of after-tax contributions. It phases out between ' + money(r.lower) + ' and ' + money(r.upper) + '. Under 71, and other ATO tests apply.</p></div>' +
+          '<div class="calc-block"><span class="label">LISTO</span><div class="headline">{{listo-estimate:' + money(r.listo) + '}}<span>15% of before-tax contributions, up to ' + money(r.listoMax) + ', income up to ' + money(r.listoIncome) + '</span></div></div>';
+      },
+      charts: function (v, r) {
+        var inc = P.parseMoney(v.income);
+        CompanionCharts.line($('ch-co'), { points: r.coCurve, fx: money, fy: money, label: 'Co-contribution by income', yMax: r.max * 1.1,
+          xTicks: [30000, r.lower, r.upper, 70000], band: [r.lower, r.upper, 'phases out'], marker: inc != null ? { x: inc, y: r.co } : null });
+      },
+      summary: function (v, r) { return 'Income ' + money(P.parseMoney(v.income)) + ': co-contribution about ' + money(r.co) + ', LISTO about ' + money(r.listo) + ' (estimates; the ATO works these out).'; }
+    },
+    spouse: {
+      intro: 'The tax offset for contributing to a spouse\'s super: 18% of up to $3,000, reducing as the spouse\'s income goes over $37,000.',
+      fields: [{ k: 'spouseIncome', label: 'Spouse\'s income', ph: 'e.g. 38000' }, { k: 'contribution', label: 'Spouse contribution', ph: 'e.g. 3000' }],
+      prefill: function (m) { return { spouseIncome: m.spouse && m.spouse.income }; },
+      compute: function (v) { return CompanionCalcs.spouseOffset(v, DATA.rates); },
+      sources: ['spouse_offset_max', 'spouse_offset_income', 'spouse_offset_cutout'],
+      out: function (v, r) {
+        return '<div class="calc-block"><span class="label">Tax offset</span><div class="headline">' + money(r.offset) + '<span>up to ' + money(r.max) + '</span></div>' +
+          '<div class="ch-host" id="ch-spouse"></div>' +
+          '<p class="meta">{{offset-taper:Between ' + money(r.from) + ' and ' + money(r.to) + ' of spouse income the offset reduces}}. Not available if the spouse\'s total super balance is $2.1 million or more, or they\'re over their after-tax cap. The contribution can\'t be accepted once the spouse is 75.</p></div>';
+      },
+      charts: function (v, r) {
+        var inc = P.parseMoney(v.spouseIncome);
+        CompanionCharts.line($('ch-spouse'), { points: r.curve, fx: money, fy: money, label: 'Offset by spouse income', yMax: r.max * 1.15,
+          xTicks: [34000, r.from, r.to, 41000], band: [r.from, r.to, 'reduces'], marker: inc != null ? { x: inc, y: r.offset } : null });
+      },
+      summary: function (v, r) { return 'Spouse income ' + money(P.parseMoney(v.spouseIncome)) + ', contribution ' + money(P.parseMoney(v.contribution)) + ': offset about ' + money(r.offset) + '.'; }
+    },
+    div293: {
+      intro: 'An extra 15% on before-tax contributions when income plus those contributions goes over $250,000.',
+      fields: [{ k: 'income', label: 'Income for Division 293', ph: 'taxable income plus fringe benefits, e.g. 240000' }, { k: 'cc', label: 'Before-tax contributions', ph: 'e.g. 30000' }],
+      prefill: function (m) { return { income: m.income, cc: Math.max((m.fy && m.fy.concessional) || 0, m.expected_concessional || 0) || null }; },
+      compute: function (v) { return CompanionCalcs.div293(v, DATA.rates); },
+      sources: ['div293_threshold'],
+      out: function (v, r) {
+        return '<div class="calc-block"><span class="label">Division 293 tax</span><div class="headline">{{div293-estimate:' + money(r.tax) + '}}<span>' + (r.applies ? '15% of ' + money(r.taxed) : 'under ' + money(r.threshold)) + '</span></div>' +
+          '<div class="ch-host" id="ch-293"></div>' +
+          '<p class="meta">Taxed on the lesser of the before-tax contributions and the amount over ' + money(r.threshold) + '. The ATO assesses it; it can be paid personally or released from super.</p></div>';
+      },
+      charts: function (v, r) {
+        var inc = P.parseMoney(v.income) || 0, cc = P.parseMoney(v.cc) || 0;
+        CompanionCharts.meter($('ch-293'), { fmt: money, label: 'Income and contributions against the threshold', max: r.threshold,
+          parts: [{ value: inc, label: 'Income', cls: 'ch-muted' }, { value: cc - r.taxed, label: 'Contributions, not taxed extra', cls: 'ch-p2' }, { value: r.taxed, label: 'Taxed an extra 15%', cls: 'ch-p1' }],
+          marks: [{ value: r.threshold, label: money(r.threshold) }] });
+      },
+      summary: function (v, r) { return 'Income ' + money(P.parseMoney(v.income)) + ' plus before-tax contributions ' + money(P.parseMoney(v.cc)) + ': Division 293 about ' + money(r.tax) + '.'; }
+    },
+    rb: {
+      intro: 'The bonus added when money moves into a Retirement Phase Flexi Pension from 1 October 2026: 0.7% of the amount from eligible investment options.',
+      fields: [{ k: 'eligible', label: 'Moving from eligible options', ph: 'e.g. 600000' }, { k: 'excluded', label: 'Moving from Cash, Australian Bond or Australian Income', ph: 'optional' }, { k: 'previous', label: 'Retirement Bonuses already received', ph: 'optional' }],
+      prefill: function () { return {}; },
+      compute: function (v) { return CompanionCalcs.retirementBonus(v, DATA.rates); },
+      sources: ['rb_rate', 'rb_cap', 'rb_membership'],
+      out: function (v, r) {
+        return '<div class="calc-block"><span class="label">Retirement Bonus</span><div class="headline">' + money(r.bonus) + '<span>0.7% of ' + money(r.eligible) + (r.capped ? ', limited by the ' + money(r.cap) + ' lifetime cap' : '') + '</span></div>' +
+          '<div class="ch-host" id="ch-rb"></div><div class="ch-host" id="ch-rb-cap"></div>' +
+          '<ul class="warns"><li>Needs money in a UniSuper super or TTR account for 12 continuous months before the transfer; the bonus is added when the pension starts.</li>' +
+          '<li>Withdrawing 50% or more of the starting balance within 12 months may mean it\'s taken back.</li></ul></div>';
+      },
+      charts: function (v, r) {
+        CompanionCharts.meter($('ch-rb'), { fmt: money, label: 'What moves, and what counts', parts: [{ value: r.eligible, label: 'Counts for the bonus', cls: 'ch-p1' }, { value: r.excluded, label: 'Excluded options', cls: 'ch-muted' }], max: 0 });
+        CompanionCharts.meter($('ch-rb-cap'), { fmt: money, label: 'Bonuses against the lifetime cap', parts: [{ value: r.previous, label: 'Bonuses already received', cls: 'ch-muted' }, { value: r.bonus, label: 'This bonus', cls: 'ch-p1' }],
+          max: r.cap, marks: [{ value: r.cap, label: money(r.cap) + ' lifetime cap' }] });
+      },
+      summary: function (v, r) { return 'Retirement Bonus about ' + money(r.bonus) + ' on ' + money(r.eligible) + ' from eligible options' + (r.capped ? ' (limited by the ' + money(r.cap) + ' lifetime cap)' : '') + '.'; }
+    },
+    cover: {
+      intro: 'Unitised Death and TPD cover: what the member\'s units are worth at each age. The cover per unit peaks at 38, then falls.',
+      fields: [{ k: 'age', label: 'Age', kind: 'age' }, { k: 'units', label: 'Units of Death/TPD cover', ph: 'default cover is 10 units', kind: 'number' }],
+      prefill: function (m) { var a = m.accounts.filter(function (x) { return x.insurance && x.insurance.death_tpd_units; })[0]; return { units: a ? a.insurance.death_tpd_units : null }; },
+      compute: function (v) { return CompanionCalcs.cover({ age: v.age === '' ? null : v.age, units: v.units === '' ? 10 : v.units }, DATA.rates); },
+      sources: ['unit_cover'],
+      out: function (v, r) {
+        var later = r.age != null ? DATA.rates.tables.unit_cover.rows.filter(function (x) { return x.age === Math.min(r.maxAge, r.age + 10); })[0] : null;
+        return '<div class="calc-block"><span class="label">Cover now</span><div class="headline">' + (r.cover != null ? money(r.cover) : '–') + '<span>' + r.units + ' units' + (r.age != null ? ' at age ' + r.age : ': add an age') + '</span></div>' +
+          '<div class="ch-host" id="ch-cover"></div>' +
+          (later && later.age !== r.age ? row('At ' + later.age, money(later.cover * r.units)) : '') + row('Peak, at ' + r.peak.age, money(r.peak.cover * r.units)) +
+          (r.premium ? row('Death premium, illustrative', money(r.premium.male) + ' a year (male) · ' + money(r.premium.female) + ' (female)') : '') +
+          '<p class="meta">TPD cover stops at 70; Death cover is available to 74. Premiums in the PDS table are illustrative; the actual cost is worked out per $1,000 of cover.</p>' +
+          '<details class="calc-table"><summary>Show the table</summary><table class="mini"><thead><tr><th>Age</th><th class="num">Per unit</th><th class="num">' + r.units + ' units</th></tr></thead><tbody>' +
+          DATA.rates.tables.unit_cover.rows.map(function (x) { return '<tr class="' + (x.age === r.age ? 'hit' : '') + '"><td>' + x.age + '</td><td class="num">' + money(x.cover) + '</td><td class="num">' + money(x.cover * r.units) + '</td></tr>'; }).join('') +
+          '</tbody></table></details></div>';
+      },
+      charts: function (v, r) {
+        CompanionCharts.line($('ch-cover'), { points: r.curve, fx: function (a) { return 'age ' + a; }, fy: money, label: 'Cover by age for ' + r.units + ' units',
+          xTicks: [14, 25, 38, 50, 62, 74], marker: r.cover != null ? { x: r.age, y: r.cover } : null });
+      },
+      summary: function (v, r) { return r.units + ' units of Death/TPD cover' + (r.age != null ? ' at age ' + r.age + ': ' + money(r.cover) : '') + '. Peak ' + money(r.peak.cover * r.units) + ' at ' + r.peak.age + '.'; }
+    }
+  };
+
+  function simpleValues(id) {
+    var def = SIMPLE[id], v = state.cf[id] = state.cf[id] || {};
+    // Fill blanks from the age box and a loaded test member, without overwriting anything typed.
+    def.fields.forEach(function (f) { if (f.kind === 'age' && (v[f.k] == null || v[f.k] === '') && currentAge() != null) v[f.k] = String(currentAge()); });
+    if (state.member) {
+      var pre = def.prefill(state.member, CompanionMembers.context(state.member, DATA.rates, new Date())) || {};
+      Object.keys(pre).forEach(function (k) { if ((v[k] == null || v[k] === '') && pre[k] != null && pre[k] !== 0) v[k] = String(Math.round(pre[k])); });
+    }
+    if (id === 'caps' && !v.employerRate) v.employerRate = String(DATA.rates.tables.employer_rates.rows[0]);
+    return v;
+  }
+  function parsedValues(id) {
+    var v = simpleValues(id), out = {};
+    SIMPLE[id].fields.forEach(function (f) {
+      var raw = v[f.k];
+      out[f.k] = f.kind === 'rate' ? +raw : f.kind === 'age' || f.kind === 'number' ? (raw === '' || raw == null ? '' : parseInt(raw, 10)) : moneyOrNull(raw);
+      if (out[f.k] != null && out[f.k] !== '' && isNaN(out[f.k])) out[f.k] = null;
+    });
+    // Keep the typed text for the summaries and charts.
+    Object.keys(v).forEach(function (k) { out['_' + k] = v[k]; });
+    return out;
+  }
+  function renderSimple(body, id) {
+    var def = SIMPLE[id], v = simpleValues(id);
+    body.innerHTML = '<div class="calc-layout"><section class="card"><span class="label">' + esc(CALC_BY_ID[id].group) + '</span><h3>' + esc(CALC_BY_ID[id].title) + '</h3>' +
+      '<p class="detail">' + esc(def.intro) + '</p><div class="form-grid">' +
+      def.fields.map(function (f) {
+        if (f.kind === 'rate') return '<span class="label">' + esc(f.label) + '</span><div class="cell">' + seg('cf-' + f.k, DATA.rates.tables.employer_rates.rows.map(function (x) { return [String(x), Math.round(x * 100) + '%']; }), v[f.k]) + '</div>';
+        return field('cf-' + f.k, esc(f.label), textInput('cf-' + f.k, v[f.k] || '', f.ph || (f.kind === 'age' ? 'e.g. 45' : ''), f.kind === 'age' || f.kind === 'number' ? 'numeric' : 'decimal'));
+      }).join('') +
+      '</div><div class="actions"><button type="button" class="btn ghost" data-clear-simple="' + id + '">Clear</button></div>' + calcSources(def.sources) + '</section>' +
+      '<section class="card results-card"><span class="label">Result</span><div class="results" id="cf-out"></div></section></div>';
+    def.fields.forEach(function (f) {
+      if (f.kind === 'rate') return;
+      $('cf-' + f.k).addEventListener('input', function () {
+        state.cf[id][f.k] = this.value;
+        if (f.kind !== 'age' && f.kind !== 'number') echoMoney('cf-' + f.k, this.value);
+        runSimple(id);
+      });
+      if (f.kind !== 'age' && f.kind !== 'number') echoMoney('cf-' + f.k, v[f.k] || '');
+    });
+    runSimple(id);
+  }
+  function runSimple(id) {
+    var def = SIMPLE[id], pv = parsedValues(id), raw = state.cf[id];
+    var vals = {};
+    def.fields.forEach(function (f) { vals[f.k] = pv[f.k]; });
+    var r = def.compute(vals);
+    $('cf-out').innerHTML = marks(def.out(raw, r)) + '<div class="actions"><button class="btn" data-main-copy data-copy="' + esc(CALC_BY_ID[id].title + ': ' + plain(def.summary(raw, r))) + '">Copy summary</button></div>';
+    def.charts(raw, r);
+  }
+
+  function renderCalculators() {
+    unmountFigures(); hidePop(true);
+    var id = CALC_BY_ID[state.calc] ? state.calc : 'drawdown';
+    var groups = [];
+    CALCS.forEach(function (c) { if (groups.indexOf(c.group) < 0) groups.push(c.group); });
+    main.innerHTML = '<div class="calc-page"><nav class="calc-picker" aria-label="Calculators">' + groups.map(function (g) {
+      return '<div class="calc-group"><span class="label">' + esc(g) + '</span>' + CALCS.filter(function (c) { return c.group === g; }).map(function (c) {
+        return '<button class="calc-tile" data-calc="' + c.id + '" aria-pressed="' + (c.id === id) + '">' + esc(c.title) + '</button>';
+      }).join('') + '</div>';
+    }).join('') + '</nav><div id="calc-body"></div></div>';
+    var body = $('calc-body');
+    if (id === 'drawdown') renderDrawdown(body);
+    else if (id === 'dates') { body.innerHTML = datesToolHtml(); bindDates(); }
+    else renderSimple(body, id);
   }
 
   // Date calculator: opens from the start screen, and under any timeframe that has a fixed length.
@@ -1274,7 +1512,7 @@
   });
   // New call: clears the search, member, product filter, ticks and the "earlier in this call" list.
   $('new-call').addEventListener('click', function () {
-    state.q = ''; qEl.value = ''; state.tab = 'all'; state.sel = null; state.pinned = false; state.recent = []; state.ticks = {}; state.showHidden = false; state.callTicks = {}; state.callStartHidden = false; state.missOpen = false;
+    state.q = ''; qEl.value = ''; state.tab = 'all'; state.sel = null; state.pinned = false; state.recent = []; state.ticks = {}; state.showHidden = false; state.callTicks = {}; state.callStartHidden = false; state.missOpen = false; state.calc = 'drawdown'; state.cf = {};
     state.product = '';
     resetCalc(); state.dt = { from: '', n: '5', unit: 'business_days' }; state.calcPreset = null; state.stripOpen = false; state.memberError = null;
     setMember('', 'clear');
@@ -1287,7 +1525,12 @@
   function syncTop() { document.documentElement.style.setProperty('--top-h', topEl.offsetHeight + 'px'); }
   if (window.ResizeObserver) new ResizeObserver(syncTop).observe(topEl);
   syncTop();
-  $('member').addEventListener('input', function () { setMember(this.value, 'member'); if (state.tab === 'calc') runDrawdown(); else render(); });
+  $('member').addEventListener('input', function () {
+    setMember(this.value, 'member');
+    if (state.tab !== 'calc') render();
+    else if (state.calc === 'drawdown') runDrawdown();
+    else if (SIMPLE[state.calc]) renderCalculators();
+  });
   $('member-file').addEventListener('change', function () {
     var file = this.files && this.files[0];
     if (!file) return;
@@ -1426,6 +1669,12 @@
     if (t.hasAttribute('data-open-form')) { openItem('form', t.getAttribute('data-open-form')); return; }
     if (t.hasAttribute('data-open-timeframe')) { openItem('timeframe', t.getAttribute('data-open-timeframe')); return; }
     if (t.hasAttribute('data-open-rule')) { openItem('rule', t.getAttribute('data-open-rule')); return; }
+    if (t.hasAttribute('data-seg') && /^cf-/.test(t.getAttribute('data-seg'))) {
+      var sk = t.getAttribute('data-seg').slice(3);
+      state.cf[state.calc][sk] = t.getAttribute('data-val');
+      document.querySelectorAll('[data-seg="' + t.getAttribute('data-seg') + '"]').forEach(function (b) { b.setAttribute('aria-pressed', String(b === t)); });
+      runSimple(state.calc); return;
+    }
     if (t.hasAttribute('data-seg')) {
       setSeg(t.getAttribute('data-seg'), t.getAttribute('data-val'));
       if (t.getAttribute('data-seg') !== 'unit') state.dd.touched[t.getAttribute('data-seg')] = true;
@@ -1453,12 +1702,15 @@
     }
     if (t.hasAttribute('data-goto-calc')) {
       // Opened from a TTR, BIS or Retirement Phase card: start on that type, with the cursor in the first empty box.
+      state.calc = CALC_BY_ID[t.getAttribute('data-goto-calc')] ? t.getAttribute('data-goto-calc') : 'drawdown';
       if (t.getAttribute('data-calc-type')) state.dd.type = t.getAttribute('data-calc-type');
       state.tab = 'calc'; render(); window.scrollTo(0, 0);
-      var empty = ['dd-member', 'dd-bal'].map($).filter(function (el) { return el && !el.value.trim(); })[0];
+      var empty = Array.prototype.slice.call(document.querySelectorAll('#calc-body input')).filter(function (el) { return !el.value.trim() && el.id !== 'dd-quick'; })[0];
       if (empty) empty.focus();
       return;
     }
+    if (t.hasAttribute('data-calc')) { state.calc = t.getAttribute('data-calc'); renderCalculators(); return; }
+    if (t.hasAttribute('data-clear-simple')) { state.cf[t.getAttribute('data-clear-simple')] = {}; renderCalculators(); return; }
   });
 
   document.addEventListener('keydown', function (e) {
@@ -1514,7 +1766,7 @@
   updateFoot();
 
   // The tests render every card through these (see test/companion.test.mjs); unused in the page.
-  if (window.__companionTest) window.__companionTest.api = { RENDER: RENDER, procedureView: procedureView, datesToolHtml: datesToolHtml, startHtml: startHtml, sideHtml: sideHtml, state: state, setMember: setMember, scrub: scrub, internalHtml: internalHtml };
+  if (window.__companionTest) window.__companionTest.api = { RENDER: RENDER, procedureView: procedureView, datesToolHtml: datesToolHtml, startHtml: startHtml, sideHtml: sideHtml, state: state, setMember: setMember, scrub: scrub, internalHtml: internalHtml, SIMPLE: SIMPLE, marks: marks };
 
   if (!TABS.some(function (t) { return t.id === state.tab; })) state.tab = 'all';
   renderProducts();

@@ -203,6 +203,18 @@
       "assumed": "The companion quotes How super works: up to eight transfers out in any 12-month period.",
       "pds": "How super works (28 Sep 2026, p19) says eight; the Roll over your super to another fund form (24 Jul 2026) says four.",
       "check": "Confirm the current limit with the team before telling a member how many rollovers they have left."
-    }
+    },
+    { "id": "employer-estimate", "title": "Employer contributions from salary",
+      "assumed": "Employer contributions are worked out as salary times the employer rate.",
+      "pds": "The PDS gives the 12% minimum (How super works). Employers may pay on ordinary time earnings only, or pay more (UniSuper employers commonly pay 14% or 17%).",
+      "check": "Use the actual employer contributions from the member's account where possible." },
+    { "id": "bring-forward-status", "title": "No bring-forward period already running",
+      "assumed": "The after-tax limit assumes the member isn't already part-way through a bring-forward period from the last two years.",
+      "pds": "How super works (p13) gives the bring-forward amounts by total super balance, but a period started in an earlier year changes what is left.",
+      "check": "Check the member's bring-forward status in ATO online services." },
+    { "id": "offset-taper", "title": "How the spouse offset reduces",
+      "assumed": "Between $37,000 and $40,000 of spouse income, the $3,000 the offset applies to drops by $1 for every $1 of income over $37,000.",
+      "pds": "How super works (p10) says the offset \"will gradually reduce and will completely phase out\" at $40,000, without the formula.",
+      "check": "Check the ATO's spouse contribution tax offset page or the member's tax return." }
   ]
 }

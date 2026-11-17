@@ -83,7 +83,7 @@ const fonts = font('schibsted-grotesk-latin.woff2', 'Schibsted Grotesk', '400 70
 const page = (data) => src('companion.html')
   .replace('/*STYLES*/', () => src('styles.css').replace('/*FONTS*/', () => fonts))
   .replace('/*DATA*/', () => safe(JSON.stringify(data)))
-  .replace('/*SCRIPTS*/', () => safe(['search.js', 'dates.js', 'parse.js', 'drawdown.js', 'figures.js', 'members.js', 'app.js'].map(src).join('\n;\n')));
+  .replace('/*SCRIPTS*/', () => safe(['search.js', 'dates.js', 'parse.js', 'drawdown.js', 'figures.js', 'members.js', 'calcs.js', 'charts.js', 'app.js'].map(src).join('\n;\n')));
 const html = page(bundle);
 writeFileSync(new URL('companion.html', dist), page(localBundle));
 // site/ is committed and published to GitHub Pages at /companion/ (see the repo's build.js).

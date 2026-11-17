@@ -7,10 +7,10 @@ import vm from 'node:vm';
 
 const root = new URL('../', import.meta.url);
 const ctx = vm.createContext({ console });
-for (const f of ['search.js', 'dates.js', 'parse.js', 'drawdown.js', 'members.js']) {
+for (const f of ['search.js', 'dates.js', 'parse.js', 'drawdown.js', 'members.js', 'calcs.js']) {
   vm.runInContext(readFileSync(new URL(`src/${f}`, root), 'utf8'), ctx, { filename: f });
 }
-const { CompanionSearch, CompanionDates: D, CompanionDrawdown, CompanionParse: P, CompanionMembers: M } = vm.runInContext('({ CompanionSearch, CompanionDates, CompanionDrawdown, CompanionParse, CompanionMembers })', ctx);
+const { CompanionSearch, CompanionDates: D, CompanionDrawdown, CompanionParse: P, CompanionMembers: M, CompanionCalcs: C } = vm.runInContext('({ CompanionSearch, CompanionDates, CompanionDrawdown, CompanionParse, CompanionMembers, CompanionCalcs })', ctx);
 const data = JSON.parse(readFileSync(new URL('dist/companion-data.json', root), 'utf8'));
 const engine = CompanionSearch.create(data);
 const strip = (t) => String(t).replace(/\{\{[a-z0-9-]+:/g, '').replace(/\}\}/g, '');
@@ -260,7 +260,7 @@ test('members: import validation catches bad files', () => {
 test('assumptions: every marker in the code and data names a registered assumption', () => {
   const ids = new Set(data.assumptions.map((a) => a.id));
   const used = new Set();
-  for (const f of ['app.js', 'members.js', 'drawdown.js', 'figures.js']) {
+  for (const f of ['app.js', 'members.js', 'drawdown.js', 'figures.js', 'calcs.js']) {
     const src = readFileSync(new URL(`src/${f}`, root), 'utf8');
     for (const m of src.matchAll(/\{\{([a-z0-9-]+):/g)) used.add(m[1]);
     for (const m of src.matchAll(/assume(?:Span)?\('([a-z0-9-]+)'/g)) used.add(m[1]);
@@ -317,7 +317,7 @@ function loadApp(patch) {
   };
   const window = { __companionTest: {}, localStorage: { getItem: () => null, setItem() {} }, addEventListener() {}, scrollTo() {}, innerWidth: 1366, innerHeight: 768, isSecureContext: false };
   const appCtx = vm.createContext({ console, document, window, navigator: {}, setTimeout, clearTimeout, URL, Blob: class {} });
-  for (const f of ['search.js', 'dates.js', 'parse.js', 'drawdown.js', 'figures.js', 'members.js', 'app.js']) {
+  for (const f of ['search.js', 'dates.js', 'parse.js', 'drawdown.js', 'figures.js', 'members.js', 'calcs.js', 'charts.js', 'app.js']) {
     vm.runInContext(readFileSync(new URL(`src/${f}`, root), 'utf8'), appCtx, { filename: f, timeout: 5000 });
   }
   appCtx.api = window.__companionTest.api;
@@ -425,4 +425,60 @@ test('missed searches: member numbers, TFNs and emails are blanked before saving
   assert.equal(scrub('tfn 123 456 789'), 'tfn ######');
   assert.equal(scrub('email jo@example.com about split'), 'email [email] about split');
   assert.equal(scrub('ttr max 10%'), 'ttr max 10%');
+});
+
+test('calculators: caps, top-ups, spouse offset, Division 293, Retirement Bonus and cover by age', () => {
+  const r = data.rates;
+  const c = C.caps({ salary: 100000, employerRate: 0.12, salarySacrifice: 10000, tsb: 800000, age: 50, ncc: 0 }, r);
+  assert.equal(c.cc, 22000); assert.equal(c.ccLeft, 10500);
+  assert.equal(c.nccAvailable, 390000); assert.equal(c.period, 'Three years');
+  assert.equal(C.caps({ tsb: 1900000, age: 50 }, r).nccAvailable, 260000);
+  assert.equal(C.caps({ tsb: 2000000, age: 50 }, r).nccAvailable, 130000);
+  assert.equal(C.caps({ tsb: 2200000, age: 50 }, r).nccAvailable, 0);
+  assert.equal(C.caps({ tsb: 800000, age: 76 }, r).nccAvailable, 130000, 'no bring-forward at 75+');
+  assert.equal(C.caps({ cc: 0, tsb: 600000, carryForward: 20000 }, r).ccAvailable, 32500, 'no carry-forward from $500,000');
+  assert.equal(C.caps({ tsb: 400000, carryForward: 20000 }, r).ccAvailable, 52500);
+
+  assert.equal(C.topups({ income: 40000, ncc: 1000 }, r).co, 500);
+  assert.equal(C.topups({ income: 56793, ncc: 1000 }, r).co, 250, 'halfway through the taper');
+  assert.equal(C.topups({ income: 64293, ncc: 1000 }, r).co, 0);
+  assert.equal(C.topups({ income: 40000, ncc: 400 }, r).co, 200, '50 cents a dollar');
+  assert.equal(C.topups({ income: 30000, cc: 5000 }, r).listo, 500);
+  assert.equal(C.topups({ income: 30000, cc: 2000 }, r).listo, 300);
+  assert.equal(C.topups({ income: 37001, cc: 2000 }, r).listo, 0);
+
+  assert.equal(C.spouseOffset({ spouseIncome: 30000, contribution: 3000 }, r).offset, 540);
+  assert.equal(C.spouseOffset({ spouseIncome: 38500, contribution: 3000 }, r).offset, 270);
+  assert.equal(C.spouseOffset({ spouseIncome: 40000, contribution: 3000 }, r).offset, 0);
+  assert.equal(C.spouseOffset({ spouseIncome: 20000, contribution: 1000 }, r).offset, 180);
+
+  assert.equal(C.div293({ income: 240000, cc: 30000 }, r).tax, 3000);
+  assert.equal(C.div293({ income: 300000, cc: 30000 }, r).tax, 4500);
+  assert.equal(C.div293({ income: 200000, cc: 30000 }, r).applies, false);
+
+  assert.equal(C.retirementBonus({ eligible: 600000, excluded: 150000 }, r).bonus, 4200, 'the website example');
+  const capped = C.retirementBonus({ eligible: 600000, previous: 12000 }, r);
+  assert.equal(capped.bonus, 2700); assert.equal(capped.capped, true);
+
+  assert.equal(C.cover({ age: 35, units: 10 }, r).cover, 266000, 'the PDS example');
+  assert.equal(C.cover({ age: 55, units: 10 }, r).cover, 86000);
+  assert.equal(C.cover({ age: 38, units: 1 }, r).peak.age, 38);
+  assert.equal(C.cover({ units: 10 }, r).curve.length, 61);
+});
+
+test('calculators: every calculator renders its result with sample values', () => {
+  const app = loadApp();
+  const samples = {
+    caps: { salary: '95000', employerRate: '0.17', salarySacrifice: '8000', personal: '', tsb: '450000', carryForward: '12000', age: '52', ncc: '20000' },
+    topups: { income: '52000', ncc: '1000', cc: '4500' }, spouse: { spouseIncome: '38500', contribution: '3000' },
+    div293: { income: '240000', cc: '30000' }, rb: { eligible: '600000', excluded: '150000', previous: '' }, cover: { age: '35', units: '10' },
+  };
+  for (const [id, raw] of Object.entries(samples)) {
+    app.raw = raw; app.id = id;
+    const html = vm.runInContext(`(() => { const d = api.SIMPLE[id], v = {};
+      d.fields.forEach((f) => { const x = raw[f.k]; v[f.k] = f.kind === 'rate' ? +x : (f.kind === 'age' || f.kind === 'number') ? (x === '' ? '' : parseInt(x, 10)) : (x === '' ? null : +x); });
+      const r = d.compute(v); return api.marks(d.out(raw, r)) + d.summary(raw, r); })()`, app, { timeout: 2000 });
+    assert.ok(html.length > 100, `${id} rendered nothing`);
+    assert.doesNotMatch(html, /\{\{[a-z0-9-]+:|NaN|undefined/, `${id} shows a raw marker, NaN or undefined`);
+  }
 });
