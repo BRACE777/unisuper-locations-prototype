@@ -14,3 +14,5 @@ companion/data/*.local.json
 
 # Call companion: text extracted from the downloaded PDF forms
 companion/data/form-pages.json
+# Call companion: exported "missed searches" (what consultants typed on calls)
+companion/feedback/

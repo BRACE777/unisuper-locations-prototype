@@ -188,6 +188,31 @@ if (problems.length) {
   console.error(`${problems.length} problem(s):\n- ` + problems.join('\n- '));
   process.exit(1);
 }
+// Internal notes (the committed example, and your local file if there is one): every 'on' target must exist.
+{
+  const ids = {
+    rule: new Set(cards.map((c) => c.id)), procedure: new Set((procedures?.items ?? []).map((p) => p.id)),
+    form: new Set((forms?.forms ?? []).map((f) => f.id)), timeframe: new Set((timeframes?.items ?? []).map((t) => t.id)),
+    explainer: new Set((explainers?.items ?? []).map((e) => e.id)),
+  };
+  for (const file of ['internal.example.json', 'internal.local.json']) {
+    const data = optional(file);
+    if (!data) continue;
+    if (data.callStart && !(Array.isArray(data.callStart.steps) && data.callStart.steps.length)) problems.push(`${file}: callStart needs a list of steps`);
+    for (const [kind, list] of [['notes', data.notes], ['referrals', data.referrals]]) for (const [i, n] of (list ?? []).entries()) {
+      if (!Array.isArray(n.on) || !n.on.length) problems.push(`${file}: ${kind}[${i}] needs 'on'`);
+      if (kind === 'notes' && !n.text) problems.push(`${file}: notes[${i}] needs 'text'`);
+      if (kind === 'referrals' && !n.to) problems.push(`${file}: referrals[${i}] needs 'to'`);
+      for (const t of n.on ?? []) {
+        const [type, id] = [t.slice(0, t.indexOf(':')), t.slice(t.indexOf(':') + 1)];
+        if (type === 'topic') continue;
+        if (!ids[type]) problems.push(`${file}: ${kind}[${i}] has an unknown target "${t}"`);
+        else if (!ids[type].has(id)) problems.push(`${file}: ${kind}[${i}] points to ${type} "${id}", which doesn't exist`);
+      }
+    }
+  }
+}
+
 // Warnings don't fail the check: things to update soon.
 const year = new Date().getFullYear();
 const gf = (read('holidays.json').extra ?? []).filter((h) => /grand final/i.test(h.name)).map((h) => Number(h.date.slice(0, 4)));

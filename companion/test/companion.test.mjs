@@ -295,7 +295,7 @@ test('explainers: three levels of steps and blocks, with links that resolve', ()
 
 // Loads the page script against a stand-in DOM and renders every card. A time limit turns a
 // rendering loop (which would freeze the real page) into a failed test.
-function loadApp() {
+function loadApp(patch) {
   const el = () => {
     const e = {
       value: '', textContent: '', innerHTML: '', hidden: false, style: { setProperty() {} }, offsetHeight: 60, offsetWidth: 300, files: null,
@@ -308,7 +308,8 @@ function loadApp() {
     return e;
   };
   const els = {};
-  const bundle = readFileSync(new URL('dist/companion-data.json', root), 'utf8');
+  const raw = JSON.parse(readFileSync(new URL('dist/companion-data.json', root), 'utf8'));
+  const bundle = JSON.stringify(patch ? patch(raw) : raw);
   const document = {
     getElementById: (id) => (els[id] ||= Object.assign(el(), id === 'data' ? { textContent: bundle } : {})),
     querySelector: () => el(), querySelectorAll: () => [], createElement: () => el(), addEventListener() {},
@@ -396,4 +397,32 @@ test('search: every common misspelling of beneficiary is read as beneficiary', (
     assert.equal(fix && fix.to, 'beneficiary', `${w} should be read as beneficiary`);
     assert.equal(engine.search(w).results[0].id, 'nom-types', `${w} should put the nomination types card first`);
   }
+});
+
+test('internal notes: shown from a local file, never in the published page', () => {
+  const example = JSON.parse(readFileSync(new URL('data/internal.example.json', root), 'utf8'));
+  const app = loadApp((d) => ({ ...d, internal: example, local: { ...d.local, internal: true } }));
+  const run = (code) => vm.runInContext(code, app, { timeout: 3000 });
+  app.item = data.rules.find((r) => r.id === 'hardship');
+  assert.match(run('api.RENDER.rule(item)'), /Internal · team only/);
+  app.item = data.rules.find((r) => r.id === 'claims');
+  assert.match(run('api.RENDER.rule(item)'), /Refer to/);
+  assert.match(run('api.startHtml()'), /Start of call · internal/);
+  // Without the local file there is no internal box anywhere.
+  const pub = loadApp();
+  pub.item = data.rules.find((r) => r.id === 'hardship');
+  assert.doesNotMatch(vm.runInContext('api.RENDER.rule(item)', pub, { timeout: 3000 }), /Internal · team only/);
+  // The published page is built from the public data only.
+  const site = readFileSync(new URL('site/index.html', root), 'utf8');
+  assert.doesNotMatch(site, /"internal":\{|"kind":"internal"/);
+  assert.equal(data.internal, null);
+});
+
+test('missed searches: member numbers, TFNs and emails are blanked before saving', () => {
+  const app = loadApp();
+  const scrub = (s) => vm.runInContext(`api.scrub(${JSON.stringify(s)})`, app);
+  assert.equal(scrub('member 12345678 withdrawal'), 'member ###### withdrawal');
+  assert.equal(scrub('tfn 123 456 789'), 'tfn ######');
+  assert.equal(scrub('email jo@example.com about split'), 'email [email] about split');
+  assert.equal(scrub('ttr max 10%'), 'ttr max 10%');
 });

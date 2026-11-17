@@ -1,0 +1,19 @@
+{
+  "note": "EXAMPLE ONLY. Copy this file to internal.local.json (git-ignored, never published) and replace the placeholders with your team's own steps. Internal notes show only in dist/companion.html on your PC, in an 'Internal · team only' box. 'on' lists where a note or referral shows: 'rule:<id>', 'procedure:<id>', 'form:<id>', 'timeframe:<id>', 'explainer:<id>', or 'topic:<topic>' for every card in that topic. Never put member details in this file.",
+  "callStart": {
+    "title": "Start of call",
+    "steps": [
+      "[Your ID check: e.g. which details to confirm before discussing the account]",
+      "[Who can be spoken to: the member, or someone with a third party authority]",
+      "[Anything to note in the system at the start of the call]"
+    ]
+  },
+  "notes": [
+    { "on": ["rule:hardship", "procedure:hardship"], "text": "[Team note: e.g. where hardship applications are tracked, or what to check before transferring]" },
+    { "on": ["topic:Insurance"], "text": "[Team note shown on every insurance card]" }
+  ],
+  "referrals": [
+    { "on": ["rule:claims", "form:manual-death-benefit-claim", "form:manual-insurance-claim"], "when": "[e.g. any death or insurance claim]", "to": "[Team name]", "how": "[e.g. warm transfer, extension, queue]" },
+    { "on": ["rule:advice-contact"], "when": "[e.g. the member wants personal advice]", "to": "[Advice team]", "how": "[How to book or transfer]" }
+  ]
+}

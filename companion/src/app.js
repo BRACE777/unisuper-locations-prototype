@@ -36,7 +36,7 @@
 
   // Every launch starts on the quiet start screen; 'recent' is what was opened during this call.
   var state = { member: null, stripOpen: false, ticks: {}, q: '', product: '', tab: 'all', memberText: '', age: null, dob: null, showHidden: false, calcPreset: null,
-    sel: null, pinned: false, recent: [], railList: [] };
+    sel: null, pinned: false, recent: [], railList: [], callTicks: {}, callStartHidden: false, missOpen: false };
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -280,7 +280,7 @@
       '<p class="answer">' + annotate(esc(c.a), seen) + '</p>' +
       (c.detail ? '<p class="detail">' + annotate(esc(c.detail), seen) + '</p>' : '') + figureSlot(c.id) + ageTableHtml(c) +
       explainChips(explainersIn(c.q + ' ' + c.a + ' ' + (c.detail || ''))) +
-      sourcesHtml(c.sources, c.ato) +
+      internalHtml('rule', c) + sourcesHtml(c.sources, c.ato) +
       '<div class="actions"><button class="btn" data-main-copy data-copy="' + esc(copy) + '">Copy answer and source</button>' +
       (c.calc === 'drawdown' ? calcButton('btn ghost', calcTypeOf(c)) : '') + '</div>' + see + '</article>';
   }
@@ -329,7 +329,7 @@
       (f.summary ? '<p class="detail">' + annotate(esc(f.summary), seen) + '</p>' : '') + say +
       (steps.length ? '<ol class="steps">' + steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol>' : '') +
       account + (f.phone ? '<div class="row-line"><span class="label">Phone</span><span class="num">' + esc(f.phone) + '</span></div>' : '') + reqs +
-      (srcs.length || formSrcs.length ? sourcesHtml(srcs, formSrcs) : '') +
+      internalHtml('form', f) + (srcs.length || formSrcs.length ? sourcesHtml(srcs, formSrcs) : '') +
       '<div class="actions">' +
       (f.online ? '<a class="btn solid" href="' + esc(f.online) + '" target="_blank" rel="noopener">' + esc(f.online_label || 'Complete online') + ' ↗</a>' : '') +
       (f.pdf ? '<a class="btn" href="' + esc(f.pdf) + '" target="_blank" rel="noopener">Open PDF ↗</a><button class="btn" data-copy="' + esc(f.pdf) + '">Copy PDF link</button>' : '') +
@@ -351,7 +351,7 @@
       '<div class="figure-line">' + (t.calc && t.calc.type === 'days' ? assumeSpan('calendar-days', esc(t.timeframe)) : esc(t.timeframe)) + '</div>' +
       (due ? '<div class="due-line"><span class="label">If the clock starts today</span><b>' + esc(shortDate(due)) + '</b></div>' : '') +
       (t.starts ? '<div class="meta">Clock starts: ' + rich(t.starts) + '</div>' : '') +
-      '<div class="say"><span class="label">Say</span><p>' + annotate(esc(t.say), seen) + '</p></div>' + (t.source || (t.ato && t.ato.length) ? sourcesHtml(t.source ? [t.source] : [], t.ato) : '') +
+      '<div class="say"><span class="label">Say</span><p>' + annotate(esc(t.say), seen) + '</p></div>' + internalHtml('timeframe', t) + (t.source || (t.ato && t.ato.length) ? sourcesHtml(t.source ? [t.source] : [], t.ato) : '') +
       '<div class="actions"><button class="btn" data-main-copy data-copy="' + esc(plain(t.say)) + '">Copy wording</button>' +
       (t.calc ? '<button class="btn ghost" data-calc-preset="' + esc(t.id) + '">Work out the date →</button>' : '') + '</div></article>';
   }
@@ -428,12 +428,65 @@
     return '<article class="card explainer" data-id="' + esc(e.id) + '">' + head(e.topic + ' · explainer', '') +
       '<h3 class="card-title">' + esc(e.title) + '</h3>' + figureSlot(e.id) + versionsHtml('data-version') +
       chainsHtml(e) + linksHtml(e) +
-      '<div class="general"><span class="label">Stay general</span><p>' + esc(e.general) + '</p></div>' + sourcesHtml([].concat(e.source), e.also) +
+      '<div class="general"><span class="label">Stay general</span><p>' + esc(e.general) + '</p></div>' + internalHtml('explainer', e) + sourcesHtml([].concat(e.source), e.also) +
       '<div class="actions"><button class="btn" data-main-copy data-copy-script>Copy this version</button></div></article>';
   }
 
 
   // ----- list of every assumption -----
+  // ----- internal notes (local only: dist/companion.html built with data/internal.local.json) -----
+  // Never in the published page: DATA.internal is null there.
+  var INTERNAL = DATA.internal || null;
+  function internalFor(type, x) {
+    if (!INTERNAL) return { notes: [], referrals: [] };
+    var keys = [type + ':' + x.id, 'topic:' + (x.topic || '')];
+    var hit = function (n) { return (n.on || []).some(function (k) { return keys.indexOf(k) >= 0; }); };
+    return { notes: (INTERNAL.notes || []).filter(hit), referrals: (INTERNAL.referrals || []).filter(hit) };
+  }
+  function internalHtml(type, x) {
+    var it = internalFor(type, x);
+    if (!it.notes.length && !it.referrals.length) return '';
+    return '<div class="internal"><span class="label">Internal · team only</span>' +
+      it.notes.map(function (n) { return '<p>' + esc(n.text) + '</p>'; }).join('') +
+      it.referrals.map(function (r) {
+        return '<div class="row-line"><span class="label">Refer to</span><span><b>' + esc(r.to) + '</b>' + (r.when ? ' · ' + esc(r.when) : '') + (r.how ? '<br><span class="meta">' + esc(r.how) + '</span>' : '') + '</span></div>';
+      }).join('') + '</div>';
+  }
+  // Start-of-call checks: shown until ticked off or hidden, and back on every New call.
+  function callStartHtml(compact) {
+    var cs = INTERNAL && INTERNAL.callStart;
+    if (!cs || state.callStartHidden) return '';
+    var done = cs.steps.filter(function (s, i) { return state.callTicks[i]; }).length;
+    return '<section class="call-start' + (compact ? ' compact' : '') + '"><div class="cs-head"><span class="label">' + esc(cs.title || 'Start of call') + ' · internal</span>' +
+      '<span class="meta">' + done + ' of ' + cs.steps.length + '</span><button class="link" data-cs-hide>Hide for this call</button></div>' +
+      '<ul>' + cs.steps.map(function (s, i) {
+        return '<li><button class="cs-tick" data-cs-tick="' + i + '" aria-pressed="' + !!state.callTicks[i] + '">' + (state.callTicks[i] ? '✓' : '') + '</button><span>' + esc(s) + '</span></li>';
+      }).join('') + '</ul></section>';
+  }
+
+  // ----- "Didn't find it": searches that let the consultant down, kept in this browser only -----
+  // Long digit runs (member numbers, TFNs, phone numbers) and email addresses are blanked before saving.
+  function scrub(s) { return String(s || '').replace(/\d[\d\s-]{5,}\d/g, '######').replace(/\S+@\S+/g, '[email]').trim().slice(0, 200); }
+  function missedList() { try { return JSON.parse(store.get('missed') || '[]'); } catch (e) { return []; } }
+  function saveMissed(list) { store.set('missed', JSON.stringify(list.slice(-500))); updateFoot(); }
+  function missedText(list) {
+    return list.map(function (m) { return m.at.slice(0, 10) + '  "' + m.q + '"' + (m.wanted ? '  -> wanted: ' + m.wanted : '') + (m.top.length ? '  (showed: ' + m.top.join(', ') + ')' : ''); }).join('\n');
+  }
+  function showMissed() {
+    hidePop(true); ws = null;
+    var list = missedList().slice().reverse();
+    setMain('<h2 class="section-title"><span class="label">Missed searches</span><span class="count">' + list.length + '</span></h2>' +
+      '<p class="hint">Searches marked <b>Didn\'t find it</b>, kept in this browser only and never sent anywhere. Export them now and then to turn them into better search terms. Don\'t type member names or numbers into the search.</p>' +
+      '<div class="actions"><button class="btn solid" data-missed-copy' + (list.length ? '' : ' disabled') + '>Copy all</button><button class="btn" data-missed-download' + (list.length ? '' : ' disabled') + '>Download (.json)</button>' +
+      '<button class="btn ghost" data-missed-clear' + (list.length ? '' : ' disabled') + '>Clear all</button></div>' +
+      (list.length ? '<div class="stack missed-list">' + list.map(function (m, i) {
+        return '<article class="card missed"><div class="row-line"><span class="label">' + esc(m.at.slice(0, 10)) + '</span><span><b>' + esc(m.q) + '</b>' + (m.wanted ? '<br>Wanted: ' + esc(m.wanted) : '') +
+          (m.top.length ? '<br><span class="meta">Showed: ' + esc(m.top.join(', ')) + '</span>' : '<br><span class="meta">Showed nothing</span>') + '</span></div>' +
+          '<div class="actions"><button class="btn sm ghost" data-q="' + esc(m.q) + '">Search again</button><button class="btn sm ghost" data-missed-del="' + (list.length - 1 - i) + '">Delete</button></div></article>';
+      }).join('') + '</div>' : '<p class="meta">Nothing saved yet.</p>'));
+    window.scrollTo(0, 0);
+  }
+
   function showAssumptions() {
     hidePop(true);
     state.q = ''; qEl.value = '';
@@ -504,6 +557,7 @@
           '<div class="step-body"><p>' + annotate(esc(st.do), seen) + '</p>' + stepNotes(st, ctx) + stepLinks(st) + (st.source ? stepSource(st.source) : '') + '</div></li>';
       }).join('') + '</ol>' +
       (p.mistakes && p.mistakes.length ? '<div class="general"><span class="label">Common mistakes</span><ul class="reqs">' + p.mistakes.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' : '') +
+      internalHtml('procedure', p) +
       '<div class="actions"><button class="btn solid" data-main-copy data-copy-proc>Copy as call note</button><button class="btn ghost" data-reset-proc>Reset ticks</button></div></article>';
   }
   function openProcedure(id) { openItem('procedure', id); }
@@ -593,11 +647,18 @@
     var html = '';
     if (m.search) {
       var res = m.res;
-      html += '<div class="rail-head"><span class="label">' + m.total + ' match' + (m.total === 1 ? '' : 'es') + '</span><div class="type-chips">' +
+      html += '<div class="rail-head"><span class="label">' + m.total + ' match' + (m.total === 1 ? '' : 'es') + '</span>' +
+        '<button class="link miss-link" data-miss aria-expanded="' + state.missOpen + '">Didn\'t find it?</button><div class="type-chips">' +
         '<button class="tchip" data-tab="all" aria-pressed="' + (state.tab === 'all') + '">All <span>' + m.total + '</span></button>' +
         ['procedure', 'rule', 'form', 'timeframe', 'explainer'].filter(function (t) { return m.counts[t]; }).map(function (t) {
           return '<button class="tchip" data-tab="' + TYPE_TAB[t] + '" aria-pressed="' + (state.tab === TYPE_TAB[t]) + '">' + TYPE_LABEL[t] + ' <span>' + m.counts[t] + '</span></button>';
         }).join('') + '</div></div>';
+      if (state.missOpen) {
+        html += '<div class="miss-form"><label for="miss-wanted">What were you after? <span class="meta">(optional; no member details)</span></label>' +
+          '<input id="miss-wanted" type="text" autocomplete="off" placeholder="e.g. the TPD claim form">' +
+          '<div class="actions"><button class="btn sm solid" data-miss-save>Save</button><button class="btn sm ghost" data-miss>Cancel</button></div>' +
+          '<p class="meta">Saved in this browser only, for improving search later.</p></div>';
+      }
       if (res.corrections && res.corrections.length) {
         html += '<div class="fixes"><span class="label">Spelling</span>' + res.corrections.map(function (f) { return '<s>' + esc(f.from) + '</s> → <b>' + esc(f.to) + '</b>'; }).join(', ') + '</div>';
       }
@@ -670,7 +731,7 @@
     if (recent.length) {
       html += '<section class="side-group this-call"><span class="label">Earlier in this call</span>' + recent.slice(0, 6).map(function (r) { return miniHtml(r.type, itemOf(r.type, r.id)); }).join('') + '</section>';
     }
-    return '<span class="label side-title">Alongside</span>' + (html || '<p class="meta">Related timeframes, forms and checklists show here.</p>');
+    return callStartHtml(true) + '<span class="label side-title">Alongside</span>' + (html || '<p class="meta">Related timeframes, forms and checklists show here.</p>');
   }
 
   function detailHtml() {
@@ -758,7 +819,7 @@
     var recent = state.recent.length ? '<section class="start-block"><span class="label">Earlier in this call</span><div class="start-list">' +
       state.recent.slice(0, 6).map(function (r) { return miniHtml(r.type, itemOf(r.type, r.id)); }).join('') + '</div></section>' : '';
     return '<section class="start">' +
-      '<h1>What did the member ask?</h1>' +
+      callStartHtml() + '<h1>What did the member ask?</h1>' +
       '<p>Type it in their words, in the box above. Results show on the left, the answer in the middle, and related timeframes, forms and checklists on the right.</p>' +
       '<p class="keys"><kbd>↑</kbd> <kbd>↓</kbd> move through results · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> copy the answer · <kbd>Shift</kbd>+<kbd>Enter</kbd> jump into the answer · <kbd>/</kbd> back to the search box</p>' +
       '<div class="try"><span class="label">For example</span>' + TRY.map(function (t) { return '<button class="chip" data-q="' + esc(t) + '">' + esc(t) + '</button>'; }).join('') + '</div>' +
@@ -1196,7 +1257,7 @@
   qEl.addEventListener('input', function () {
     clearTimeout(timer);
     timer = setTimeout(function () {
-      state.q = qEl.value; state.showHidden = false; state.sel = null; state.pinned = false;
+      state.q = qEl.value; state.showHidden = false; state.sel = null; state.pinned = false; state.missOpen = false;
       if (state.tab === 'calc') state.tab = 'all';
       render();
     }, 60);
@@ -1213,7 +1274,7 @@
   });
   // New call: clears the search, member, product filter, ticks and the "earlier in this call" list.
   $('new-call').addEventListener('click', function () {
-    state.q = ''; qEl.value = ''; state.tab = 'all'; state.sel = null; state.pinned = false; state.recent = []; state.ticks = {}; state.showHidden = false;
+    state.q = ''; qEl.value = ''; state.tab = 'all'; state.sel = null; state.pinned = false; state.recent = []; state.ticks = {}; state.showHidden = false; state.callTicks = {}; state.callStartHidden = false; state.missOpen = false;
     state.product = '';
     resetCalc(); state.dt = { from: '', n: '5', unit: 'business_days' }; state.calcPreset = null; state.stripOpen = false; state.memberError = null;
     setMember('', 'clear');
@@ -1253,6 +1314,7 @@
   // Enter moves to the next field in a calculator, like Tab.
   main.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter' || e.target.tagName !== 'INPUT') return;
+    if (e.target.id === 'miss-wanted') { e.preventDefault(); main.querySelector('[data-miss-save]').click(); return; }
     var fields = Array.prototype.slice.call(e.target.closest('section').querySelectorAll('input:not([hidden])')).filter(function (el) { return el.offsetParent; });
     var next = fields[fields.indexOf(e.target) + 1];
     if (next) { e.preventDefault(); next.focus(); next.select(); }
@@ -1276,6 +1338,36 @@
     }
     if (t.matches('.term, .acr, .assume')) { showPop(t); return; }
     if (t.hasAttribute('data-show-assumptions')) { showAssumptions(); return; } // tap on touch screens
+    if (t.hasAttribute('data-cs-tick')) { var ci = +t.getAttribute('data-cs-tick'); state.callTicks[ci] = !state.callTicks[ci]; rerenderCallStart(); return; }
+    if (t.hasAttribute('data-cs-hide')) { state.callStartHidden = true; rerenderCallStart(); return; }
+    if (t.hasAttribute('data-miss')) {
+      state.missOpen = !state.missOpen; renderWorkspace(true);
+      if (state.missOpen && $('miss-wanted')) $('miss-wanted').focus();
+      return;
+    }
+    if (t.hasAttribute('data-miss-save')) {
+      var list = missedList();
+      list.push({ q: scrub(state.q), wanted: scrub($('miss-wanted') ? $('miss-wanted').value : ''), at: new Date().toISOString(),
+        top: (state.railList || []).slice(0, 3).map(function (r) { return r.type + ':' + r.id; }) });
+      saveMissed(list); state.missOpen = false; renderWorkspace(true); qEl.focus();
+      toast('Saved to missed searches (this browser only)');
+      return;
+    }
+    if (t.hasAttribute('data-show-missed')) { showMissed(); return; }
+    if (t.hasAttribute('data-missed-del')) { var ml = missedList(); ml.splice(+t.getAttribute('data-missed-del'), 1); saveMissed(ml); showMissed(); return; }
+    if (t.hasAttribute('data-missed-copy')) { copy(missedText(missedList())); return; }
+    if (t.hasAttribute('data-missed-download')) {
+      var blob = new Blob([JSON.stringify({ exported: new Date().toISOString(), missed: missedList() }, null, 2)], { type: 'application/json' });
+      var dl = document.createElement('a'); dl.href = URL.createObjectURL(blob); dl.download = 'missed-searches-' + new Date().toISOString().slice(0, 10) + '.json'; dl.click();
+      setTimeout(function () { URL.revokeObjectURL(dl.href); }, 1000);
+      return;
+    }
+    if (t.hasAttribute('data-missed-clear')) {
+      // Two clicks, no confirm dialog: the first arms it.
+      if (t.getAttribute('data-armed')) { saveMissed([]); showMissed(); toast('Missed searches cleared'); }
+      else { t.setAttribute('data-armed', '1'); t.textContent = 'Click again to clear all'; }
+      return;
+    }
     if (t.hasAttribute('data-q')) { qEl.value = t.getAttribute('data-q'); state.q = qEl.value; render(); qEl.focus(); return; }
     if (t.hasAttribute('data-pop-version')) {
       var pv = t.getAttribute('data-pop-version');
@@ -1407,12 +1499,22 @@
     clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.classList.remove('show'); }, 1400);
   }
 
-  $('foot').innerHTML = 'General information from the public UniSuper PDS documents issued ' + esc(issued('flexi')) + ': ' +
-    DATA.sources.filter(function (s) { return s.kind === 'pds'; }).map(function (s) { return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + '</a>'; }).join(', ') +
-    '. ATO pages are linked as supplementary sources only. Words with a red dotted underline are <button class="link" data-show-assumptions>assumptions (' + DATA.assumptions.length + ')</button>. Built ' + esc(DATA.built) + '. Not personal advice. Nothing typed here is saved or sent anywhere.';
+  function rerenderCallStart() {
+    if (ws && main.contains(ws.root)) ws.side.innerHTML = sideHtml();
+    else if (!state.q.trim() && state.tab === 'all') renderBrowse();
+  }
+  function updateFoot() {
+    var n = missedList().length;
+    $('foot').innerHTML = 'General information from the public UniSuper PDS documents issued ' + esc(issued('flexi')) + ': ' +
+      DATA.sources.filter(function (s) { return s.kind === 'pds'; }).map(function (s) { return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + '</a>'; }).join(', ') +
+      '. ATO pages, UniSuper forms and the UniSuper website are linked as supplementary sources only. Words with a red dotted underline are <button class="link" data-show-assumptions>assumptions (' + DATA.assumptions.length + ')</button>. Built ' + esc(DATA.built) + '. Not personal advice. ' +
+      (DATA.local && DATA.local.internal ? '<b>Internal notes from this PC are shown (this copy is not published).</b> ' : '') +
+      'Nothing typed here is sent anywhere; searches marked "Didn\'t find it" are kept in this browser only: <button class="link" data-show-missed>missed searches (' + n + ')</button>.';
+  }
+  updateFoot();
 
   // The tests render every card through these (see test/companion.test.mjs); unused in the page.
-  if (window.__companionTest) window.__companionTest.api = { RENDER: RENDER, procedureView: procedureView, datesToolHtml: datesToolHtml, startHtml: startHtml, sideHtml: sideHtml, state: state, setMember: setMember };
+  if (window.__companionTest) window.__companionTest.api = { RENDER: RENDER, procedureView: procedureView, datesToolHtml: datesToolHtml, startHtml: startHtml, sideHtml: sideHtml, state: state, setMember: setMember, scrub: scrub, internalHtml: internalHtml };
 
   if (!TABS.some(function (t) { return t.id === state.tab; })) state.tab = 'all';
   renderProducts();

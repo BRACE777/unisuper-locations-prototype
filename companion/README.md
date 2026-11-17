@@ -75,7 +75,18 @@ Needs Node 20+, `pdftotext` (Poppler), Python with `openpyxl`, and Excel for the
 | `holidays.json` | Grand Final eve holiday (set yearly by the Victorian Government) | Hand |
 | `sources.json` | The seven PDFs, issue dates and hashes | `tools/fetch-sources.mjs` |
 
-Local-only files, never committed: `glossary.local.json` (team shorthand) and `timeframes.local.json` (internal processing times). Same shape as the main files; the build merges them in.
+Local-only files, never committed: `glossary.local.json` (team shorthand), `timeframes.local.json` (internal processing times) and `internal.local.json` (internal notes, below). Same shape as the main files.
+
+**Two pages from one build.** `site/index.html` is the public page (committed, published): PDS, forms and website only. `dist/companion.html` is your copy: the same page plus the local-only files. Use `dist/companion.html` on your work PC. The build refuses to write `site/` if anything local ever reached it, and a test checks the published page has none.
+
+**Internal notes** (`data/internal.local.json`; start from `data/internal.example.json`):
+- `callStart`: the checks to do at the start of every call (ID, who can be spoken to). They show on the start screen and at the top of the right-hand column, with ticks, until hidden, and come back with **New call**.
+- `notes`: team notes on a card, shown in an "Internal · team only" box.
+- `referrals`: who to refer to, when and how, on the cards they apply to.
+- `on` says where each one shows: `rule:<id>`, `procedure:<id>`, `form:<id>`, `timeframe:<id>`, `explainer:<id>`, or `topic:<topic>` for every card in a topic. `check-data` checks every target exists.
+- Never put member details in it.
+
+**Missed searches.** When a search doesn't find what the member needed, click **Didn't find it?** above the results and, optionally, say what you were after. It's saved in that browser only (long numbers and email addresses are blanked first) and listed under **missed searches** in the footer, where you can copy or download the list. To turn the list into better search: save the download in `companion/feedback/` (git-ignored), run `node companion/tools/check-missed.mjs companion/feedback/<file>.json` to see what each search finds now, then add the member's wording as an alias on the right card (or a glossary phrase) and a case in `test/search-cases.json`.
 
 ## When a new PDS is issued
 

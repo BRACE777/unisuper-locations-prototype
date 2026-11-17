@@ -587,3 +587,29 @@ details.pages > summary::-webkit-details-marker { display: none; }
   .subbar { flex-direction: column; align-items: stretch; }
   .new-call { padding: 0 10px; }
 }
+
+/* Internal notes (local copy only): team notes, referrals and the start-of-call checks */
+.internal { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: var(--info-wash); box-shadow: inset 3px 0 0 var(--info); }
+.internal > .label { color: var(--info); display: block; margin-bottom: 6px; }
+.internal p { margin: 0 0 8px; font-size: 13.5px; color: var(--ink-1); }
+.internal .row-line { margin-top: 4px; }
+.call-start { margin: 0 0 18px; padding: 12px 14px; border-radius: 14px; background: var(--info-wash); box-shadow: inset 3px 0 0 var(--info); }
+.call-start.compact { margin-bottom: 14px; padding: 10px 12px; }
+.cs-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-bottom: 6px; }
+.cs-head .label { color: var(--info); }
+.cs-head .link { margin-left: auto; }
+.call-start ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.call-start li { display: flex; gap: 8px; align-items: flex-start; font-size: 13.5px; color: var(--ink-1); }
+.call-start.compact li { font-size: 12.5px; }
+.cs-tick { flex: none; width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--info); background: transparent; color: var(--info); font-size: 12px; line-height: 1; cursor: pointer; }
+.cs-tick[aria-pressed="true"] { background: var(--info); color: var(--paper); }
+.cs-tick:focus-visible { outline: 2px solid var(--ink-1); outline-offset: 2px; }
+
+/* "Didn't find it?" */
+.miss-link { margin-left: auto; font-size: 12px; }
+.miss-form { display: grid; gap: 6px; margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.miss-form label { font-size: 12.5px; color: var(--ink-2); }
+.miss-form input { height: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line-2); background: var(--paper); color: var(--ink-1); font: inherit; font-size: 13px; }
+.miss-form .actions { margin: 0; }
+.miss-form .meta { margin: 0; }
+.missed-list .card.missed { padding: 12px 14px; }
