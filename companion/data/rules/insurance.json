@@ -158,10 +158,13 @@
         "waiting period",
         "salary continuance",
         "injured and cant work",
-        "off work sick"
+        "off work sick",
+        "most income protection units",
+        "maximum income protection",
+        "ip units maximum"
       ],
       "a": "Up to 23 units without health evidence, each $100 a week, capped at 85% of income. Default terms: 90-day waiting period, two-year benefit period. Apply within 180 days of starting with an eligible employer.",
-      "detail": "Benefits can be reduced by other income such as workers' compensation. Not all occupations are eligible.",
+      "detail": "Benefits can be reduced by other income such as workers' compensation. Not all occupations are eligible. With health evidence accepted by the Insurer, up to 69 units, still within 85% of salary. Units from salary are rounded up to the next whole unit: $120,000 gives 19.62, so 20 units. Leaving the DBD, transitioned cover is at most 34 units.",
       "sources": [
         {
           "doc": "acc1",
@@ -170,6 +173,14 @@
         {
           "doc": "ins",
           "quote": "Income Protection cover is available in units of cover where each unit is valued at $100 per week."
+        },
+        {
+          "doc": "ins",
+          "quote": "Up to the lesser of 69 units (equivalent to $6,900 per week) and the number of units which equates to 85% of your salary."
+        },
+        {
+          "doc": "ins",
+          "quote": "units are rounded up to the next whole unit, so Angela can apply for up to 20 units of cover"
         }
       ]
     },

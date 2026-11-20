@@ -466,15 +466,22 @@ test('calculators: caps, top-ups, spouse offset, Division 293 and cover by age',
   assert.equal(C.cover({ age: 38, units: 1 }, r).peak.age, 38);
   assert.equal(C.cover({ units: 10 }, r).curve.length, 61);
 
-  // Income Protection: the PDS examples (Angela $120,000 -> 19 units; Kent $90,000 -> 14 units).
-  assert.equal(C.ipCover({ salary: 120000 }, r).allowed, 19);
-  assert.equal(C.ipCover({ salary: 90000 }, r).allowed, 14);
-  assert.equal(C.ipCover({ salary: 400000 }, r).allowed, 23, 'never more than 23 units');
+  // Income Protection: units from salary are rounded UP (Insurance PDS p5: Angela $120,000 -> 19.62 -> 20;
+  // Accumulation 1 PDS p3: $130,000 -> 21.25 -> 22; Insurance PDS p13: Kent $90,000 -> 14.71 -> 15).
+  assert.equal(C.ipCover({ salary: 120000 }, r).noEvidence, 20);
+  assert.equal(C.ipCover({ salary: 130000 }, r).noEvidence, 22);
+  assert.equal(C.ipCover({ salary: 90000 }, r).noEvidence, 15);
+  // Without health evidence at most 23 units; with the Insurer's acceptance at most 69 (p29), both within 85% of salary.
+  const hi = C.ipCover({ salary: 400000 }, r);
+  assert.equal(hi.noEvidence, 23); assert.equal(hi.allowed, 66, '85% of $400,000 is 65.38, so 66 units');
+  assert.equal(C.ipCover({ salary: 600000 }, r).allowed, 69, 'never more than 69 units');
+  assert.equal(C.ipCover({ salary: 120000, units: 30 }, r).overAllowed, true, '30 units is over 85% of $120,000');
+  assert.equal(C.ipCover({ salary: 200000, units: 30 }, r).needsEvidence, true, 'over 23 units needs health evidence');
   const ip = C.ipCover({ salary: 120000, age: 35, wait: '90', period: '2y', sex: 'm' }, r);
-  assert.equal(ip.units, 19); assert.equal(ip.weekly, 1900);
-  assert.equal(ip.rate, 3.21); assert.equal(ip.premium, 60.99);
-  assert.equal(Math.round(ip.benefit), 8233); assert.equal(ip.cash, 7300, '73% of $10,000 a month');
-  assert.equal(Math.round(ip.toSuper), 933);
+  assert.equal(ip.units, 20); assert.equal(ip.weekly, 2000);
+  assert.equal(ip.rate, 3.21); assert.equal(ip.premium, 64.2);
+  assert.equal(Math.round(ip.benefit), 8500, 'the lesser of the units ($8,667 a month) and 85% of income ($8,500)');
+  assert.equal(ip.cash, 7300, '73% of $10,000 a month'); assert.equal(Math.round(ip.toSuper), 1200, 'up to 12% into super');
   assert.equal(C.ipCover({ salary: 120000, age: 50, wait: '30', period: '65', sex: 'f', units: 10 }, r).premium, 5404.9, 'to-65, 30-day, female, age 50: $540.49 a unit');
   const late = C.ipCover({ salary: 120000, age: 64, wait: '90', period: '65', sex: 'm', units: 10 }, r);
   assert.equal(late.converted, true); assert.equal(late.rate, 27.56, 'to-65 becomes two-year rates from 63');

@@ -98,8 +98,10 @@ var CompanionCalcs = (function () {
     };
   }
 
-  // Income Protection (Insurance in your super): units of $100 a week, up to the lesser of 23 units and
-  // 85% of salary; at claim, up to 73% of pre-disability income as cash and up to 12% into super; the
+  // Income Protection (Insurance in your super): units of $100 a week. From salary, 85% ÷ 52 ÷ $100, rounded
+  // UP to the next whole unit (the PDS examples: $120,000 -> 19.62 -> 20 units). Without health evidence, up
+  // to the lesser of 23 units and that; with the Insurer's acceptance, up to the lesser of 69 units and that.
+  // At claim, up to 73% of pre-disability income as cash and up to 12% into super; the
   // annual premium per unit by age, sex at birth, waiting period and benefit period. A to-age-65 benefit
   // period becomes two years from 63, so the two-year rates apply from then. Cover stops at 67.
   // in: salary, age, units (blank = the most allowed), wait ('90' | '60' | '30'), period ('2y' | '5y' | '65'), sex ('m' | 'f')
@@ -113,11 +115,14 @@ var CompanionCalcs = (function () {
     var r = R(rates), t = rates.tables.ip_premiums, salary = num(input.salary);
     var wait = input.wait || '90', period = input.period || '2y', sex = input.sex || 'm';
     var age = input.age == null || input.age === '' ? null : num(input.age);
-    var allowed = salary > 0 ? Math.min(r.ip_max_units, Math.floor(salary * r.ip_salary_pct / 52 / r.ip_unit_value)) : r.ip_max_units;
-    var units = input.units == null || input.units === '' ? allowed : num(input.units);
+    var bySalary = salary > 0 ? Math.ceil(Math.round(salary * r.ip_salary_pct / 52 / r.ip_unit_value * 1e6) / 1e6) : null;
+    var noEvidence = bySalary == null ? r.ip_units_no_evidence : Math.min(r.ip_units_no_evidence, bySalary);
+    var allowed = bySalary == null ? r.ip_units_max : Math.min(r.ip_units_max, bySalary);
+    var units = input.units == null || input.units === '' ? noEvidence : num(input.units);
     var monthly = units * r.ip_unit_value * 52 / 12;
-    var out = { units: units, allowed: allowed, overAllowed: units > allowed, weekly: units * r.ip_unit_value, monthly: monthly,
-      wait: wait, period: period, sex: sex, age: age, ceases: r.ip_ceases, switchAge: r.ip_to65_switch, maxUnits: r.ip_max_units };
+    var out = { units: units, bySalary: bySalary, noEvidence: noEvidence, allowed: allowed, overAllowed: units > allowed, needsEvidence: units > noEvidence && units <= allowed,
+      noEvidenceMax: r.ip_units_no_evidence, transitionedMax: r.ip_units_transitioned, weekly: units * r.ip_unit_value, monthly: monthly,
+      wait: wait, period: period, sex: sex, age: age, ceases: r.ip_ceases, switchAge: r.ip_to65_switch, maxUnits: r.ip_units_max };
     if (salary > 0) {
       var income = salary / 12;
       out.benefit = Math.min(monthly, income * r.ip_salary_pct);

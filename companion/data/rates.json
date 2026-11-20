@@ -287,7 +287,10 @@
     }
   },
   "rates": [
-    { "id": "ip_max_units", "label": "Income Protection: most units", "value": 23, "doc": "ins", "quote": "Up to the lesser of 23 units and the number of units which equates to 85% of your salary." },
+    { "id": "ip_units_no_evidence", "label": "Income Protection: most units without health evidence", "value": 23, "doc": "ins", "quote": "Up to the lesser of 23 units and the number of units which equates to 85% of your salary." },
+    { "id": "ip_units_max", "label": "Income Protection: most units that can be applied for (with the Insurer's acceptance)", "value": 69, "doc": "ins", "quote": "Up to the lesser of 69 units (equivalent to $6,900 per week) and the number of units which equates to 85% of your salary." },
+    { "id": "ip_units_transitioned", "label": "Income Protection: most transitioned units on leaving the DBD", "value": 34, "doc": "ins", "quote": "The maximum number of units of Income Protection cover you can receive is 34 units (equivalent to $3,400 per week)" },
+    { "id": "ip_round_up", "label": "Income Protection: units from salary are rounded up", "value": "up", "doc": "ins", "quote": "units are rounded up to the next whole unit, so Angela can apply for up to 20 units of cover" },
     { "id": "ip_salary_pct", "label": "Income Protection: cover up to this share of salary", "value": 0.85, "unit": "%", "doc": "ins", "quote": "as long as it’s no greater than 85% of your salary" },
     { "id": "ip_cash_pct", "label": "Income Protection: most of pre-disability income paid as cash", "value": 0.73, "unit": "%", "doc": "ins", "quote": "the maximum income replacement percentage that applies to your pre-disability income is 73%, and the maximum percentage paid as a super contribution is 12%." },
     { "id": "ip_super_pct", "label": "Income Protection: most of pre-disability income paid into super", "value": 0.12, "unit": "%", "doc": "ins", "quote": "the maximum percentage paid as a super contribution is 12%." },

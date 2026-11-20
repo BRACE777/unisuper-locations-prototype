@@ -1226,20 +1226,25 @@
       summary: function (v, r) { return 'Taxable income ' + money(P.parseMoney(v.income)) + ' plus pre-tax contributions ' + money(r.counted) + (r.excess ? ' (' + money(r.excess) + ' excess left out)' : '') + ': Division 293 about ' + money(r.tax) + '.'; }
     },
     ip: {
-      intro: 'Income Protection is bought in units of $100 a week, up to the lesser of 23 units and 85% of salary. The cover doesn\'t change with age; the premium does. Cover stops at 67.',
+      intro: 'Income Protection is bought in units of $100 a week, up to 85% of salary (rounded up to the next whole unit): up to 23 units without health evidence, and up to 69 with the Insurer’s acceptance. The cover doesn’t change with age; the premium does. Cover stops at 67.',
       fields: [
         { k: 'salary', label: 'Salary', ph: 'e.g. 120000' }, { k: 'age', label: 'Age', kind: 'age' },
-        { k: 'units', label: 'Units of Income Protection', ph: 'blank: the most allowed', kind: 'number' },
+        { k: 'units', label: 'Units of Income Protection', ph: 'blank: the most without health evidence', kind: 'number' },
         { k: 'wait', label: 'Waiting period', kind: 'choice', options: [['90', '90 days'], ['60', '60 days'], ['30', '30 days']], dflt: '90' },
         { k: 'period', label: 'Benefit period', kind: 'choice', options: [['2y', '2 years'], ['5y', '5 years'], ['65', 'To age 65']], dflt: '2y' },
         { k: 'sex', label: 'Sex at birth (sets the premium)', kind: 'choice', options: [['m', 'Male'], ['f', 'Female']], dflt: 'm' }],
       prefill: function (m) { var a = m.accounts.filter(function (x) { return x.insurance && x.insurance.ip_units; })[0]; return { salary: m.income, units: a ? a.insurance.ip_units : null }; },
       compute: function (v) { return CompanionCalcs.ipCover(v, DATA.rates); },
-      sources: ['ip_unit_value', 'ip_max_units', 'ip_salary_pct', 'ip_cash_pct', 'ip_ceases', 'ip_to65_switch', 'ip_premiums'],
+      sources: ['ip_unit_value', 'ip_salary_pct', 'ip_round_up', 'ip_units_no_evidence', 'ip_units_max', 'ip_units_transitioned', 'ip_cash_pct', 'ip_ceases', 'ip_to65_switch', 'ip_premiums'],
       out: function (v, r) {
         var periodName = { '2y': 'two-year', '5y': 'five-year', '65': 'to-age-65' }[r.period];
         return '<div class="calc-block"><span class="label">Cover</span><div class="headline">' + tw('ipweek', r.weekly) + '<span>a week · ' + r.units + ' units · about ' + money(r.monthly) + ' a month</span></div>' +
-          (r.overAllowed ? '<p class="warn-line">More than this salary allows: ' + r.allowed + ' units is the most (85% of salary, at most 23 units).</p>' : '<p class="meta">This salary allows up to ' + r.allowed + ' units.</p>') +
+          (r.bySalary != null ? row('85% of salary', r.bySalary + ' units (' + money(r.bySalary * 100) + ' a week, rounded up)') : '') +
+          row('Without health evidence', 'up to ' + r.noEvidence + ' units' + (r.bySalary == null || r.bySalary > r.noEvidenceMax ? ' (' + r.noEvidenceMax + ' at most)' : '')) +
+          row('With the Insurer’s acceptance', 'up to ' + r.allowed + ' units' + (r.bySalary == null || r.bySalary > r.maxUnits ? ' (' + r.maxUnits + ' at most)' : '')) +
+          (r.overAllowed ? '<p class="warn-line">' + r.units + ' units is more than can be held: ' + r.allowed + ' is the most for this salary (85% of salary, at most ' + r.maxUnits + ' units).</p>'
+            : r.needsEvidence ? '<p class="meta">Over ' + r.noEvidence + ' units needs an application with health evidence, accepted by the Insurer.</p>' : '') +
+          '<p class="meta">Leaving the DBD, transitioned cover is at most ' + r.transitionedMax + ' units.</p>' +
           (r.benefit != null ? '<div class="ch-host" id="ch-ipb"></div><p class="meta">At claim, the monthly benefit is the lesser of the units and 85% of pre-disability income: up to 73% of income is paid to the member and the rest, up to 12%, into super.</p>' : '<p class="meta">Add the salary to see what would be paid at claim.</p>') +
           '</div><div class="calc-block"><span class="label">Premium</span><div class="headline">' + (r.premium != null ? tw('ipprem', r.premium) : '–') + '<span>a year' + (r.rate != null ? ' · ' + money(r.rate) + ' a unit · ' + r.wait + '-day wait, ' + periodName + ' benefit' : r.age == null ? ': add an age' : ': no cover at this age') + '</span></div>' +
           '<div class="ch-host" id="ch-ipp"></div>' +
@@ -1336,9 +1341,10 @@
       var r = state.ddLast, top = r ? (r.max != null ? r.max : Math.max(r.fullMin * 4, 20000)) : 100000;
       return { min: 0, max: Math.round(top / 10) * 10, step: 10, snaps: r ? [r.proMin, r.fullMin, r.max] : [] };
     },
-    'ip.salary': function () { return { min: 0, max: 300000, step: 1000, snaps: [Math.ceil(rv('ip_max_units') * rv('ip_unit_value') * 52 / rv('ip_salary_pct') / 1000) * 1000] }; },
+    // Latches at the lowest salaries that reach 23 units (no health evidence) and 69 units (the most).
+    'ip.salary': function () { var at = function (u) { return Math.ceil((u - 1) * rv('ip_unit_value') * 52 / rv('ip_salary_pct') / 1000) * 1000; }; return { min: 0, max: 500000, step: 1000, snaps: [at(rv('ip_units_no_evidence')), at(rv('ip_units_max'))] }; },
     'ip.age': function () { var rows = DATA.rates.tables.ip_premiums.periods['2y']; return { min: rows[0][0], max: rows[rows.length - 1][0], step: 1, snaps: [39, 44, 54, rv('ip_to65_switch')], ticksOnly: true }; },
-    'ip.units': function () { return { min: 1, max: rv('ip_max_units'), step: 1, snaps: [], ticksOnly: true }; },
+    'ip.units': function () { return { min: 1, max: rv('ip_units_max'), step: 1, snaps: [rv('ip_units_no_evidence'), rv('ip_units_transitioned')], ticksOnly: true }; },
     'dd.bal': function () { return { min: 0, max: 3000000, step: 5000, snaps: [rv('pension_min_start'), 250000, 500000, 1000000, rv('tbc_general')] }; }
   };
   // Incomes up to $3 million on a stretched scale: the first 60% of the slider covers $0 to $300,000 in
